@@ -1,0 +1,1 @@
+window.opener.edited_content = 'new verision of the file';

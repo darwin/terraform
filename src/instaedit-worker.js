@@ -1,5 +1,9 @@
-editor = window.open('../src/editor.html');
-editor.getElementById('editor').innerHTML = 'window.parent.document.body.innerHTML';
+var site_content = document.getElementById('instaeditable').innerHTML;
+var editor_content = 'This will be displayed in editor.';
+
+editor = window.open('../src/editor.html', 'Instaedit editor');
 editor.focus();
 
-// Chamges receiving here
+console.log(site_content)
+
+// Changes receiving here
