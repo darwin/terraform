@@ -6,5 +6,8 @@ window.onload = function() {
 
 	var editor = ace.edit("editor");
 
-	window.opener.edited_content = 'New verision of the file submitted from editor.';
+	addEventListener('keydown', function () {
+		console.log(editor.getSession().getValue());
+		window.opener.document.getElementById('instaeditable').innerHTML = editor.getSession().getValue();
+	});
 }
