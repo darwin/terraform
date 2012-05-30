@@ -9,8 +9,6 @@
 			function instaedit() {
 				if(!instaedit_loaded) {
 					addJavascript('../src/instaedit-worker.js');
-
-					instaedit_loaded = true;
 				} else {
 					console.log('Instaedit already loaded!');
 				}
@@ -22,8 +20,8 @@
 				s.setAttribute('type', 'text/javascript');
 
 				var id = new Date().getTime();
-
 				s.setAttribute('src', name + '?id' + id);
+
 				th.appendChild(s);
 			}
 		</script>

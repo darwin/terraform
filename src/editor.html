@@ -2,8 +2,11 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta cache-mode="debug">
   <title>Editor</title>
+
+  <script src="../libs/ace-uncompressed-noconflict.js" type="text/javascript" charset="utf-8"></script>
+  <script src="../src/instaedit-editor.js?8988a9978" type="text/javascript" charset="utf-8"></script>
 
   <style type="text/css" media="screen">
     body {
@@ -22,16 +25,5 @@
 </head>
 <body>
   <pre id="editor">Instaedit rocks!</pre>
-
-  <script src="../libs/ace-uncompressed-noconflict.js" type="text/javascript" charset="utf-8"></script>
-  <script src="../src/instaedit-editor.js" type="text/javascript" charset="utf-8"></script>
-
-  <script>
-    window.onload = function() {
-        var editor = ace.edit("editor");
-        console.log(window.opener.content);
-    };
-  </script>
-
 </body>
 </html>
