@@ -9,6 +9,5 @@ window.onload = function() {
 	addEventListener('keydown', function () {
 		console.log(editor.getSession().getValue());
 		window.opener.parse(editor.getSession().getValue());
-		// window.opener.document.getElementById('instaeditable').innerHTML = editor.getSession().getValue();
 	});
 }
