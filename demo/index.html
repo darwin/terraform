@@ -9,6 +9,7 @@
 			function instaedit() {
 				if(!instaedit_loaded) {
 					addJavascript('../src/instaedit-worker.js');
+					addJavascript('./js/parser-example.js');
 				} else {
 					console.log('Instaedit already loaded!');
 				}
@@ -24,6 +25,10 @@
 
 				th.appendChild(s);
 			}
+		</script>
+
+		<script type="instaedit/rawdata">
+			You can edit this content via Edit button, placed on the bottom of this site.
 		</script>
 	</head>
 	<body>
