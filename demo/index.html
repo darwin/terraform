@@ -10,6 +10,7 @@
 				if(!instaedit_loaded) {
 					addJavascript('../src/instaedit-worker.js');
 					addJavascript('./js/parser-example.js');
+					instaedit_loaded = true;
 				} else {
 					console.log('Instaedit already loaded!');
 				}

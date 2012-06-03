@@ -1,13 +1,12 @@
 window.onload = function() {
-	var site_content = window.opener.site_content;
+	var siteContent = window.opener.siteContent;
 
-	var editor_content = document.getElementById('editor');
-	editor_content.innerHTML = site_content.replace(/^\s+|\s+$/g,"");
+	var editorContent = document.getElementById('editor');
+	editorContent.innerHTML = siteContent.replace(/^\s+|\s+$/g,"");
 
 	var editor = ace.edit("editor");
 
 	addEventListener('keydown', function () {
-		console.log(editor.getSession().getValue());
 		window.opener.parse(editor.getSession().getValue());
 	});
 }

@@ -2,13 +2,13 @@ function trim(string) {
 	return string.replace(/^\s+||\s+$/g, '');
 }
 
-function import_site_content_from_script_tag(data_script_tag, head) {
+function importSiteContentFromScriptTag(dataScriptTag, head) {
 	var content = 'not found';
 
 	if(head.length != 0) {
 		for(var i in head) {
-			if(trim(head[i]).replace(data_script_tag, '') != trim(head[i])) {
-				content = trim(head[i]).substr(data_script_tag.length, trim(head[i]).length - data_script_tag.length)
+			if(trim(head[i]).replace(dataScriptTag, '') != trim(head[i])) {
+				content = trim(head[i]).substr(dataScriptTag.length, trim(head[i]).length - dataScriptTag.length)
 			}
 		}
 	}
@@ -16,14 +16,14 @@ function import_site_content_from_script_tag(data_script_tag, head) {
 	return trim(content);
 }
 
-function import_site_content_from_meta_tag(meta_tag, head) {
+function importSiteContentFromMetaTag(metaTag, head) {
 	var url = '';
 	var content = 'data import failed';
 
 	if(head.length != 0) {
 		for(var i in head) {
-			if(trim(head[i]).replace(meta_tag, '') != trim(head[i])) {
-				url = trim(head[i]).substr(meta_tag.length, trim(head[i]).length - meta_tag.length)
+			if(trim(head[i]).replace(metaTag, '') != trim(head[i])) {
+				url = trim(head[i]).substr(metaTag.length, trim(head[i]).length - metaTag.length)
 				url = url.replace('">', '');
 			}
 		}
@@ -47,29 +47,29 @@ function importSiteContent(source) {
 	var head = document.getElementsByTagName('head');
 	head = head[0].innerHTML.split('</script>');
 
-	var data_script_tag = '<script type="instaedit/rawdata">';
-	var meta_script_tag = '<meta raw-data-source="';
+	var dataScriptTag = '<script type="instaedit/rawdata">';
+	var metaScriptTag = '<meta raw-data-source="';
 
 	if(source == 'script-tag') {
-		content = import_site_content_from_script_tag(data_script_tag, head);
+		content = importSiteContentFromScriptTag(dataScriptTag, head)
 	}
 
 	if(source == 'meta-tag') {
-		content = import_site_content_from_meta_tag(meta_script_tag, head);
+		content = importSiteContentFromMetaTag(metaScriptTag, head);
 	}
 
 	if(source == 'auto') {
-		var content = import_site_content_from_script_tag(data_script_tag, head);
+		var content = importSiteContentFromScriptTag(dataScriptTag, head)
 		if(content == 'not found') {
-			content = import_site_content_from_meta_tag(data_script_tag, head);
+			content = importSiteContentFromMetaTag(metaScriptTag, head);
 		}
 	}
 
 	return content;
 }
 
-var site_content = importSiteContent('meta-tag');
-var editor_content = 'This will be displayed in editor.';
+var siteContent = importSiteContent('script-tag');
+var editorContent = 'This will be displayed in editor.';
 
 editor = window.open('../src/editor.html', 'Instaedit editor');
 editor.focus();
