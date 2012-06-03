@@ -4,13 +4,21 @@
 		<title> Instaedit demo  </title>
 
 		<script>
-			var instaedit_loaded = false;
+			var instaeditLoaded = false;
 
-			function instaedit() {
-				if(!instaedit_loaded) {
-					addJavascript('../src/instaedit-worker.js');
-					addJavascript('./js/parser-example.js');
-					instaedit_loaded = true;
+			window.onload = function () {
+				var button = document.getElementById('instaedit-edit');
+
+				button.onclick = function () {
+					instaedit('./js/parser-example.js')
+				}
+			}
+
+			function instaedit(parserScript) {
+				if(!instaeditLoaded) {
+					addJavascript('../src/instaedit-worker.js'); // https://raw.github.com/binaryage/instaedit/master/src/instaedit-worker.js
+					addJavascript(parserScript);
+					instaeditLoaded = true;
 				} else {
 					console.log('Instaedit already loaded!');
 				}
@@ -42,6 +50,6 @@
 			You can edit this content via Edit button, placed on the bottom of this site.
 		</section>
 
-		<button id="instaedit-edit" onclick="instaedit()">Edit</button>
+		<button id="instaedit-edit">Edit</button>
 	</body>
 </html>
