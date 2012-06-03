@@ -71,5 +71,10 @@ function importSiteContent(source) {
 var siteContent = importSiteContent('script-tag');
 var editorContent = 'This will be displayed in editor.';
 
-editor = window.open('../src/editor.html', 'Instaedit editor');
+if(document.location.href.replace('.com') != document.location.href) {
+	editor = window.open('editor.html', 'Instaedit editor');
+} else {
+	editor = window.open('../src/editor.html', 'Instaedit editor');
+}
+
 editor.focus();

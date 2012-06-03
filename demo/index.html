@@ -8,16 +8,18 @@
 
 			window.onload = function () {
 				var button = document.getElementById('instaedit-edit');
+				var editorLocation = '../src/editor.html';
 
 				button.onclick = function () {
-					instaedit('./js/parser-example.js')
+					instaedit('./js/parser-example.js', editorLocation)
 				}
 			}
 
-			function instaedit(parserScript) {
+			function instaedit(parserScript, editorLocation) {
 				if(!instaeditLoaded) {
-					addJavascript('../src/instaedit-worker.js'); // https://raw.github.com/binaryage/instaedit/master/src/instaedit-worker.js
+					addJavascript('../src/instaedit-worker.js');
 					addJavascript(parserScript);
+	
 					instaeditLoaded = true;
 				} else {
 					console.log('Instaedit already loaded!');
