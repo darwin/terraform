@@ -11,19 +11,13 @@
 				var editorLocation = '../src/editor.html';
 
 				button.onclick = function () {
-					instaedit('./js/parser-example.js', editorLocation)
+					loadScripts('./js/parser-example.js', editorLocation);
 				}
 			}
 
-			function instaedit(parserScript, editorLocation) {
-				if(!instaeditLoaded) {
-					addJavascript('../src/instaedit-worker.js');
-					addJavascript(parserScript);
-	
-					instaeditLoaded = true;
-				} else {
-					console.log('Instaedit already loaded!');
-				}
+			function loadScripts(parserScript, editorLocation) {
+				addJavascript('../src/instaedit-worker.js');
+				addJavascript(parserScript);
 			}
 
 			function addJavascript(name) {
