@@ -26,16 +26,26 @@ Worker.prototype.loadFromGithuAPI= function (url) {
 	return url;
 }
 
-Worker.prototype.importSiteContentFromMetaTag = function (metaTag, head) {
-	var url = '';
-	var content = 'data import failed';
+Worker.prototype.getMetaContent = function (name) {
+	var content = 'not found';
 
 	metas = document.getElementsByTagName('meta');
 	for(var i in metas) {
-		if(metas[i].name == 'instaeditsource') {
-			var url = metas[i].content;
+		if(metas[i].name == name) {
+			content = metas[i].content;
 		}		
 	}
+
+	return content;
+}
+
+Worker.prototype.loadParser = function () {
+	addJavascript(this.getMetaContent('instaeditparser'));
+}
+
+Worker.prototype.importSiteContentFromMetaTag = function (metaTag, head) {
+	var url = this.getMetaContent('instaeditsource');
+	var content = 'data import failed';
 
 	// TODO - Solve same origin policy issues
 	if(url.replace('raw.github.com') != url) {
@@ -98,6 +108,7 @@ Worker.prototype.performEditor = function () {
 }
 
 Worker.prototype.load = function () {
+	this.loadParser();
 	this.siteContent = this.getSiteContent();
 	this.performEditor();
 }

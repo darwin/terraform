@@ -11,13 +11,8 @@
 				var editorLocation = '../src/editor.html';
 
 				button.onclick = function () {
-					loadScripts('./js/parser-example.js', editorLocation);
+					addJavascript('../src/instaedit-worker.js');
 				}
-			}
-
-			function loadScripts(parserScript, editorLocation) {
-				addJavascript('../src/instaedit-worker.js');
-				addJavascript(parserScript);
 			}
 
 			function addJavascript(name) {
@@ -38,6 +33,7 @@
 
 		<meta name="instaeditsource" content="https://raw.github.com/binaryage/blog/gh-pages/_posts/2012-04-07-hello-san-francisco.md">
 
+		<meta name="instaeditparser" content="./js/parser-example.js">
 	</head>
 	<body>
 		<h1> Instaedit demo </h1>
