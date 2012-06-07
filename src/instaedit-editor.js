@@ -1,5 +1,5 @@
 window.onload = function() {
-	var siteContent = window.opener.InstaeditWorker.importSiteContent('script-tag');
+	var siteContent = window.opener.InstaeditWorker.siteContent;
 
 	var editorContent = document.getElementById('editor');
 	editorContent.innerHTML = siteContent.replace(/^\s+|\s+$/g,"");

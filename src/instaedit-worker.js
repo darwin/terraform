@@ -20,31 +20,37 @@ Worker.prototype.importSiteContentFromScriptTag = function (dataScriptTag, head)
 
 	return this.trim(content);
 }
+ 
+Worker.prototype.loadFromGithuAPI= function (url) {
+	console.log(url);
+	return url;
+}
 
 Worker.prototype.importSiteContentFromMetaTag = function (metaTag, head) {
 	var url = '';
 	var content = 'data import failed';
 
-	if(head.length != 0) {
-		for(var i in head) {
-			if(trim(head[i]).replace(metaTag, '') != trim(head[i])) {
-				url = trim(head[i]).substr(metaTag.length, trim(head[i]).length - metaTag.length)
-				url = url.replace('">', '');
-			}
-		}
+	metas = document.getElementsByTagName('meta');
+	for(var i in metas) {
+		if(metas[i].name == 'instaeditsource') {
+			var url = metas[i].content;
+		}		
 	}
 
 	// TODO - Solve same origin policy issues
-	var request = new XMLHttpRequest();  
-	request.open('GET', url, true);  
-	request.send();  
+	if(url.replace('raw.github.com') != url) {
+		content = this.loadFromGithuAPI(url);
+	} else {
+		var request = new XMLHttpRequest();  
+		request.open('GET', url, true);  
+		request.send();  
   
-	if(request.status === "200") {  
-  		console.log(request.responseText);
-  		content = request.responseText;
-	}  
+		if(request.status === "200") {  
+  			content = request.responseText;
+		}  
+	}
 
-	return trim(content);
+	return this.trim(content);
 }
 
 Worker.prototype.importSiteContent = function (source) {
@@ -53,7 +59,7 @@ Worker.prototype.importSiteContent = function (source) {
 	head = head[0].innerHTML.split('</script>');
 
 	var dataScriptTag = '<script type="instaedit/rawdata">';
-	var metaScriptTag = '<meta raw-data-source="';
+	var metaScriptTag = 'raw-data-source';
 
 	if(source == 'script-tag') {
 		content = this.importSiteContentFromScriptTag(dataScriptTag, head)
@@ -74,7 +80,7 @@ Worker.prototype.importSiteContent = function (source) {
 }
 
 Worker.prototype.getSiteContent = function () {
-	if(this.siteContent == '') {
+	if(typeof this.siteContent === "undefined") {
 		this.siteContent = this.importSiteContent('script-tag')
 	}
 
@@ -87,15 +93,15 @@ Worker.prototype.performEditor = function () {
 	} else {
 		editor = window.open('../src/editor.html', 'Instaedit editor');
 	}
+
+	editor.focus();
 }
 
 Worker.prototype.load = function () {
 	this.siteContent = this.getSiteContent();
 	this.performEditor();
-
-	editor.focus();
 }
 
-// TODO fix it
+// TODO thats not good way
 var InstaeditWorker = new Worker();
 InstaeditWorker.load();
