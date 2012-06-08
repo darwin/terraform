@@ -39,6 +39,28 @@ Worker.prototype.getMetaContent = function (name) {
 	return content;
 }
 
+// TODO fix the broken code (commented)
+Worker.prototype.mirrorToInlineScript = function (scriptUrl) {
+	var request = new XMLHttpRequest();  
+	request.open('GET', scriptUrl, true);  
+	request.send();  
+  	/*
+	if(request.status == "200") {  
+		content = request.responseText;
+	}  
+	*/
+	/*
+	var th = document.getElementsByTagName('head')[0];
+	var s = document.createElement('script');
+	s.setAttribute('type', 'text/javascript');
+
+	var id = new Date().getTime();
+	s.setAttribute('src', name + '?id' + id);
+
+	th.appendChild(s);
+	*/
+}
+
 Worker.prototype.loadParser = function () {
 	addJavascript(this.getMetaContent('instaeditparser'));
 }

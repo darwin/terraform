@@ -14,16 +14,40 @@
     }
     
     #editor { 
-        margin: 0;
+        width: 100%; 
+        margin: 0px;
+        
         position: absolute;
         top: 0;
-        bottom: 0;
+        bottom: 30px;
         left: 0;
+        border-bottom: 1px solid silver;
+    }
+
+    #parsereditor {
+        margin: 0px;
+        width: 50%; 
+
+        position: absolute;
+        top: 0;
+        bottom: 30px;
         right: 0;
+        border-bottom: 1px solid silver;
+    }
+
+    .btn {
+      position: absolute;
+      left: 40px;
+      bottom: 5px;
     }
   </style>
 </head>
 <body>
-  <pre id="editor">Instaedit rocks!</pre>
+  <section id="editors">
+    <pre id="editor">Instaedit rocks!</pre>
+    <pre id="parsereditor">Parser source code here.</pre>
+  </section>
+
+  <button id="editparser" class="btn">Edit parser</button>
 </body>
 </html>
