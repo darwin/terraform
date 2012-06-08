@@ -1,3 +1,1 @@
-function parse(data) {
-	document.getElementById('instaeditable').innerHTML = data;
-}
+document.getElementById('instaeditable').innerHTML = instadata;

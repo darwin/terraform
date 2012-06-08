@@ -16,15 +16,25 @@ function toggleParserEditor() {
 
 window.onload = function() {
 	var siteContent = window.opener.InstaeditWorker.siteContent;
+	var parserScript = window.opener.parserCode;
 
 	var editorContent = document.getElementById('editor');
 	editorContent.innerHTML = siteContent.replace(/^\s+|\s+$/g,"");
+
+	var parserEditorElem = document.getElementById('parsereditor');
+	parserEditorElem.innerHTML = parserScript.replace(/^\s+|\s+$/g,"");
+
 
 	var editor = ace.edit("editor");
 	var parsereditor = ace.edit("parsereditor");
 
 	addEventListener('keydown', function () {
-		window.opener.parse(editor.getSession().getValue());
+		if(window.opener.parserCode != parsereditor.getSession().getValue()) {
+			window.opener.parserCode = parsereditor.getSession().getValue();
+		}
+
+		window.opener.instadata = editor.getSession().getValue();
+		window.opener.eval(window.opener.parserCode);
 	});
 
 	var parserEditorWrapper = document.getElementById('parsereditor');

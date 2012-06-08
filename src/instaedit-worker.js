@@ -2,6 +2,7 @@ var Worker = function () {};
 
 Worker.siteContent = '';
 Worker.editorContent = '';
+Worker.parserCode = '';
 
 Worker.prototype.trim = function trim(string) {
 	return string.replace(/^\s+||\s+$/g, '');
@@ -21,7 +22,7 @@ Worker.prototype.importSiteContentFromScriptTag = function (dataScriptTag, head)
 	return this.trim(content);
 }
  
-Worker.prototype.loadFromGithuAPI= function (url) {
+Worker.prototype.loadFromGithuAPI = function (url) {
 	console.log(url);
 	return url;
 }
@@ -39,30 +40,17 @@ Worker.prototype.getMetaContent = function (name) {
 	return content;
 }
 
-// TODO fix the broken code (commented)
-Worker.prototype.mirrorToInlineScript = function (scriptUrl) {
-	var request = new XMLHttpRequest();  
-	request.open('GET', scriptUrl, true);  
-	request.send();  
-  	/*
-	if(request.status == "200") {  
-		content = request.responseText;
-	}  
-	*/
-	/*
-	var th = document.getElementsByTagName('head')[0];
-	var s = document.createElement('script');
-	s.setAttribute('type', 'text/javascript');
+Worker.prototype.getParserCode = function (scriptUrl, cb) {
+	if(typeof scriptUrl != 'undefined') {
+		var request = new XMLHttpRequest();  
+		request.open('GET', scriptUrl, true);  
+		request.send();  
 
-	var id = new Date().getTime();
-	s.setAttribute('src', name + '?id' + id);
-
-	th.appendChild(s);
-	*/
-}
-
-Worker.prototype.loadParser = function () {
-	addJavascript(this.getMetaContent('instaeditparser'));
+		request.onloadend = function () { 
+			console.log(request.responseText);
+			cb(request.responseText);
+		}
+	}
 }
 
 Worker.prototype.importSiteContentFromMetaTag = function (metaTag, head) {
@@ -79,7 +67,7 @@ Worker.prototype.importSiteContentFromMetaTag = function (metaTag, head) {
   
 		if(request.status === "200") {  
   			content = request.responseText;
-		}  
+		}
 	}
 
 	return this.trim(content);
@@ -130,9 +118,12 @@ Worker.prototype.performEditor = function () {
 }
 
 Worker.prototype.load = function () {
-	this.loadParser();
 	this.siteContent = this.getSiteContent();
-	this.performEditor();
+	this.getParserCode(this.getMetaContent('instaeditparser'), function (code) {
+		this.parserCode = code;
+		Worker.prototype.performEditor();
+	});
+	
 }
 
 // TODO thats not good way
