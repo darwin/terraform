@@ -8,18 +8,17 @@ Worker.prototype.trim = function trim(string) {
 	return string.replace(/^\s+||\s+$/g, '');
 }
 
-Worker.prototype.importSiteContentFromScriptTag = function (dataScriptTag, head) {
+Worker.prototype.importSiteContentFromScriptTag = function (scriptType) {
 	var content = 'not found';
 
-	if(head.length != 0) {
-		for(var i in head) {
-			if(this.trim(head[i]).replace(dataScriptTag, '') != this.trim(head[i])) {
-				content = this.trim(head[i]).substr(dataScriptTag.length, this.trim(head[i]).length - dataScriptTag.length)
-			}
-		}
+	metas = document.getElementsByTagName('script');
+	for(var i in metas) {
+		if(metas[i].type == scriptType) {
+			content = metas[i].innerHTML;
+		}		
 	}
 
-	return this.trim(content);
+	return content;
 }
  
 Worker.prototype.loadFromGithuAPI = function (url) {
@@ -47,64 +46,50 @@ Worker.prototype.getParserCode = function (scriptUrl, cb) {
 		request.send();  
 
 		request.onloadend = function () { 
-			console.log(request.responseText);
 			cb(request.responseText);
 		}
 	}
 }
 
-Worker.prototype.importSiteContentFromMetaTag = function (metaTag, head) {
-	var url = this.getMetaContent('instaeditsource');
-	var content = 'data import failed';
-
-	// TODO - Solve same origin policy issues
-	if(url.replace('raw.github.com') != url) {
-		content = this.loadFromGithuAPI(url);
-	} else {
+Worker.prototype.importSiteContentFromMetaTag = function (scriptType, scriptUrl, cb) {
+	if(typeof scriptUrl != 'undefined') {
 		var request = new XMLHttpRequest();  
-		request.open('GET', url, true);  
-		request.send();  
-  
-		if(request.status === "200") {  
-  			content = request.responseText;
-		}
-	}
+		request.open('GET', scriptUrl, true);  
+		// request.send();  
 
-	return this.trim(content);
+		request.onloadend = function () { 
+			if(request.statusCode == 200) {
+				// cb(request.responseText);
+				cb('err');
+			} else {
+				cb('err');
+			}
+		}
+		cb('err');
+	}
 }
 
-Worker.prototype.importSiteContent = function (source) {
-	var content = '';
-	var head = document.getElementsByTagName('head');
-	head = head[0].innerHTML.split('</script>');
+Worker.prototype.importSiteContent = function (res) {
+	var scriptType = 'instaedit/rawdata';
 
-	var dataScriptTag = '<script type="instaedit/rawdata">';
-	var metaScriptTag = 'raw-data-source';
-
-	if(source == 'script-tag') {
-		content = this.importSiteContentFromScriptTag(dataScriptTag, head)
-	}
-
-	if(source == 'meta-tag') {
-		content = this.importSiteContentFromMetaTag(metaScriptTag, head);
-	}
-
-	if(source == 'auto') {
-		var content = this.importSiteContentFromScriptTag(dataScriptTag, head)
-		if(content == 'not found') {
-			content = this.importSiteContentFromMetaTag(metaScriptTag, head);
+	this.importSiteContentFromMetaTag(scriptType, this.getMetaContent('instaeditsource'), function (content) {
+		if(content == 'err') {
+			content = Worker.prototype.importSiteContentFromScriptTag(scriptType);
 		}
-	}
 
-	return content;
+		res(content);
+	});
 }
 
-Worker.prototype.getSiteContent = function () {
-	if(typeof this.siteContent === "undefined") {
-		this.siteContent = this.importSiteContent('script-tag')
+Worker.prototype.getSiteContent = function (done) {
+	if(typeof this.siteContent == "undefined") {
+		this.importSiteContent(function (res) {
+			this.siteContent = res;
+			done();
+		});
+	} else {
+		done(this.siteContent);
 	}
-
-	return this.siteContent;
 }
 
 Worker.prototype.performEditor = function () {
@@ -117,15 +102,23 @@ Worker.prototype.performEditor = function () {
 	editor.focus();
 }
 
-Worker.prototype.load = function () {
-	this.siteContent = this.getSiteContent();
-	this.getParserCode(this.getMetaContent('instaeditparser'), function (code) {
-		this.parserCode = code;
-		Worker.prototype.performEditor();
+Worker.prototype.load = function (cb) {
+	console.log('Worker loaded');
+	this.getSiteContent(function () {
+		console.log('Site content loaded');
+		Worker.prototype.getParserCode(Worker.prototype.getMetaContent('instaeditparser'), function (code) {
+			console.log('ParserCode loaded');
+			this.parserCode = code;
+
+			cb(this.siteContent, this.parserCode);
+		});	
 	});
-	
 }
 
-// TODO thats not good way
 var InstaeditWorker = new Worker();
-InstaeditWorker.load();
+InstaeditWorker.load(function (site, parser) {
+	InstaeditWorker.siteContent = site;
+	InstaeditWorker.parserCode = parser;
+
+	InstaeditWorker.performEditor();
+});

@@ -4,26 +4,18 @@
 		<title> Instaedit demo  </title>
 
 		<script>
-			var instaeditLoaded = false;
-
 			window.onload = function () {
-				var button = document.getElementById('instaedit-edit');
-				var editorLocation = '../src/editor.html';
+				document.getElementById('instaedit-edit').onclick = function () {
+					(function () {
+						var th = document.getElementsByTagName('head')[0];
 
-				button.onclick = function () {
-					addJavascript('../src/instaedit-worker.js');
+						var s = document.createElement('script');
+						s.setAttribute('type', 'text/javascript');
+						s.setAttribute('src', '../src/instaedit-worker.js');
+
+						th.appendChild(s);
+					})();
 				}
-			}
-
-			function addJavascript(name) {
-				var th = document.getElementsByTagName('head')[0];
-				var s = document.createElement('script');
-				s.setAttribute('type', 'text/javascript');
-
-				var id = new Date().getTime();
-				s.setAttribute('src', name + '?id' + id);
-
-				th.appendChild(s);
 			}
 		</script>
 

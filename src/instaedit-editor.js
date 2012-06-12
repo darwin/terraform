@@ -6,11 +6,9 @@ function toggleParserEditor() {
 		parserEditorWrapper.style.visibility = 'visible';
 		contentEditor.style.width = '50%';
 		parserEditorWrapper.style.width = '50%';
-		console.log('sjpw');
 	} else {
 		parserEditorWrapper.style.visibility = 'hidden'
 		contentEditor.style.width = '100%';
-		console.log('hode');
 	}
 }
 
@@ -43,5 +41,10 @@ window.onload = function() {
 	var parserEditButton = document.getElementById('editparser');
 	parserEditButton.onclick = function () {
 		toggleParserEditor();
+	}
+
+	var parserEditButton = document.getElementById('commit');
+	parserEditButton.onclick = function () {
+		alert('Feature not yet supported but you can manually paste that to your site: ' + '\n' + '\n' + editor.getSession().getValue());
 	}
 }
