@@ -20,11 +20,161 @@ Worker.prototype.importSiteContentFromScriptTag = function (scriptType) {
 
 	return content;
 }
- 
-Worker.prototype.loadFromGithuAPI = function (url) {
-	console.log(url);
-	return url;
+
+Worker.prototype.httpRequest = function (url, cb) {
+	var request = new XMLHttpRequest();  
+	request.open('GET', url, true);  
+	request.send();
+
+	request.onloadend = function () { 
+		cb(request.responseText);
+	}
 }
+
+Worker.prototype.addScript = function (name, cb) {
+	var th = document.getElementsByTagName('head')[0];
+
+	var s = document.createElement('script');
+	s.setAttribute('type', 'text/javascript');
+	s.setAttribute('src', name);
+
+	s.onload = function () {
+		cb();
+	}
+
+	th.appendChild(s);
+}
+
+Worker.prototype.addJQuery = function (data, cb) {
+	if (typeof jQuery != 'undefined') {  
+ 		console.log('jQuery already loaded.');
+ 		cb(data);
+	} else {
+	    this.addScript('js/jQuery_1.7.2_min.js', function () {
+	    	cb(data);
+	    });
+	}
+}
+
+Worker.prototype.loadFromGithuAPI = function (url, cb) {
+	this.addJQuery(url, function (url) {
+		var originUrl = url;
+		var url = url.split('/');
+		var user = url[3].replace('undefined');
+		var repo = url[4].replace('undefined');
+		var branch = url[5].replace('undefined');
+
+		if(url.length == 6) {
+			var path = url[6].replace('undefined');
+		} else {
+			var path = '';
+			for(var i = 7; i <= url.length; i++) {
+				path += '/' + url[i - 1].replace('undefined');
+			}
+			path = path.substr(1);
+		}
+
+		var url = 'https://api.github.com/repos/' + user + '/' + repo + '/git/refs/heads/' + branch;
+		jQuery.getJSON(url + "?callback=?", {}, function(data) {
+			var url = 'https://api.github.com/repos/' + user + '/' + repo + '/git/trees/' + data.data.object.sha;
+			jQuery.getJSON(url + "?callback=?", {recursive: 1}, function(data) {
+				for(var j in data.data.tree) {
+					if(path == data.data.tree[j].path) {
+						var url = data.data.tree[j].url;
+						jQuery.getJSON(url + "?callback=?", {recursive: 1}, function(data) {
+							var data = Worker.prototype.decode64(data.data.content)
+							cb(data);
+						});
+					}
+				}
+  			});
+		});
+	});
+}
+
+Worker.prototype.encode64 = function (input) {
+	var keyStr = "ABCDEFGHIJKLMNOP" +
+        "QRSTUVWXYZabcdef" +
+   	    "ghijklmnopqrstuv" +
+        "wxyz0123456789+/" +
+        "=";
+
+ 	input = escape(input);
+ 	var output = "";
+ 	var chr1, chr2, chr3 = "";
+ 	var enc1, enc2, enc3, enc4 = "";
+ 	var i = 0;
+
+	do {
+ 	   chr1 = input.charCodeAt(i++);
+ 	   chr2 = input.charCodeAt(i++);
+ 	   chr3 = input.charCodeAt(i++);
+
+	   enc1 = chr1 >> 2;
+ 	   enc2 = ((chr1 & 3) << 4) | (chr2 >> 4);
+ 	   enc3 = ((chr2 & 15) << 2) | (chr3 >> 6);
+ 	   enc4 = chr3 & 63;
+
+	   if (isNaN(chr2)) {
+ 	      enc3 = enc4 = 64;
+ 	   } else if (isNaN(chr3)) {
+ 	      enc4 = 64;
+ 	   }
+
+	   output = output +
+ 	      keyStr.charAt(enc1) +
+ 	      keyStr.charAt(enc2) +
+ 	      keyStr.charAt(enc3) +
+ 	      keyStr.charAt(enc4);
+ 	   chr1 = chr2 = chr3 = "";
+ 	   enc1 = enc2 = enc3 = enc4 = "";
+ 	} while (i < input.length);
+
+	return output;
+}
+
+Worker.prototype.decode64 = function (input) {
+  	var keyStr = "ABCDEFGHIJKLMNOP" +
+               "QRSTUVWXYZabcdef" +
+               "ghijklmnopqrstuv" +
+               "wxyz0123456789+/" +
+               "=";
+
+     var output = "";
+     var chr1, chr2, chr3 = "";
+     var enc1, enc2, enc3, enc4 = "";
+     var i = 0;
+
+     // remove all characters that are not A-Z, a-z, 0-9, +, /, or =
+     var base64test = /[^A-Za-z0-9\+\/\=]/g;
+     input = input.replace(/[^A-Za-z0-9\+\/\=]/g, "");
+
+     do {
+        enc1 = keyStr.indexOf(input.charAt(i++));
+        enc2 = keyStr.indexOf(input.charAt(i++));
+        enc3 = keyStr.indexOf(input.charAt(i++));
+        enc4 = keyStr.indexOf(input.charAt(i++));
+
+        chr1 = (enc1 << 2) | (enc2 >> 4);
+        chr2 = ((enc2 & 15) << 4) | (enc3 >> 2);
+        chr3 = ((enc3 & 3) << 6) | enc4;
+
+        output = output + String.fromCharCode(chr1);
+
+        if (enc3 != 64) {
+           output = output + String.fromCharCode(chr2);
+        }
+        if (enc4 != 64) {
+           output = output + String.fromCharCode(chr3);
+        }
+
+        chr1 = chr2 = chr3 = "";
+        enc1 = enc2 = enc3 = enc4 = "";
+
+     } while (i < input.length);
+
+     return unescape(output);
+  }
 
 Worker.prototype.getMetaContent = function (name) {
 	var content = 'not found';
@@ -46,6 +196,7 @@ Worker.prototype.getParserCode = function (scriptUrl, cb) {
 		request.send();  
 
 		request.onloadend = function () { 
+			console.log(request.responseText);
 			cb(request.responseText);
 		}
 	}
@@ -53,19 +204,23 @@ Worker.prototype.getParserCode = function (scriptUrl, cb) {
 
 Worker.prototype.importSiteContentFromMetaTag = function (scriptType, scriptUrl, cb) {
 	if(typeof scriptUrl != 'undefined') {
-		var request = new XMLHttpRequest();  
-		request.open('GET', scriptUrl, true);  
-		// request.send();  
+		if(scriptUrl.replace('github.com') == scriptUrl) {
+			var request = new XMLHttpRequest();  
+			request.open('GET', scriptUrl, true);  
+			request.send();
 
-		request.onloadend = function () { 
-			if(request.statusCode == 200) {
-				// cb(request.responseText);
-				cb('err');
-			} else {
-				cb('err');
+			request.onloadend = function () { 
+				if(request.statusCode == 200) {
+					cb(request.responseText);
+				} else {
+					cb('err');
+				}
 			}
+		} else {
+			this.loadFromGithuAPI(scriptUrl, function(content) {
+				cb(content);
+			});
 		}
-		cb('err');
 	}
 }
 
