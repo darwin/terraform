@@ -1,17 +1,21 @@
 function toggleParserEditor() {
+	console.log('toggling');
 	var parserEditorWrapper = document.getElementById('parsereditor');
 	var contentEditor = document.getElementById('editor');
 	var applyButton = document.getElementById('apply');
 
 	if(parserEditorWrapper.style.visibility == 'hidden') {
+		console.log('up');
 		parserEditorWrapper.style.visibility = 'visible';
-		contentEditor.style.width = '50%';
-		parserEditorWrapper.style.width = '50%';
 		applyButton.style.visibility = 'visible';
+
+		contentEditor.style.height = '360px';
 	} else {
-		parserEditorWrapper.style.visibility = 'hidden'
-		contentEditor.style.width = '100%';
+		console.log('down');
+		parserEditorWrapper.style.visibility = 'hidden';
 		applyButton.style.visibility = 'hidden';
+
+		contentEditor.style.height = '695px';
 	}
 }
 
@@ -50,6 +54,8 @@ window.onload = function() {
 	var parserEditButton = document.getElementById('editparser');
 	parserEditButton.onclick = function () {
 		toggleParserEditor();
+		editor.resize();
+		parsereditor.resize();
 	}
 
 	var parserEditButton = document.getElementById('commit');
