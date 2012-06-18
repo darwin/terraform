@@ -36,6 +36,11 @@ window.onload = function() {
 	var parsereditor = ace.edit("parsereditor");
 	window.opener.parserCode = parsereditor.getSession().getValue();
 
+/*
+	var JavaScriptMode = require("ace/mode/javascript").Mode;
+    parsereditor.getSession().setMode(new JavaScriptMode());
+*/
+
 	applyButton.onclick = function () {
 		if(window.opener.parserCode != parsereditor.getSession().getValue()) {
 			window.opener.parserCode = parsereditor.getSession().getValue();
@@ -43,7 +48,7 @@ window.onload = function() {
 		}
 	}
 
-	addEventListener('keydown', function () {
+	addEventListener('keyup', function () {
 		window.opener.instadata = editor.getSession().getValue();
 		window.opener.eval(window.opener.parserCode);
 	});
