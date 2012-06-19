@@ -53,6 +53,7 @@ window.onload = function() {
 
 	// var JavaScriptMode = require("ace/mode/javascript").Mode;
     // parsereditor.getSession().setMode(new JavaScriptMode());
+    parsereditor.getSession().setMode("ace/mode/javascript");
 
 	applyButton.onclick = function () {
 		if(window.opener.parserCode != parsereditor.getSession().getValue()) {
