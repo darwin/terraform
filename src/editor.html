@@ -57,12 +57,41 @@
       left: 55%;
       bottom: 5px; 
     }
+
+    #error-info {
+      visibility: hidden;
+      position: absolute;
+      
+      background-color: white;
+      z-index: 10;
+
+      bottom: 0px;
+      right: 0px;
+      width: 400px;
+
+      height: 365px;
+      border-left: 1px solid silver;
+    }
+
+    #error-info .error {
+      font-family: 'Menlo', monospace;
+      color: white;
+      background-color: red;
+      padding-top: 3px;
+      padding-bottom: 3px;
+      font-size: 11px;
+
+      position: relative;
+      text-indent: 30px;
+      top: 30px;
+    }
   </style>
 </head>
 <body>
   <section id="editors">
     <pre id="editor">Instaedit rocks!</pre>
     <pre id="parsereditor">Parser source code here.</pre>
+    <div id="error-info"></div>
   </section>
 
   <button id="editparser" class="btn">Edit parser</button>

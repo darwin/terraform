@@ -19,6 +19,21 @@ function toggleParserEditor() {
 	}
 }
 
+function handleError(err) {
+	console.log('error ocured' + err)
+	var errorWindow = document.getElementById('error-info');
+	errorWindow.innerHTML = '<div class="error">' + err + '</div>';
+	errorWindow.style.visibility = 'visible';
+}
+
+window.opener.onerror = function (err) {
+	handleError(err);
+}
+
+window.onerror = function (err) {
+	handleError(err);
+}
+
 window.onload = function() {
 	var siteContent = window.opener.InstaeditWorker.siteContent;
 	var parserScript = window.opener.parserCode;
@@ -36,10 +51,8 @@ window.onload = function() {
 	var parsereditor = ace.edit("parsereditor");
 	window.opener.parserCode = parsereditor.getSession().getValue();
 
-/*
-	var JavaScriptMode = require("ace/mode/javascript").Mode;
-    parsereditor.getSession().setMode(new JavaScriptMode());
-*/
+	// var JavaScriptMode = require("ace/mode/javascript").Mode;
+    // parsereditor.getSession().setMode(new JavaScriptMode());
 
 	applyButton.onclick = function () {
 		if(window.opener.parserCode != parsereditor.getSession().getValue()) {
