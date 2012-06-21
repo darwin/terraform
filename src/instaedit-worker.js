@@ -50,7 +50,7 @@ Worker.prototype.addJQuery = function (data, cb) {
  		console.log('jQuery already loaded.');
  		cb(data);
 	} else {
-	    this.addScript('js/jQuery_1.7.2_min.js', function () {
+	    this.addScript('https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js', function () {
 	    	cb(data);
 	    });
 	}
