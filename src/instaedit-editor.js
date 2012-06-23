@@ -1,3 +1,45 @@
+function handleApplyButton (parsereditor) {
+	console.log('applying');
+	var applyButton = document.getElementById('apply');
+	applyButton.style.visibility = 'hidden';
+
+	applyButton.onclick = function () {
+		if(window.opener.parserCode != parsereditor.getSession().getValue()) {
+			window.opener.parserCode = parsereditor.getSession().getValue();
+			window.opener.eval(window.opener.parserCode);
+		}
+	}
+}
+
+function setUpEditors() {
+	var data = {};
+	var siteContent = window.opener.InstaeditWorker.siteContent;
+	var parserScript = window.opener.parserCode;
+
+	var parserEditorElem = document.getElementById('parsereditor');
+	var contentEditor = document.getElementById('editor');
+
+	contentEditor.innerHTML = siteContent.replace(/^\s+|\s+$/g,"");	
+	parserEditorElem.innerHTML = parserScript.replace(/^\s+|\s+$/g,"");
+
+	var editor = ace.edit("editor");
+	var parsereditor = ace.edit("parsereditor");
+
+	parsereditor.getSession().setMode("ace/mode/javascript");
+
+	editor.resize();
+	parsereditor.resize();
+
+	data.contentEditor = contentEditor;
+	data.parserEditorElem = parserEditorElem;
+	data.parsereditor = parsereditor;
+	data.parserScript = parserScript;
+	data.siteContent = siteContent;
+	data.editor = editor;
+
+	return data;
+}
+
 function toggleParserEditor() {
 	console.log('toggling');
 	var parserEditorWrapper = document.getElementById('parsereditor');
@@ -34,33 +76,17 @@ window.onerror = function (err) {
 	handleError(err);
 }
 
+window.onresize = function(event) {
+	setUpEditors();
+}
+
 window.onload = function() {
-	var siteContent = window.opener.InstaeditWorker.siteContent;
-	var parserScript = window.opener.parserCode;
+	var editors = setUpEditors();
+	var editor = editors.editor;
+	// parserEditorElem.innerHTML = parserScript.replace(/^\s+|\s+$/g,"");
 
-	var editorContent = document.getElementById('editor');
-	editorContent.innerHTML = siteContent.replace(/^\s+|\s+$/g,"");
-
-	var parserEditorElem = document.getElementById('parsereditor');
-	parserEditorElem.innerHTML = parserScript.replace(/^\s+|\s+$/g,"");
-
-	var applyButton = document.getElementById('apply');
-	applyButton.style.visibility = 'hidden';
-
-	var editor = ace.edit("editor");
-	var parsereditor = ace.edit("parsereditor");
-	window.opener.parserCode = parsereditor.getSession().getValue();
-
-	// var JavaScriptMode = require("ace/mode/javascript").Mode;
-    // parsereditor.getSession().setMode(new JavaScriptMode());
-    parsereditor.getSession().setMode("ace/mode/javascript");
-
-	applyButton.onclick = function () {
-		if(window.opener.parserCode != parsereditor.getSession().getValue()) {
-			window.opener.parserCode = parsereditor.getSession().getValue();
-			window.opener.eval(window.opener.parserCode);
-		}
-	}
+	window.opener.parserCode = editors.parsereditor.getSession().getValue();
+	handleApplyButton(editors.parsereditor);
 
 	addEventListener('keyup', function () {
 		window.opener.instadata = editor.getSession().getValue();
@@ -73,8 +99,8 @@ window.onload = function() {
 	var parserEditButton = document.getElementById('editparser');
 	parserEditButton.onclick = function () {
 		toggleParserEditor();
-		editor.resize();
-		parsereditor.resize();
+		editors.editor.resize();
+		editors.parsereditor.resize();
 	}
 
 	var parserEditButton = document.getElementById('commit');
