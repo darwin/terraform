@@ -1,33 +1,45 @@
-function handleApplyButton (parsereditor) {
+// send logs also to instaedit
+window.console.originalLog = window.console.log;
+window.console.log = function() {
+	window.console.originalLog.apply(this, arguments);
+	instaedit.editorLog.apply(this, arguments);
+}
+
+var editor;
+
+function updateParserCode() {
+	instaedit.setParserCode(editor.parsereditor.getSession().getValue());
+	instaedit.evalParser();
+}
+
+function handleApplyButton () {
 	console.log('applying');
 	var applyButton = document.getElementById('apply');
 	applyButton.style.visibility = 'hidden';
 
 	applyButton.onclick = function () {
-		if(window.opener.parserCode != parsereditor.getSession().getValue()) {
-			window.opener.parserCode = parsereditor.getSession().getValue();
-			window.opener.eval(window.opener.parserCode);
-		}
+		console.log("apply clicked!");
+		updateParserCode();
 	}
 }
 
 function setUpEditors() {
 	var data = {};
-	var siteContent = window.opener.InstaeditWorker.siteContent;
-	var parserScript = window.opener.parserCode;
+	var siteContent = instaedit.getSiteContent();
+	var parserScript = instaedit.getParserCode();
 
 	var parserEditorElem = document.getElementById('parsereditor');
 	var contentEditor = document.getElementById('editor');
 
-	contentEditor.innerHTML = siteContent.replace(/^\s+|\s+$/g,"");	
-	parserEditorElem.innerHTML = parserScript.replace(/^\s+|\s+$/g,"");
+	contentEditor.innerHTML = siteContent;
+	parserEditorElem.innerHTML = parserScript;
 
-	var editor = ace.edit("editor");
+	var contentEditor = ace.edit("editor");
 	var parsereditor = ace.edit("parsereditor");
 
 	parsereditor.getSession().setMode("ace/mode/javascript");
 
-	editor.resize();
+	contentEditor.resize();
 	parsereditor.resize();
 
 	data.contentEditor = contentEditor;
@@ -35,9 +47,12 @@ function setUpEditors() {
 	data.parsereditor = parsereditor;
 	data.parserScript = parserScript;
 	data.siteContent = siteContent;
-	data.editor = editor;
-
-	return data;
+	data.contentEditor = contentEditor;
+	data.onError = handleError;
+	
+	editor = data;
+	
+	instaedit.setEditor(editor);
 }
 
 function toggleParserEditor() {
@@ -62,35 +77,28 @@ function toggleParserEditor() {
 }
 
 function handleError(err) {
-	console.log('error ocured' + err)
+	console.log('error occurred', err, err.stack);
 	var errorWindow = document.getElementById('error-info');
 	errorWindow.innerHTML = '<div class="error">' + err + '</div>';
 	errorWindow.style.visibility = 'visible';
 }
 
-window.opener.onerror = function (err) {
-	handleError(err);
-}
-
-window.onerror = function (err) {
-	handleError(err);
-}
-
-window.onresize = function(event) {
-	setUpEditors();
-}
+// TODO: this is probably buggy
+// window.onresize = function(event) {
+// 	setUpEditors();
+// }
 
 window.onload = function() {
-	var editors = setUpEditors();
-	var editor = editors.editor;
-	// parserEditorElem.innerHTML = parserScript.replace(/^\s+|\s+$/g,"");
+	setUpEditors();
 
-	window.opener.parserCode = editors.parsereditor.getSession().getValue();
-	handleApplyButton(editors.parsereditor);
+	updateParserCode();
+	handleApplyButton();
 
 	addEventListener('keyup', function () {
-		window.opener.instadata = editor.getSession().getValue();
-		window.opener.eval(window.opener.parserCode);
+		console.log("updating content...");
+		var content = editor.contentEditor.getSession().getValue();
+		instaedit.setSiteContent(content);
+		instaedit.evalParser();
 	});
 
 	var parserEditorWrapper = document.getElementById('parsereditor');
@@ -99,8 +107,8 @@ window.onload = function() {
 	var parserEditButton = document.getElementById('editparser');
 	parserEditButton.onclick = function () {
 		toggleParserEditor();
-		editors.editor.resize();
-		editors.parsereditor.resize();
+		editor.contentEditor.resize();
+		editor.parsereditor.resize();
 	}
 
 	var parserEditButton = document.getElementById('commit');
