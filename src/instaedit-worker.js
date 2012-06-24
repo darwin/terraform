@@ -11,11 +11,12 @@ Worker.prototype.trim = function trim(string) {
 Worker.prototype.importSiteContentFromScriptTag = function (scriptType) {
 	var content = 'not found';
 
-	metas = document.getElementsByTagName('script');
+	var metas = document.getElementsByTagName('script');
 	for(var i in metas) {
-		if(metas[i].type == scriptType) {
-			content = metas[i].innerHTML;
-		}		
+		var meta = metas[i];
+		if(meta.type == scriptType) {
+			content = meta.innerHTML;
+		}
 	}
 
 	return content;
@@ -23,12 +24,11 @@ Worker.prototype.importSiteContentFromScriptTag = function (scriptType) {
 
 Worker.prototype.httpRequest = function (url, cb) {
 	var request = new XMLHttpRequest();  
-	request.open('GET', url, true);  
-	request.send();
-
 	request.onloadend = function () { 
 		cb(request.responseText);
 	}
+	request.open('GET', url, true);  
+	request.send();
 }
 
 Worker.prototype.addScript = function (name, cb) {
@@ -179,10 +179,11 @@ Worker.prototype.decode64 = function (input) {
 Worker.prototype.getMetaContent = function (name) {
 	var content = 'not found';
 
-	metas = document.getElementsByTagName('meta');
+	var metas = document.getElementsByTagName('meta');
 	for(var i in metas) {
-		if(metas[i].name == name) {
-			content = metas[i].content;
+		var meta = metas[i];
+		if(meta.name == name) {
+			content = meta.content;
 		}		
 	}
 
@@ -192,13 +193,12 @@ Worker.prototype.getMetaContent = function (name) {
 Worker.prototype.getParserCode = function (scriptUrl, cb) {
 	if(typeof scriptUrl != 'undefined') {
 		var request = new XMLHttpRequest();  
-		request.open('GET', scriptUrl, true);  
-		request.send();  
-
 		request.onloadend = function () { 
 			console.log(request.responseText);
 			cb(request.responseText);
 		}
+		request.open('GET', scriptUrl, true);  
+		request.send();  
 	}
 }
 
@@ -206,9 +206,6 @@ Worker.prototype.importSiteContentFromMetaTag = function (scriptType, scriptUrl,
 	if(typeof scriptUrl != 'undefined') {
 		if(scriptUrl.replace('github.com') == scriptUrl) {
 			var request = new XMLHttpRequest();  
-			request.open('GET', scriptUrl, true);  
-			request.send();
-
 			request.onloadend = function () { 
 				if(request.statusCode == 200) {
 					cb(request.responseText);
@@ -216,6 +213,8 @@ Worker.prototype.importSiteContentFromMetaTag = function (scriptType, scriptUrl,
 					cb('err');
 				}
 			}
+			request.open('GET', scriptUrl, true);  
+			request.send();
 		} else {
 			this.loadFromGithuAPI(scriptUrl, function(content) {
 				cb(content);
@@ -249,9 +248,9 @@ Worker.prototype.getSiteContent = function (done) {
 
 Worker.prototype.performEditor = function () {
 	if(document.location.href.replace('.com') != document.location.href) {
-		editor = window.open('editor.html', 'Instaedit editor');
+		var editor = window.open('editor.html', 'Instaedit editor');
 	} else {
-		editor = window.open('../src/editor.html', 'Instaedit editor');
+		var editor = window.open('../src/editor.html', 'Instaedit editor');
 	}
 
 	editor.focus();
