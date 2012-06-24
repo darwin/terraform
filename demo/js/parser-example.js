@@ -1,3 +1,3 @@
 var converter = new Markdown.Converter();
 
-document.getElementById('instaeditable').innerHTML = converter.makeHtml(instadata);
+document.getElementById('content1').innerHTML = converter.makeHtml(instadata);
