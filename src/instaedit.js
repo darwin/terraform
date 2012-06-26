@@ -76,7 +76,7 @@ if (typeof InstaEditConfig == "undefined") {
   }
 
   var importSiteContentFromScriptTag = function (scriptType) {
-    var content = 'not found';
+    var content = 404;
 
     var metas = document.getElementsByTagName('script');
     for(var i in metas) {
@@ -210,7 +210,7 @@ if (typeof InstaEditConfig == "undefined") {
     }
 
   var getMetaContent = function (name) {
-    var content = 'not found';
+    var content = 404;
 
     var metas = document.getElementsByTagName('meta');
     for(var i in metas) {
@@ -240,7 +240,7 @@ if (typeof InstaEditConfig == "undefined") {
       if(request.statusCode == 200) {
         cb(request.responseText);
       } else {
-        cb('err'); // TODO: this is so ugly
+        cb(404); // TODO: this is so ugly
       }
     }
     request.open('GET', scriptUrl, true);
@@ -251,7 +251,7 @@ if (typeof InstaEditConfig == "undefined") {
     var scriptType = 'instaedit/rawdata';
 
     importSiteContentFromMetaTag(scriptType, url, function (content) {
-      if(content == 'err') {
+      if(content == 404) {
         content = importSiteContentFromScriptTag(scriptType);
       }
 
@@ -260,6 +260,10 @@ if (typeof InstaEditConfig == "undefined") {
   }
 
   var fetchParserCode = function (scriptUrl, cb) {
+    if(scriptUrl == 404) {
+      cb(404);
+    }
+
     var request = new XMLHttpRequest();  
     request.onloadend = function () { 
       console.log(request.responseText);
@@ -283,7 +287,8 @@ if (typeof InstaEditConfig == "undefined") {
     var tempVarName = "__instaedit_gen_" + Math.floor(Math.random() * 5000);
     prefix = "(function(content){";
     postfix = "})(" + tempVarName + ")";
-    var code = prefix + getParserCode() + postfix; 
+
+    var code = prefix + getParserCode() + postfix;
 
     // eval in wrapper function using global temporary variable
     // TODO: alternatively we could encode site content into postfix as a parameter string
@@ -298,15 +303,71 @@ if (typeof InstaEditConfig == "undefined") {
     delete config.evalScope[tempVarName];
   }
 
+  var displayNotification = function (text, kind) {
+  	console.log('Displaying ' + kind + ' ' + text);
+    var doc = document.getElementsByTagName('body')[0];
+
+    var notification = document.createElement('div');
+    notification.setAttribute('id', 'instaedit-notification');
+    doc.appendChild(notification);
+
+    var notification = document.getElementById('instaedit-notification');
+    notification.innerHTML = '<span id="instaedit-notification-text">' + text + '</span>';
+
+    if(kind != 'error') {
+      notification.style.background = "-webkit-linear-gradient(#636363, #030303)";
+      notification.style.background = "linear-gradient(#636363, #030303)";
+    } else {
+      notification.style.background = "-webkit-linear-gradient(#c40505, #840404)";
+      notification.style.background = "linear-gradient(#c40505, #a90303)";
+    }
+
+    notification.style.border = "1px solid #000000";
+    notification.style.width = "300px";
+    notification.style.height = "70px";
+    notification.style.position = "absolute";
+    notification.style.top = "10px";
+    notification.style.right = "10px";
+    notification.style.textAlign = "center";
+    notification.style.borderRadius = "6px";
+
+    var notification_text = document.getElementById('instaedit-notification-text');
+    notification_text.style.color = 'white';
+    notification_text.style.position = 'relative';
+    notification_text.style.top = '20px';
+    notification_text.style.paddingTop = '40px';
+    notification_text.style.fontFamily = 'HelveticaNeueBold, HelveticaNeue-Bold, Helvetica Neue Bold, "HelveticaNeue", "Helvetica Neue", "TeXGyreHerosBold", "Helvetica", "Tahoma", "Geneva", "Arial", sans-serif';
+
+    notification_text.style.fontWeight = '600'; 
+    notification_text.style.fontStretch = 'normal';
+
+    notification_text.style.textShadow = 'rgba(0,0,0,0.5) -1px 0, rgba(0,0,0,0.3) 0 -1px, rgba(255,255,255,0.5) 0 1px, rgba(0,0,0,0.3) -1px -2px';
+
+    notification_text.style.fontSize = '13px';
+
+    setTimeout(function () {
+      notification.style.visibility = 'hidden';
+    }, 3000);
+}
+
   var bootstrap = function (cb) {
     console.log('Worker loaded');
     // TODO: implement proper error handling when meta tags are not present...
     fetchSiteContent(getMetaContent('instaeditsource'), function (content) {
-      console.log('Site content loaded');
-      fetchParserCode(getMetaContent('instaeditparser'), function (code) {
-        console.log('ParserCode loaded');
-        cb(content, code);
-      });  
+      if(content == 404) {
+        displayNotification('Site source is undefined in meta tag.', 'error');
+      } else {
+        console.log('Site content loaded');
+        fetchParserCode(getMetaContent('instaeditparser'), function (code) {
+          console.log(code);
+          if(code == 404) {
+            displayNotification('Parser is undefined in meta tag.', 'error');
+          } else {
+            console.log('ParserCode loaded');
+            cb(content, code);
+          }
+        });
+      }
     });
   }
   
@@ -341,9 +402,11 @@ if (typeof InstaEditConfig == "undefined") {
   // perform intial editor bootstraping, this enables user to call it later by hand via instaedit.bootstrap() if needed
   if (!config.preventInitialLoad) {
     bootstrap(function (site, parser) {
-      setParserCode(parser);
-      setSiteContent(site);
-      openEditor();
+      if((content != 404) || (code != 404)) {
+        setParserCode(parser);
+        setSiteContent(site);
+        openEditor();
+      }
     });
   }
 })(InstaEditConfig);
