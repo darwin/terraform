@@ -149,7 +149,7 @@ window.onload = function() {
         }
       });
     } else {
-      window.location = 'https://github.com/login/oauth/authorize'; // TODO: External auth proxy
+      window.location = 'https://github.com/login/oauth/authorize?client_id=6d4cb6d5f13dc9dce0ca&redirect_uri=' + window.location;
     }
   }
 }
