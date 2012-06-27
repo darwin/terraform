@@ -112,10 +112,11 @@ function catchCode() {
   }
 }
 
-// TODO: this is probably buggy
-// window.onresize = function(event) {
-//   setUpEditors();
-// }
+window.onresize = function(event) {
+  console.log('Editor resizing.');
+   editor.contentEditor.resize();
+   editor.parsereditor.resize();
+}
 
 window.onload = function() {
   setUpEditors();
