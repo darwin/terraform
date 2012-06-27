@@ -352,7 +352,7 @@ if (typeof InstaEditConfig == "undefined") {
 
   var bootstrap = function (cb) {
     console.log('Worker loaded');
-    // TODO: implement proper error handling when meta tags are not present...
+    displayNotification('Instaedit is booting.', 'notification')
     fetchSiteContent(getMetaContent('instaeditsource'), function (content) {
       if(content == 404) {
         displayNotification('Site source is undefined in meta tag.', 'error');
@@ -391,6 +391,7 @@ if (typeof InstaEditConfig == "undefined") {
     setParserCode: setParserCode,
     evalParser: evalParser,
     setEditor: setEditor,
+    displayNotification: displayNotification,
     getEditor: getEditor
   };
 

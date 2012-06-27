@@ -78,6 +78,9 @@ function toggleParserEditor() {
 
 function handleError(err) {
   console.log('error occurred', err, err.stack);
+
+  instaedit.displayNotification(err, 'error');
+
   var errorWindow = document.getElementById('error-info');
   errorWindow.innerHTML = '<div class="error">' + err + '</div>';
   errorWindow.style.visibility = 'visible';
