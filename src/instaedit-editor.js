@@ -86,6 +86,32 @@ function handleError(err) {
   errorWindow.style.visibility = 'visible';
 }
 
+function catchCode() {
+  var code = window.location.href.match(/\?code=(.*)/);
+  if(code == null) {
+    console.log('Github code is not part of url, nothing were caught.');
+  } else {
+    instaedit.storeGithubCode(code[1], function (result) {
+      if(result != 'err') {
+        console.log('Github code succesfully stored.');
+        console.log('Now commiting.');
+
+        document.getElementById('commit').innerHTML = 'Commit';
+
+        instaedit.githubCommit(editor.contentEditor.getSession().getValue(), code[1], instaedit.contentSourceUrl , function (res) {
+          if(res != 'err') {
+            displayNotification('New version succesfully commited.', 'notification');
+          } else {
+            displayNotification('Unkown error occurred during commit.', 'error');
+          }
+        });
+      } else {
+        console.log('Unkown error occurred during saving github code.');
+      }
+    });
+  }
+}
+
 // TODO: this is probably buggy
 // window.onresize = function(event) {
 //   setUpEditors();
@@ -96,6 +122,9 @@ window.onload = function() {
 
   updateParserCode();
   handleApplyButton();
+  catchCode();
+
+  document.getElementById('parsereditor').style.visibility = 'hidden';
 
   addEventListener('keyup', function () {
     console.log("updating content...");
@@ -104,18 +133,23 @@ window.onload = function() {
     instaedit.evalParser();
   });
 
-  var parserEditorWrapper = document.getElementById('parsereditor');
-  parserEditorWrapper.style.visibility = 'hidden';
-
-  var parserEditButton = document.getElementById('editparser');
-  parserEditButton.onclick = function () {
+  document.getElementById('editparser').onclick = function () {
     toggleParserEditor();
     editor.contentEditor.resize();
     editor.parsereditor.resize();
   }
 
-  var parserEditButton = document.getElementById('commit');
-  parserEditButton.onclick = function () {
-    alert('Feature not yet supported but you can manually paste that to your site: ' + '\n' + '\n' + editor.getSession().getValue());
+  document.getElementById('commit').onclick = function () {
+    if(instaedit.signedToGithub) {
+      instaedit.githubCommit(editor.contentEditor.getSession().getValue(), instaedit.githubAccessCode, instaedit.contentSourceUrl , function (res) {
+        if(res != 'err') {
+          displayNotification('Succesfully commited.', 'notification');
+        } else {
+          displayNotification('Unkown error occurred during commit.', 'error');
+        }
+      });
+    } else {
+      window.location = 'https://github.com/login/oauth/authorize'; // TODO: External auth proxy
+    }
   }
 }

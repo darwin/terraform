@@ -12,7 +12,10 @@ if (typeof InstaEditConfig == "undefined") {
   var content;
   var code;
   var editor;
-
+  var githubAccessCode;
+  var signedToGithub = false;
+  var contentSourceUrl;
+  
   var getParserCode = function() {
     return code;
   }
@@ -62,6 +65,25 @@ if (typeof InstaEditConfig == "undefined") {
     }
 
     th.appendChild(s);
+  }
+
+  var githubCommit = function (data, code, url, cb) {
+    console.log('Storing given data to ' + url + ' with access code ' + code);
+    cb('success'); 
+  }
+
+  var storeGithubCode = function (code, cb) {
+    githubAccessCode = code;
+
+    // TODO browser storage code storing implementation here
+    cb('success');
+  }
+
+  var loadGithubCode = function () {
+    // TODO browser storage code loading implementation here
+    var code = 404;
+
+    githubAccessCode = code;
   }
 
   var addJQuery = function (data, cb) {
@@ -352,8 +374,15 @@ if (typeof InstaEditConfig == "undefined") {
 
   var bootstrap = function (cb) {
     console.log('Worker loaded');
-    displayNotification('Instaedit is booting.', 'notification')
-    fetchSiteContent(getMetaContent('instaeditsource'), function (content) {
+
+    loadGithubCode();
+    if(githubAccessCode != 404) {
+      signedToGithub = true;
+    }
+
+    displayNotification('Instaedit is booting.', 'notification');
+    contentSourceUrl = getMetaContent('instaeditsource');
+    fetchSiteContent(contentSourceUrl, function (content) {
       if(content == 404) {
         displayNotification('Site source is undefined in meta tag.', 'error');
       } else {
@@ -382,7 +411,10 @@ if (typeof InstaEditConfig == "undefined") {
 
   // define public interface
   var instaedit = {
+    githubAccessCode: githubAccessCode,
+    signedToGithub: signedToGithub,
     bootstrap: bootstrap,
+    githubCommit: githubCommit,
     openEditor: openEditor,
     editorLog: editorLog,
     getSiteContent: getSiteContent,
