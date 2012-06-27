@@ -7,7 +7,7 @@ if (typeof InstaEditConfig == "undefined") {
   };
 }
 
-// make our stuff private, the only exported variable will be instaedit into InstaEditConfig.scope
+// make our stuff private, the only exported variable will be instaedit into InstaEditConfig.defScope
 (function(config) {
   var content;
   var code;
@@ -433,7 +433,7 @@ if (typeof InstaEditConfig == "undefined") {
   }
   
   // perform intial editor bootstraping, this enables user to call it later by hand via instaedit.bootstrap() if needed
-  if (!config.preventInitialLoad) {
+  if (!config.preventBootstrapping) {
     bootstrap(function (site, parser) {
       if((content != 404) || (code != 404)) {
         setParserCode(parser);
