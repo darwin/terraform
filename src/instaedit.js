@@ -324,16 +324,23 @@ if (typeof InstaEditConfig == "undefined") {
     delete config.evalScope[tempVarName];
   }
 
-  var displayNotification = function (text, kind) {
-  	console.log('Displaying ' + kind + ' ' + text);
-    var doc = document.getElementsByTagName('body')[0];
+  var displayNotification = function (text, kind, target) {
+    if(typeof target == 'undefined') {
+      target = document;
+    }
 
-    var notification = document.createElement('div');
-    notification.setAttribute('id', 'instaedit-notification');
+    var uid = Math.random() * 10000;
+    var notificationElemId = 'instaedit-notification-' + parseInt(uid);
+    var notificationTextElemId = 'instaedit-notification-text' + parseInt(uid);
+
+    var doc = target.getElementsByTagName('body')[0];
+
+    var notification = target.createElement('div');
+    notification.setAttribute('id', notificationElemId);
     doc.appendChild(notification);
 
-    var notification = document.getElementById('instaedit-notification');
-    notification.innerHTML = '<span id="instaedit-notification-text">' + text + '</span>';
+    var notification = target.getElementById(notificationElemId);
+    notification.innerHTML = '<span id="' + notificationTextElemId + '">' + text + '</span>';
 
     if(kind != 'error') {
       notification.style.background = "-webkit-linear-gradient(#636363, #030303)";
@@ -343,16 +350,28 @@ if (typeof InstaEditConfig == "undefined") {
       notification.style.background = "linear-gradient(#c40505, #a90303)";
     }
 
+    if(text.length > 200) {
+      notification.style.width = "400px";
+      notification.style.height = parseInt((2/3) * text.length) + "px";
+      notification.style.textAlign = "left";
+    } else {
+      notification.style.width = "300px";
+      notification.style.height = "70px";
+      notification.style.textAlign = "center";
+    }
+
     notification.style.border = "1px solid #000000";
-    notification.style.width = "300px";
-    notification.style.height = "70px";
     notification.style.position = "absolute";
     notification.style.top = "10px";
     notification.style.right = "10px";
-    notification.style.textAlign = "center";
     notification.style.borderRadius = "6px";
 
-    var notification_text = document.getElementById('instaedit-notification-text');
+    var notification_text = target.getElementById(notificationTextElemId);
+
+    if(text.length > 200) {
+     notification_text.style.left = '25px'; 
+    }
+
     notification_text.style.color = 'white';
     notification_text.style.position = 'relative';
     notification_text.style.top = '20px';
@@ -365,6 +384,14 @@ if (typeof InstaEditConfig == "undefined") {
     notification_text.style.textShadow = 'rgba(0,0,0,0.5) -1px 0, rgba(0,0,0,0.3) 0 -1px, rgba(255,255,255,0.5) 0 1px, rgba(0,0,0,0.3) -1px -2px';
 
     notification_text.style.fontSize = '13px';
+
+    description = notification_text.childNodes.description;
+    if(typeof description != 'undefined') {
+      description.style.position = 'relative';
+      description.style.top = '10px';
+      description.style.left = '20px';
+      description.style.width = '250px';
+    }
 
     setTimeout(function () {
       notification.style.visibility = 'hidden';
