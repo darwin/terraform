@@ -7,6 +7,27 @@ window.console.log = function() {
 
 var editor;
 
+function checkIfSignedToGithub() {
+  if(!instaedit.signedToGithub) {
+    var request = new XMLHttpRequest();
+
+    request.open('GET', 'http://instaedit-server.herokuapp.com/getcode', true);
+    request.send();
+
+    request.onloadend = function () {
+      console.log(request.responseText);
+      var response = JSON.parse(request.responseText);
+
+      console.log(response);
+      if(response.result == 'found') {
+        setGithubToken(response.token);
+      } else {
+        console.log('Not logged yet.');
+      }
+    }
+  }
+}
+
 function updateParserCode() {
   instaedit.setParserCode(editor.parsereditor.getSession().getValue());
   instaedit.evalParser();
@@ -87,6 +108,7 @@ function handleError(err) {
 }
 
 function setGithubToken(token) {
+  console.log('Received auth data.')
   instaedit.signedToGithub = true;
   instaedit.displayNotification('Succesfully logged to github with token ' + token);
   instaedit.githubToken = token;
@@ -128,13 +150,14 @@ window.onload = function() {
     if(instaedit.signedToGithub) {
       instaedit.githubCommit(editor.contentEditor.getSession().getValue(), instaedit.githubToken, instaedit.contentSourceUrl , function (res) {
         if(res != 'err') {
-          displayNotification('Succesfully commited.', 'notification');
+          instaedit.displayNotification('Succesfully commited.', 'notification');
         } else {
-          displayNotification('Unkown error occurred during commit.', 'error');
+          instaedit.displayNotification('Unkown error occurred during commit.', 'error');
         }
       });
     } else {
       window.open('http://instaedit-server.herokuapp.com/login/');
+      setInterval(checkIfSignedToGithub(), 3000);
     }
   }
 }

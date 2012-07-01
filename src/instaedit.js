@@ -68,6 +68,7 @@ if (typeof InstaEditConfig == "undefined") {
   }
 
   var githubCommit = function (data, code, url, cb) {
+    displayNotification('Committing new version', 'notification');
     console.log('Storing given data to ' + url + ' with access code ' + code);
     cb('success'); 
   }
@@ -296,11 +297,9 @@ if (typeof InstaEditConfig == "undefined") {
   }
   
   var openEditor = function() {
-    if(document.location.href.replace('.com') != document.location.href) {
-      var editor = window.open('editor.html', 'Instaedit editor');
-    } else {
-      var editor = window.open('../src/editor.html', 'Instaedit editor');
-    }
+    console.log('Opening editor.');
+    var editor = window.open('editor.html', 'Instaedit editor');
+
     editor.instaedit = instaedit;
     editor.focus();
   }
