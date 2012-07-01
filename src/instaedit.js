@@ -12,7 +12,7 @@ if (typeof InstaEditConfig == "undefined") {
   var content;
   var code;
   var editor;
-  var githubAccessCode;
+  var githubToken;
   var signedToGithub = false;
   var contentSourceUrl;
   
@@ -411,7 +411,7 @@ if (typeof InstaEditConfig == "undefined") {
 
   // define public interface
   var instaedit = {
-    githubAccessCode: githubAccessCode,
+    githubAccessCode: githubToken,
     signedToGithub: signedToGithub,
     bootstrap: bootstrap,
     githubCommit: githubCommit,

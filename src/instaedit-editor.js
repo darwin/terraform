@@ -86,30 +86,11 @@ function handleError(err) {
   errorWindow.style.visibility = 'visible';
 }
 
-function catchCode() {
-  var code = window.location.href.match(/\?code=(.*)/);
-  if(code == null) {
-    console.log('Github code is not part of url, nothing were caught.');
-  } else {
-    instaedit.storeGithubCode(code[1], function (result) {
-      if(result != 'err') {
-        console.log('Github code succesfully stored.');
-        console.log('Now commiting.');
-
-        document.getElementById('commit').innerHTML = 'Commit';
-
-        instaedit.githubCommit(editor.contentEditor.getSession().getValue(), code[1], instaedit.contentSourceUrl , function (res) {
-          if(res != 'err') {
-            displayNotification('New version succesfully commited.', 'notification');
-          } else {
-            displayNotification('Unkown error occurred during commit.', 'error');
-          }
-        });
-      } else {
-        console.log('Unkown error occurred during saving github code.');
-      }
-    });
-  }
+function setGithubToken(token) {
+  instaedit.signedToGithub = true;
+  instaedit.displayNotification('Succesfully logged to github with token ' + token);
+  instaedit.githubToken = token;
+  document.getElementById('commit').innerHTML = 'Commit';
 }
 
 window.onresize = function(event) {
@@ -123,7 +104,6 @@ window.onload = function() {
 
   updateParserCode();
   handleApplyButton();
-  catchCode();
 
   document.getElementById('parsereditor').style.visibility = 'hidden';
 
@@ -140,9 +120,13 @@ window.onload = function() {
     editor.parsereditor.resize();
   }
 
+  if(!instaedit.signedToGithub) {
+    document.getElementById('commit').innerHTML = 'Github login';
+  }
+
   document.getElementById('commit').onclick = function () {
     if(instaedit.signedToGithub) {
-      instaedit.githubCommit(editor.contentEditor.getSession().getValue(), instaedit.githubAccessCode, instaedit.contentSourceUrl , function (res) {
+      instaedit.githubCommit(editor.contentEditor.getSession().getValue(), instaedit.githubToken, instaedit.contentSourceUrl , function (res) {
         if(res != 'err') {
           displayNotification('Succesfully commited.', 'notification');
         } else {
@@ -150,7 +134,7 @@ window.onload = function() {
         }
       });
     } else {
-      window.open('https://github.com/login/oauth/authorize?client_id=6d4cb6d5f13dc9dce0ca&redirect_uri=' + window.location);
+      window.open('http://instaedit-server.herokuapp.com/login/');
     }
   }
 }
