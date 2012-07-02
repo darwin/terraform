@@ -44,6 +44,10 @@ if (typeof InstaEditConfig == "undefined") {
      return string.replace(/^\s+||\s+$/g, '');
   }
 
+  var getContentSourceUrl = function () {
+    return getMetaContent('instaeditsource');
+  }
+
   var httpRequest = function (url, cb) {
      var request = new XMLHttpRequest();
      request.onloadend = function () {
@@ -67,28 +71,37 @@ if (typeof InstaEditConfig == "undefined") {
     th.appendChild(s);
   }
 
+  var githubJS = function (username) {
+    return new Github({
+      token: githubToken,
+      username: username,
+      auth: "oauth"
+    });
+  }
+
   var githubCommit = function (data, code, url, cb) {
+    var url = url.replace('https://', '').replace('raw.github.com/', '').split('/');
+    var username = url[0];
+    var repo = url[1];
+    var branch = url[2];
+    
+    var path = '';
+    for (var i in url) {
+      if(i > 2) {
+        path += url[i] + '/';
+      }
+    };
+
+    console.log('User: ' + username + ', Repo: ' + repo + ', Branch: ' + branch + ', Path: ' + path);
+    var gh = githubJS(username);
+
     displayNotification('Committing new version', 'notification');
-    console.log('Storing given data to ' + url + ' with access code ' + code);
+    
     cb('success'); 
   }
 
-  var storeGithubCode = function (code, cb) {
-    githubAccessCode = code;
-
-    // TODO browser storage code storing implementation here
-    cb('success');
-  }
-
-  var loadGithubCode = function () {
-    // TODO browser storage code loading implementation here
-    var code = 404;
-
-    githubAccessCode = code;
-  }
-
   var addGithubJS = function (cb) {
-    addScript('https://raw.github.com/prose/prose/gh-pages/_includes/vendor/github.js', function () {
+    addScript('https://raw.github.com/binaryage/instaedit/master/libs/github/github.js', function () {
       cb();
     });
   }
@@ -407,20 +420,13 @@ if (typeof InstaEditConfig == "undefined") {
   var bootstrap = function (cb) {
     console.log('Worker loaded');
 
-    loadGithubCode();
-    if(githubAccessCode != 404) {
-      signedToGithub = true;
-    }
-
     displayNotification('Instaedit is booting.', 'notification');
-    contentSourceUrl = getMetaContent('instaeditsource');
-    fetchSiteContent(contentSourceUrl, function (content) {
+    fetchSiteContent(getContentSourceUrl(), function (content) {
       if(content == 404) {
         displayNotification('Site source is undefined in meta tag.', 'error');
       } else {
         console.log('Site content loaded');
         fetchParserCode(getMetaContent('instaeditparser'), function (code) {
-          console.log(code);
           if(code == 404) {
             displayNotification('Parser is undefined in meta tag.', 'error');
           } else {
@@ -443,7 +449,6 @@ if (typeof InstaEditConfig == "undefined") {
 
   // define public interface
   var instaedit = {
-    githubAccessCode: githubToken,
     signedToGithub: signedToGithub,
     bootstrap: bootstrap,
     githubCommit: githubCommit,
@@ -457,7 +462,8 @@ if (typeof InstaEditConfig == "undefined") {
     setEditor: setEditor,
     displayNotification: displayNotification,
     getEditor: getEditor,
-    addGithubJS: addGithubJS
+    addGithubJS: addGithubJS,
+    getContentSourceUrl: getContentSourceUrl
   };
 
   // export public interface into selected scope

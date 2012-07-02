@@ -170,12 +170,13 @@ window.onload = function() {
     instaedit.signedToGithub = false;
   } else {
     instaedit.signedToGithub = true;
+    instaedit.githubToken = getCookie('gh-token');
   }
 
   document.getElementById('commit').onclick = function () {
     if(instaedit.signedToGithub) {
       instaedit.addGithubJS(function () {
-        instaedit.githubCommit(editor.contentEditor.getSession().getValue(), instaedit.githubToken, instaedit.contentSourceUrl , function (res) {
+        instaedit.githubCommit(editor.contentEditor.getSession().getValue(), instaedit.githubToken, instaedit.getContentSourceUrl() , function (res) {
           if(res != 'err') {
             instaedit.displayNotification('Succesfully commited.', 'notification');
           } else {
