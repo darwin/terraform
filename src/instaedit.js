@@ -87,6 +87,12 @@ if (typeof InstaEditConfig == "undefined") {
     githubAccessCode = code;
   }
 
+  var addGithubJS = function (cb) {
+    addScript('https://raw.github.com/prose/prose/gh-pages/_includes/vendor/github.js', function () {
+      cb();
+    });
+  }
+
   var addJQuery = function (data, cb) {
     if (typeof jQuery != 'undefined') {
        console.log('jQuery already loaded.');
@@ -450,7 +456,8 @@ if (typeof InstaEditConfig == "undefined") {
     evalParser: evalParser,
     setEditor: setEditor,
     displayNotification: displayNotification,
-    getEditor: getEditor
+    getEditor: getEditor,
+    addGithubJS: addGithubJS
   };
 
   // export public interface into selected scope
