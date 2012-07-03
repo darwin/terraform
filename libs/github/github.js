@@ -23,19 +23,29 @@
     }
 
     function _request(method, path, data, cb) {
-      $.ajax({
-        type: method,
-        url: API_URL + path,
-        data: JSON.stringify(data),
-        dataType: 'json',
-        contentType: 'application/json',
-        success: function(res) { cb(null, res); },
-        error: function(err) { cb(err); },
-        headers : headers()
-      });
+      if(method == 'GET') {
+        jQuery.getJSON(API_URL + path + "?callback=?", data, function(response) {
+          console.log(API_URL + path);
+          console.log(method);
+          console.log(response.data.object);
+          cb(response.data.object);
+        });
+      } else {
+        $.ajax({
+          type: method,
+          url: API_URL + path,
+          data: JSON.stringify(data),
+          dataType: 'json',
+          contentType: 'application/json',
+          success: function(res) { cb(null, res); },
+          error: function(err) { cb(err); },
+          headers : headers()
+        });        
+      }
     }
 
     function _raw_request(method, path, data, cb) {
+      console.log('raw_request');
       $.ajax({
         type: method,
         url: API_URL + path,
@@ -238,7 +248,10 @@
         };
 
         _request("POST", repoPath + "/git/commits", data, function(err, res) {
-          currentTree.sha = res.sha; // update latest commit
+          console.log(res);
+          console.log(err);
+          var res_sha = res.sha;
+          currentTree.sha = res_sha;
           if (err) return cb(err);
           cb(null, res.sha);
         });

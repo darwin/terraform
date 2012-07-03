@@ -72,17 +72,13 @@ if (typeof InstaEditConfig == "undefined") {
   }
 
   var githubJS = function (username) {
-    return new Github({
-      token: githubToken,
-      username: username,
-      auth: "oauth"
-    });
+    gh.authenticate(username, githubToken);
   }
 
   var githubCommit = function (data, code, url, cb) {
     var url = url.replace('https://', '').replace('raw.github.com/', '').split('/');
     var username = url[0];
-    var repo = url[1];
+    var repoName = url[1];
     var branch = url[2];
     
     var path = '';
@@ -92,16 +88,43 @@ if (typeof InstaEditConfig == "undefined") {
       }
     };
 
-    console.log('User: ' + username + ', Repo: ' + repo + ', Branch: ' + branch + ', Path: ' + path);
-    var gh = githubJS(username);
 
-    displayNotification('Committing new version', 'notification');
+    console.log('User: ' + username + ', Repo: ' + repoName + ', Branch: ' + branch + ', Path: ' + path);
+    githubJS(username);
     
-    cb('success'); 
+    var user = gh.user(username);
+    var message = 'Content update of ' + path.split('/')[path.split('/').length - 2] + ' - comitted from web with Instaedit.';
+    var repo = gh.repo(user, repoName);
+
+    var url = 'https://api.github.com/repos/' + username + '/' + repoName + '/git/refs/heads/' + branch;
+    jQuery.getJSON(url + "?callback=?", {}, function(response) {
+      postData = {};
+      postData.login = username;
+      postData.token = code;
+      postData.parent_commit = response.data.object.sha;
+      postData.message = message;
+      
+      postData.content = {};
+      postData.content.path = path;
+      postData.content.mode = 'edit';
+      postData.content.data = data;
+
+      console.log(JSON.stringify(postData));
+
+      var url = 'https://api.github.com/repos/' + username + '/' + repoName + '/git/commits/';
+
+      /*
+       *  post(url, JSON.stringify(postData));
+       *  TODO Returning 404
+       *   -> http://swanson.github.com/blog/2011/07/23/digging-around-the-github-api-take-2.html
+       */
+
+      cb();
+    });
   }
 
   var addGithubJS = function (cb) {
-    addScript('https://raw.github.com/binaryage/instaedit/master/libs/github/github.js', function () {
+    addScript('https://raw.github.com/fitzgen/github-api/master/github.js', function () {
       cb();
     });
   }
@@ -166,6 +189,39 @@ if (typeof InstaEditConfig == "undefined") {
       });
     });
   }
+
+  // By Fitzgerald 2009 - http://fitzgeraldnick.com/ - Thank you for it!
+  var post = function (url, vals) {
+        var
+        form = document.createElement("form"),
+        iframe = document.createElement("iframe");
+
+        // Need to insert the iframe now so contentDocument and contentWindow are defined
+        document.body.appendChild(iframe);
+
+        var
+        doc = iframe.contentDocument !== undefined ?
+            iframe.contentDocument :
+            iframe.contentWindow.document,
+        key, field;
+        vals = vals || {};
+
+        form.setAttribute("method", "post");
+        form.setAttribute("action", url);
+        for (key in vals) {
+            if (vals.hasOwnProperty(key)) {
+                field = document.createElement("input");
+                field.type = "hidden";
+                field.value = encodeURIComponent(vals[key]);
+                form.appendChild(field);
+            }
+        }
+
+        iframe.setAttribute("style", "display: none;");
+        doc.body.appendChild(form);
+        form.submit();
+  }
+
 
   var encode64 = function (input) {
     var keyStr = "ABCDEFGHIJKLMNOP" +

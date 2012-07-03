@@ -124,10 +124,10 @@ function handleError(err) {
 
   instaedit.displayNotification(err + '<div id="description">' + err.stack + '</div>', 'error', document);
 /*
-  var errorWindow = document.getElementById('error-info');
-  errorWindow.innerHTML = '<div class="error">' + err + '</div>';
-  errorWindow.style.visibility = 'visible';
-*/
+ * var errorWindow = document.getElementById('error-info');
+ * errorWindow.innerHTML = '<div class="error">' + err + '</div>';
+ * errorWindow.style.visibility = 'visible';
+ */
 }
 
 function setGithubToken(token) {
