@@ -1,4 +1,4 @@
-// Github.js 0.6.0
+// Github.js 0.6.1
 // (c) 2012 Michael Aufreiter, Development Seed
 // Github.js is freely distributable under the MIT license.
 // For all details and documentation:
@@ -23,34 +23,24 @@
     }
 
     function _request(method, path, data, cb) {
-      if(method == 'GET') {
-        jQuery.getJSON(API_URL + path + "?callback=?", data, function(response) {
-          console.log(API_URL + path);
-          console.log(method);
-          console.log(response.data.object);
-          cb(response.data.object);
-        });
-      } else {
-        $.ajax({
-          type: method,
-          url: API_URL + path,
-          data: JSON.stringify(data),
-          dataType: 'json',
-          contentType: 'application/json',
-          success: function(res) { cb(null, res); },
-          error: function(err) { cb(err); },
-          headers : headers()
-        });        
-      }
-    }
-
-    function _raw_request(method, path, data, cb) {
-      console.log('raw_request');
       $.ajax({
         type: method,
         url: API_URL + path,
         data: JSON.stringify(data),
-        contentType: 'application/json',
+        dataType: 'json',
+        contentType: 'application/x-www-form-urlencoded',
+        success: function(res) { cb(null, res); },
+        error: function(err) { cb(err); },
+        headers : headers()
+      });
+    }
+
+    function _raw_request(method, path, data, cb) {
+      $.ajax({
+        type: method,
+        url: API_URL + path,
+        data: JSON.stringify(data),
+        contentType: 'application/x-www-form-urlencoded',
         success: function(res) { cb(null, res); },
         error: function(err) { cb(err); },
         headers : headers()
@@ -62,7 +52,7 @@
 
     Github.User = function() {
       this.repos = function(cb) {
-        _request("GET", "/user/repos?type=all&per_page=100", null, function(err, res) {
+        _request("GET", "/user/repos?type=all&per_page=1000&sort=updated", null, function(err, res) {
           cb(err, res);
         });
       };
@@ -89,7 +79,7 @@
       // -------
 
       this.userRepos = function(username, cb) {
-        _request("GET", "/users/"+username+"/repos?type=all&per_page=100", null, function(err, res) {
+        _request("GET", "/users/"+username+"/repos?type=all&per_page=1000&sort=updated", null, function(err, res) {
           cb(err, res);
         });
       };
@@ -98,12 +88,11 @@
       // -------
 
       this.orgRepos = function(orgname, cb) {
-        _request("GET", "/orgs/"+orgname+"/repos?type=all&per_page=100", null, function(err, res) {
+        _request("GET", "/orgs/"+orgname+"/repos?type=all&per_page=1000&sort=updated&direction=desc", null, function(err, res) {
           cb(err, res);
         });
       };
     };
-
 
 
 
@@ -235,7 +224,7 @@
       // and the new tree SHA, getting a commit SHA back
       // -------
 
-      this.commit = function(parent, tree, message, cb) {
+      this.commit = function(parent, tree, message, parentCommit, cb) {
         var data = {
           "message": message,
           "author": {
@@ -248,10 +237,7 @@
         };
 
         _request("POST", repoPath + "/git/commits", data, function(err, res) {
-          console.log(res);
-          console.log(err);
-          var res_sha = res.sha;
-          currentTree.sha = res_sha;
+          currentTree.sha = parentCommit;
           if (err) return cb(err);
           cb(null, res.sha);
         });
@@ -334,11 +320,11 @@
       // Write file contents to a given branch and path
       // -------
 
-      this.write = function(branch, path, content, message, cb) {
+      this.write = function(branch, path, content, message, parentCommit, cb) {
         updateTree(branch, function(err, latestCommit) {
           that.postBlob(content, function(err, blob) {
             that.updateTree(latestCommit, path, blob, function(err, tree) {
-              that.commit(latestCommit, tree, message, function(err, commit) {
+              that.commit(latestCommit, tree, message, parentCommit, function(err, commit) {
                 that.updateHead(branch, commit, cb);
               });
             });

@@ -109,13 +109,13 @@ function toggleParserEditor() {
     parserEditorWrapper.style.visibility = 'visible';
     applyButton.style.visibility = 'visible';
 
-    contentEditor.style.height = '360px';
+    contentEditor.style.height = window.innerHeight * 0.8;
   } else {
     console.log('down');
     parserEditorWrapper.style.visibility = 'hidden';
     applyButton.style.visibility = 'hidden';
 
-    contentEditor.style.height = '695px';
+    contentEditor.style.height = window.innerHeight;
   }
 }
 
