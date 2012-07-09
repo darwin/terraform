@@ -104,7 +104,6 @@ if (typeof InstaEditConfig == "undefined") {
       }
     };
 
-
     console.log('User: ' + username + ', Repo: ' + repoName + ', Branch: ' + branch + ', Path: ' + path);
     githubJS(username);
     
