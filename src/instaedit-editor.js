@@ -5,14 +5,13 @@ window.console.log = function() {
   instaedit.editorLog.apply(this, arguments);
 }
 
-var editor;
-
+// -------------- Github auth --------------
 var GithubAuth = function () {};
 
 GithubAuth.signed = false;
 
 GithubAuth.prototype.getCookieName = function () {
-  return 'gh-token3';
+  return 'gh-token';
 }
 
 GithubAuth.prototype.isSigned = function ()  {
@@ -107,13 +106,26 @@ GithubAuth.prototype.performProcess = function () {
   setInterval(this.checkIfSignedToGithub(), 3000);
 }
 
-function updateParserCode() {
-  instaedit.setParserCode(editor.parsereditor.getSession().getValue());
+// ------------------------------------------------------------------------------------
+
+var EditorsManager = function () {};
+
+EditorsManager.editor = {};
+
+EditorsManager.prototype.setEditor = function (val) {
+  this.editor = val;
+}
+
+EditorsManager.prototype.getEditor = function () {
+  return this.editor;
+}
+
+EditorsManager.prototype.updateParserCode = function () {
+  instaedit.setParserCode(this.getEditor().parsereditor.getSession().getValue());
   instaedit.evalParser();
 }
 
-function handleApplyButton () {
-  console.log('applying');
+EditorsManager.prototype.handleApplyButton = function () {
   var applyButton = document.getElementById('apply');
   applyButton.style.visibility = 'hidden';
 
@@ -123,9 +135,7 @@ function handleApplyButton () {
   }
 }
 
-function setUpEditors() {
-  var data = {};
-
+EditorsManager.prototype.setUpEditors = function () {
   // Load data
   var siteContent = instaedit.getSiteContent();
   var parserScript = instaedit.getParserCode();
@@ -137,6 +147,10 @@ function setUpEditors() {
   contentEditor.innerHTML = siteContent;
   parserEditorElem.innerHTML = parserScript;
 
+  // Style it
+  contentEditor.style.height = (window.innerHeight - 45).toString() + 'px';
+  parserEditorElem.style.height = (window.innerHeight * 0.4 - 45).toString() + 'px';
+
   // Turn to ace editors
   var contentEditor = ace.edit("editor");
   var parsereditor = ace.edit("parsereditor");
@@ -147,20 +161,20 @@ function setUpEditors() {
   parsereditor.resize();
 
   // Export data
+  var data = {};
   data.contentEditor = contentEditor;
   data.parserEditorElem = parserEditorElem;
   data.parsereditor = parsereditor;
   data.parserScript = parserScript;
   data.siteContent = siteContent;
   data.contentEditor = contentEditor;
-  data.onError = handleError;
+  data.onError = this.handleError;
+  this.setEditor(data);
   
-  editor = data;
-  
-  instaedit.setEditor(editor);
+  instaedit.setEditor(data);
 }
 
-function toggleParserEditor() {
+EditorsManager.prototype.toggleParserEditor = function () {
   console.log('toggling');
   var parserEditorWrapper = document.getElementById('parsereditor');
   var contentEditor = document.getElementById('editor');
@@ -171,17 +185,17 @@ function toggleParserEditor() {
     parserEditorWrapper.style.visibility = 'visible';
     applyButton.style.visibility = 'visible';
 
-    contentEditor.style.height = window.innerHeight * 0.8;
+    contentEditor.style.height = (window.innerHeight * 0.6 - 45).toString() + 'px';
   } else {
     console.log('down');
     parserEditorWrapper.style.visibility = 'hidden';
     applyButton.style.visibility = 'hidden';
 
-    contentEditor.style.height = window.innerHeight;
+    contentEditor.style.height = (window.innerHeight - 45).toString() + 'px';
   }
 }
 
-function handleError(err) {
+EditorsManager.prototype.handleError = function (err) {
   console.log('error occurred', err, err.stack);
 
   instaedit.displayNotification(err + '<div id="description">' + err.stack + '</div>', 'error', document);
@@ -192,25 +206,21 @@ function handleError(err) {
  */
 }
 
-window.onresize = function(event) {
-  console.log('Editor resizing.');
-   editor.contentEditor.resize();
-   editor.parsereditor.resize();
-}
+EditorsManager.prototype.init = function () {
+  var self = this;
 
-window.onload = function() {
-  var GHAuth = new GithubAuth();
-  GHAuth.init();
+  this.setUpEditors();
 
-  setUpEditors();
+  this.updateParserCode();
+  this.handleApplyButton();
 
-  updateParserCode();
-  handleApplyButton();
+  var editor = this.getEditor();
 
   // Parser editor stuff
   document.getElementById('parsereditor').style.visibility = 'hidden';
+
   document.getElementById('editparser').onclick = function () {
-    toggleParserEditor();
+    self.toggleParserEditor();
     editor.contentEditor.resize();
     editor.parsereditor.resize();
   }
@@ -222,13 +232,27 @@ window.onload = function() {
     instaedit.setSiteContent(content);
     instaedit.evalParser();
   });
+}
+
+window.onresize = function(event) {
+  console.log('Editor resizing.');
+   this.getEditor().contentEditor.resize();
+   this.getEditor().editor.parsereditor.resize();
+}
+
+window.onload = function() {
+  var GHAuth = new GithubAuth();
+  var Editors = new EditorsManager();
+
+  GHAuth.init();
+  Editors.init();
 
   // Github auth stuff
   document.getElementById('commit').onclick = function () {
     if(GHAuth.isSigned()) {
       instaedit.addGithubJS(function () {
         console.log(GHAuth.loadTokenFromCookies());
-        instaedit.githubCommit(editor.contentEditor.getSession().getValue(), GHAuth.loadTokenFromCookies(), instaedit.getContentSourceUrl() , function (res) {
+        instaedit.githubCommit(Editors.getEditor().contentEditor.getSession().getValue(), GHAuth.loadTokenFromCookies(), instaedit.getContentSourceUrl() , function (res) {
           if(res != 'err') {
             instaedit.displayNotification('Succesfully commited.', 'notification');
           } else {
