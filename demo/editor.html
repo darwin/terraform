@@ -5,8 +5,15 @@
   <meta cache-mode="debug">
   <title>Editor</title>
 
-  <script src="../libs/ace/ace-uncompressed-noconflict.js" type="text/javascript" charset="utf-8"></script>
-  <script src="../src/instaedit-editor.js" type="text/javascript" charset="utf-8"></script>
+  <script src="../src/dependencies.js" type="text/javascript" charset="utf-8"></script>
+
+  <script type="text/javascript">
+    // Deps.provide('');
+    Deps.provide('../libs/ace/ace-uncompressed-noconflict.js');
+    Deps.provide('../src/github.js');
+    Deps.provide('../src/editors.js');
+    Deps.provide('../src/instaedit-editor.js');
+  </script>
 
   <style type="text/css" media="screen">
     body {
