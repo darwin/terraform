@@ -475,7 +475,7 @@ if (typeof InstaEditConfig == "undefined") {
       notification.style.background = "linear-gradient(#c40505, #a90303)";
     }
 
-    if(text.length > 200) {
+    if(text.length > 100) {
       notification.style.width = "400px";
       notification.style.height = parseInt((2/3) * text.length) + "px";
       notification.style.textAlign = "left";
@@ -493,8 +493,10 @@ if (typeof InstaEditConfig == "undefined") {
 
     var notification_text = target.getElementById(notificationTextElemId);
 
-    if(text.length > 200) {
+    if(text.length > 100) {
      notification_text.style.left = '25px'; 
+     notification_text.style.right = '25px';
+     notification_text.style.paddingRight = '25px'; 
     }
 
     notification_text.style.color = 'white';

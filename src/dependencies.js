@@ -8,7 +8,7 @@ DependenciesManager.prototype.getDependenciesList = function () {
 
 DependenciesManager.prototype.addDependency = function (name) {
   console.log(name);
-  this.dependencies.push(name);
+  // this.dependencies.push(name);
 }
 
 DependenciesManager.prototype.isLoaded = function (name) {
@@ -38,7 +38,7 @@ DependenciesManager.prototype.provide = function (name) {
   s.onload = function () {
     console.log('Script ' + name + ' loaded.');
     self.addDependency(name);
-    cb();
+    // cb();
   }
 
   th.appendChild(s);

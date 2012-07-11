@@ -15,7 +15,11 @@ GithubAuth.prototype.setIsSigned = function (val)  {
 }
 
 GithubAuth.prototype.getAuthServerURL = function () {
-  return 'http://instaedit-server.herokuapp.com';
+  // Stabile version
+  // return 'http://instaedit-server.herokuapp.com';
+
+  // Dev version
+  return 'http://floating-light-7013.herokuapp.com';
 }
 
 GithubAuth.prototype.storeTokenToCookies = function(token) {
@@ -65,6 +69,28 @@ GithubAuth.prototype.checkIfSignedToGithub = function () {
       } else {
         console.log('Not logged yet.');
       }
+    }
+  }
+}
+
+GithubAuth.prototype.sendCommitRequest = function (data, code, url, cb) {
+  var reqDataRaw = {};
+  reqDataRaw.data = data;
+  reqDataRaw.token = code;
+  reqDataRaw.target = url;
+
+  var reqData = JSON.stringify(reqDataRaw);
+
+  var request = new XMLHttpRequest();
+  request.open('POST', this.getAuthServerURL() + '/commit', true);
+  request.send(reqDataRaw);
+
+  request.onloadend = function () {
+    console.log(request.responseText);
+    if(JSON.parse(request.responseText).result == 'success') {
+      cb('success');
+    } else {
+      cb('failed');
     }
   }
 }

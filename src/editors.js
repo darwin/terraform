@@ -11,7 +11,7 @@ EditorsManager.prototype.getEditor = function () {
 }
 
 EditorsManager.prototype.updateParserCode = function () {
-  instaedit.setParserCode(this.getEditor().parsereditor.getSession().getValue());
+  instaedit.setParserCode(this.getEditor().parserEditor.getSession().getValue());
   instaedit.evalParser();
 }
 
@@ -53,12 +53,14 @@ EditorsManager.prototype.setUpEditors = function () {
 
   // Export data
   var data = {};
+
+  // Editors
   data.contentEditor = contentEditor;
-  data.parserEditorElem = parserEditorElem;
-  data.parsereditor = parsereditor;
+  data.parserEditor = parsereditor;
+
+  // Initial data
   data.parserScript = parserScript;
   data.siteContent = siteContent;
-  data.contentEditor = contentEditor;
   data.onError = this.handleError;
   this.setEditor(data);
   
