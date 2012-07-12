@@ -83,7 +83,9 @@ GithubAuth.prototype.sendCommitRequest = function (data, code, url, cb) {
 
   var request = new XMLHttpRequest();
   request.open('POST', this.getAuthServerURL() + '/commit', true);
-  request.send(reqDataRaw);
+  request.setRequestHeader("Content-Type", "application/json");
+  
+  request.send(reqData);
 
   request.onloadend = function () {
     console.log(request.responseText);
