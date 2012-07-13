@@ -3,7 +3,7 @@ var GithubAuth = function () {};
 GithubAuth.signed = false;
 
 GithubAuth.prototype.getCookieName = function () {
-  return 'gh-token';
+  return 'gh-token*1';
 }
 
 GithubAuth.prototype.isSigned = function ()  {
@@ -66,6 +66,7 @@ GithubAuth.prototype.checkIfSignedToGithub = function () {
 
         self.setGithubToken(token);
         self.setIsSigned(true);
+        document.getElementById('commit').innerHTML = 'Commit';
       } else {
         console.log('Not logged yet.');
       }
@@ -80,21 +81,34 @@ GithubAuth.prototype.sendCommitRequest = function (data, code, url, cb) {
   reqDataRaw.target = url;
 
   var reqData = JSON.stringify(reqDataRaw);
-
+/*
   var request = new XMLHttpRequest();
   request.open('POST', this.getAuthServerURL() + '/commit', true);
   request.setRequestHeader("Content-Type", "application/json");
   
   request.send(reqData);
 
-  request.onloadend = function () {
-    console.log(request.responseText);
-    if(JSON.parse(request.responseText).result == 'success') {
-      cb('success');
-    } else {
-      cb('failed');
-    }
-  }
+*/
+
+/*
+  $.ajax({
+    type: 'POST',
+    url: this.getAuthServerURL() + '/commit',
+    data: reqData,
+    success: cb('success'),
+    dataType: cb('failed')
+  });
+*/
+
+  console.log('Sending data to ' + this.getAuthServerURL() + '/commit');
+  $.post(this.getAuthServerURL() + '/commit', reqData,
+    function(data) {
+      console.log('API retrieved ');
+      console.log(data);
+      cb('failed'); // Just for debugging of course
+    }, 
+    "json"
+  );
 }
 
 GithubAuth.prototype.setGithubToken = function (token) {

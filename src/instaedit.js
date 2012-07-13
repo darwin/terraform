@@ -15,6 +15,7 @@ if (typeof InstaEditConfig == "undefined") {
   var githubToken;
   var signedToGithub = false;
   var contentSourceUrl;
+  var actualNotification;
   
   var getParserCode = function() {
     return code;
@@ -454,6 +455,10 @@ if (typeof InstaEditConfig == "undefined") {
       target = document;
     }
 
+    if(typeof actualNotification != 'undefined') {
+      actualNotification.style.visibility = 'hidden';
+    }
+
     var uid = Math.random() * 10000;
     var notificationElemId = 'instaedit-notification-' + parseInt(uid);
     var notificationTextElemId = 'instaedit-notification-text' + parseInt(uid);
@@ -481,15 +486,16 @@ if (typeof InstaEditConfig == "undefined") {
       notification.style.textAlign = "left";
     } else {
       notification.style.width = "300px";
-      notification.style.height = "70px";
+      notification.style.height = "90px";
       notification.style.textAlign = "center";
     }
 
     notification.style.border = "1px solid #000000";
     notification.style.position = "absolute";
-    notification.style.top = "10px";
+    notification.style.top = "5px";
     notification.style.right = "10px";
     notification.style.borderRadius = "6px";
+    notification.style.wordWrap = "break-word";
 
     var notification_text = target.getElementById(notificationTextElemId);
 
@@ -519,6 +525,8 @@ if (typeof InstaEditConfig == "undefined") {
       description.style.left = '20px';
       description.style.width = '250px';
     }
+
+    actualNotification = notification;
 
     setTimeout(function () {
       notification.style.visibility = 'hidden';
