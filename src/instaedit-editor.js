@@ -30,14 +30,15 @@ window.onload = function() {
         var url = instaedit.getContentSourceUrl();
         var data = Editors.getEditor().contentEditor.getSession().getValue();
 
-        instaedit.displayNotification('Preparing to commit to ' + token + ' with token ' + url, 'notification', document);
-        instaedit.displayNotification('Preparing to commit to ' + token + ' with token ' + url, 'notification');
-
         GHAuth.sendCommitRequest(data, token, url, function (res) {
           if(res == 'success') {
-            instaedit.displayNotification('Committed!', 'notification', document);
+            instaedit.displayNotification('Comitted!', 'notification', document);
           } else {
-            instaedit.displayNotification('Committing failed.', 'error', document);
+            if(res != 'failed') {
+              instaedit.displayNotification('API comunication failed.', 'error', document);
+            } else {
+              instaedit.displayNotification('Committing failed.', 'error', document);
+            }
           }
         });
 /*

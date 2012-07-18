@@ -467,6 +467,7 @@ if (typeof InstaEditConfig == "undefined") {
 
     var notification = target.createElement('div');
     notification.setAttribute('id', notificationElemId);
+    notification.setAttribute('class', 'instaedit-notification');
     doc.appendChild(notification);
 
     var notification = target.getElementById(notificationElemId);

@@ -89,8 +89,6 @@ GithubAuth.prototype.sendCommitRequest = function (data, code, url, cb) {
     
     jQuery.getJSON(reqUrl + "?callback=?", {}, function(commits) {
       for(var i in commits.data) {
-        console.log(commits.data[i].name);
-        console.log(url.split('/')[5]);
         if(commits.data[i].name == url.split('/')[5]) {
           var parent = commits.data[i].commit.sha;
         }
@@ -109,11 +107,14 @@ GithubAuth.prototype.sendCommitRequest = function (data, code, url, cb) {
       request.send(reqData);
 
       request.onloadend = function () {
-        console.log(request.statusCode);
         if(request.status == 500) {
           cb('failed');
         } else {
-          cb('success');
+          if(request.status == 0) {
+            cb('api-error');
+          } else {
+            cb('success');
+          }
         }
       }
     });
