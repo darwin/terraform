@@ -1,4 +1,14 @@
 (function () {
+	function done(res) {
+		var result = document.getElementById('apitest-commit-result');
+		result.innerHTML = res;
+
+		var time = document.getElementById('apitest-commit-time');
+		time.innerHTML = microtime(true) - elapsedTime;
+	}
+
+	var elapsedTime = microtime(true);
+
 	var GHAuth = new GithubAuth();
 
 	GHAuth.init();
@@ -8,18 +18,15 @@
 	var url = 'https://raw.github.com/JPalounek/Guntest/master/tests.log';
 	var data = now;
 
-	var result = document.getElementById('apitest-commit-result');
-
 	GHAuth.sendCommitRequest(data, token, url, function (res) {
 		if(res == 'success') {
-			result.innerHTML = 'Succeeded';
+			done('Succeeded');
 		} else {
 			if(res != 'failed') {
-				result.innerHTML = 'API error';
+				done('API error');
 			} else {
-				result.innerHTML = 'Failed';
+				done('Failed');
 			}
 		}
-});
-
+	});
 }(document));

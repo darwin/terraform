@@ -5,6 +5,7 @@
   <meta cache-mode="debug">
   <title>Editor</title>
 
+  <link href="visual/css/style.css" rel="stylesheet" type="text/css" />
   <script src="../src/dependencies.js" type="text/javascript" charset="utf-8"></script>
 
   <script type="text/javascript">
@@ -30,18 +31,32 @@
       display: none;
     }
   </style>
+
+  <script>
+    // TODO: Move to specific lib
+    function microtime(get_as_float) {
+      var now = new Date().getTime() / 1000;
+      var s = parseInt(now);
+      return (get_as_float) ? now : (Math.round((now - s) * 1000) / 1000) + ' ' + s;
+    }
+  </script>
 </head>
 <body>
   <div id="env-simuation">
     <button id="commit" class="btn">Commit</button>
   </div>
 
+  <h1> Instaedit testsuite </h1>
+
+  <h2> API </h2>
   <table>
     <tr>
-      <th colspan="2"> API </th>
+      <th class="name"> Name </th>
+      <th class="time"> Elapsed time </th>
+      <th class="result"> Result </th>
     </tr>
     <tr>
-      <td>Commit test</td> <td id="apitest-commit-result"> <img src="img/spinner.gif"> </td>
+      <td>Commit</td> <td id="apitest-commit-time"> <img src="visual/img/spinner.gif"> </td> <td id="apitest-commit-result"> <img src="visual/img/spinner.gif"> </td>
     </tr>
   </table>
 </body>

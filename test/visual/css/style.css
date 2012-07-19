@@ -1,0 +1,61 @@
+body {
+	font-family: "HelveticaNeueLight", "HelveticaNeue-Light", "Helvetica Neue Light", "HelveticaNeue", "Helvetica Neue", "\'TeXGyreHerosRegular\'", "Helvetica", "Tahoma", "Geneva", "Arial", sans-serif;
+	font-weight: light;
+
+	text-rendering: optimizeLegibility;
+	background: rgba(80, 176, 227, 0.3);
+}
+
+table {
+	width: 75%;
+	margin-left: auto;
+	margin-right: auto;
+	margin-top: 30px;
+	border-collapse: collapse;
+	box-shadow: 3px 3px 10px grey;
+	background-color: white;
+	
+}
+
+table td, tr, th {
+	border: 1px solid grey;
+}
+
+table td {
+	height: 30px;
+	padding-left: 10px;
+}			
+
+table th {
+	font-weight: normal;
+	font-size: 15px;
+	padding-top: 5px;
+	padding-bottom: 5px;
+	background: -webkit-linear-gradient(top, #eef6f9 0%,#bdc6cd 100%);
+	text-shadow: 1px 1px 0px #bad3ed;
+}
+
+h2, h1 {
+	text-align: center;
+	margin-top: 25px;
+	text-shadow: 0 1px 1px white;
+	color: rgba(80, 176, 227, 0.9);
+
+	font-size: 40px;
+	font-family: "Futura bold";
+}
+
+h2 {
+	font-size: 20px;
+}
+			
+@font-face {
+	font-family: 'Futura bold';
+	src: url('../fonts/futura_bold-webfont.eot');
+	src: url('../fonts/futura_bold-webfont.eot?#iefix') format('embedded-opentype'),
+	url('../fonts/futura_bold-webfont.woff') format('woff'),
+	url('../fonts/futura_bold-webfont.ttf') format('truetype'),
+	url('../fonts/futura_bold-webfont.svg#FuturaCEBoldOblique') format('svg');
+	font-weight: normal;
+	font-style: normal;
+}
