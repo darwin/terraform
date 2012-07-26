@@ -16,43 +16,5 @@ window.onresize = function(event) {
 
 window.onload = function() {
   var Editors = new EditorsManager();
-  var GHAuth = new GithubAuth();
-
-  GHAuth.init();
   Editors.init();
-
-  // Github auth stuff
-  document.getElementById('commit').onclick = function () {
-    if(GHAuth.isSigned()) {
-      // instaedit.addGithubJS(function () {
-        console.log(Editors.getEditor());
-        var token = GHAuth.loadTokenFromCookies();
-        var url = instaedit.getContentSourceUrl();
-        var data = Editors.getEditor().contentEditor.getSession().getValue();
-
-        GHAuth.sendCommitRequest(data, token, url, function (res) {
-          if(res == 'success') {
-            instaedit.displayNotification('Comitted!', 'notification', document);
-          } else {
-            if(res != 'failed') {
-              instaedit.displayNotification('API comunication failed.', 'error', document);
-            } else {
-              instaedit.displayNotification('Committing failed.', 'error', document);
-            }
-          }
-        });
-/*
-        instaedit.githubCommit(Editors.getEditor().contentEditor.getSession().getValue(), GHAuth.loadTokenFromCookies(), instaedit.getContentSourceUrl(), function (res) {
-          if(res != 'err') {
-            instaedit.displayNotification('Succesfully commited.', 'notification');
-          } else {
-            instaedit.displayNotification('Unkown error occurred during commit.', 'error');
-          }
-        });
-*/
-      // });
-    } else {
-      GHAuth.performProcess();
-    }
-  }
 }

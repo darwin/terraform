@@ -12,8 +12,6 @@ if (typeof InstaEditConfig == "undefined") {
   var content;
   var code;
   var editor;
-  var githubToken;
-  var signedToGithub = false;
   var contentSourceUrl;
   var actualNotification;
   
@@ -72,10 +70,6 @@ if (typeof InstaEditConfig == "undefined") {
     th.appendChild(s);
   }
 
-  var githubJS = function (username) {
-    gh.authenticate(username, githubToken);
-  }
-
   function _request(method, path, data, token, cb) {
     $.ajax({
         type: method,
@@ -89,94 +83,6 @@ if (typeof InstaEditConfig == "undefined") {
           console.log(status);
         },
         headers : 'Authorization: token ' + token
-    });
-  }
-
-  var githubCommit = function (data, code, url, cb) {
-    var url = url.replace('https://', '').replace('raw.github.com/', '').split('/');
-    var username = url[0];
-    var repoName = url[1];
-    var branch = url[2];
-    
-    var path = '';
-    for (var i in url) {
-      if(i > 2) {
-        path += url[i] + '/';
-      }
-    };
-
-    console.log('User: ' + username + ', Repo: ' + repoName + ', Branch: ' + branch + ', Path: ' + path);
-    githubJS(username);
-    
-    var user = gh.user(username);
-    var message = 'Content update of ' + path.split('/')[path.split('/').length - 2] + ' - comitted from web with Instaedit.';
-    var repo = gh.repo(user, repoName);
-
-    var url = 'https://api.github.com/repos/' + username + '/' + repoName + '/git/refs/heads/' + branch;
-    jQuery.getJSON(url + "?callback=?", {}, function(response) {
-      postData = {};
-//    postData.login = username;
-//    postData.token = code;
-      postData.parent_commit = response.data.object.sha;
-      postData.message = message;
-      
-      postData.content = {};
-      postData.content.path = path;
-      postData.content.mode = 'edit';
-      postData.content.data = data;
-
-      console.log(JSON.stringify(postData));
-
-      var url = 'http://github.com/api/v2/json/' + username + '/' + repoName + '/git/commits/';
-/*
-      _request('POST', url, postData, code, function (err, res) {
-        console.log('res');
-        console.log(err.toString());
-        console.log(err);
-        console.log(res);
-        cb();
-      })
-*/
-      /*
-      *  TODO Returning 404
-       *   -> http://swanson.github.com/blog/2011/07/23/digging-around-the-github-api-take-2.html
-       */
-
-       var blobData = {};
-       blobData.content = data;
-       blobData.encoding = 'utf-8';
-       // Create blob
-       var url = 'http://github.com/api/v2/json/repos/' + username + '/' + repoName + '/git/blobs';
-/*
-       _request('POST', url, blobData, code, function (err, res) {
-          console.log('res');
-          console.log(err.toString());
-          console.log(err);
-          console.log(res);
-        });
-*/
-
-        var github = new Github({
-          token: code,
-          username: username,
-          auth: "oauth"
-        });
-    
-        var user = github.getUser(username);
-        var repo = new Github.Repository({user: username, name: repoName});
-
-        repo.write(branch, path, data, message, response.data.object.sha, function (res) {
-          console.log(res);
-        });
-    });
-
-  }
-
-  var addGithubJS = function (cb) {
-    addScript('https://raw.github.com/fitzgen/github-api/master/github.js', function () {
-      addScript('../libs/github/github.js', function () {
-        cb();
-      });
     });
   }
 
@@ -566,9 +472,7 @@ if (typeof InstaEditConfig == "undefined") {
 
   // define public interface
   var instaedit = {
-    signedToGithub: signedToGithub,
     bootstrap: bootstrap,
-    githubCommit: githubCommit,
     openEditor: openEditor,
     editorLog: editorLog,
     getSiteContent: getSiteContent,
@@ -579,7 +483,6 @@ if (typeof InstaEditConfig == "undefined") {
     setEditor: setEditor,
     displayNotification: displayNotification,
     getEditor: getEditor,
-    addGithubJS: addGithubJS,
     getContentSourceUrl: getContentSourceUrl
   };
 

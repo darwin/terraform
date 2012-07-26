@@ -12,12 +12,15 @@
 	var GHAuth = new GithubAuth();
 
 	GHAuth.init();
+	// You should one time add your token to test Instaedit here
+	// GHAuth.storeTokenToCookies('');
 
 	var token = GHAuth.loadTokenFromCookies();
 	var now = new Date();
 	var url = 'https://raw.github.com/JPalounek/Guntest/master/tests.log';
 	var data = now;
 
+	console.log(token);
 	GHAuth.sendCommitRequest(data, token, url, function (res) {
 		if(res == 'success') {
 			done('Succeeded');
