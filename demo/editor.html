@@ -26,7 +26,7 @@
         top: -10px;
         left: -10px;
 
-        height: 695px;
+        height: 100%;
 
         border-bottom: 1px solid silver;
     }
@@ -37,7 +37,7 @@
         left: -8px;
 
         height: 330px;
-        width: 1300px;
+        width: 100%; 
         border-bottom: 1px solid silver;
         border-top: 1px solid silver;
     }
@@ -87,16 +87,38 @@
       text-indent: 30px;
       top: 30px;
     }
+
+    #select-file {
+      position: relative;
+      top: -5px;
+
+      margin-bottom: -5px;
+    }
+
+    #select-file select {
+      width: 100px;
+    }
   </style>
 </head>
 <body>
+  <section id="select-file">
+    <select>
+      <option value="volvo">Volvo</option>
+      <option value="saab">Saab</option>
+      <option value="mercedes">Mercedes</option>
+      <option value="audi">Audi</option>
+    </select>
+  </section>
+
   <section id="editors">
     <pre id="editor">Instaedit rocks!</pre>
     <pre id="parsereditor">Parser source code here.</pre>
     <div id="error-info"></div>
   </section>
 
-  <button id="editparser" class="btn">Edit parser</button>
-  <button id="apply" class="btn">Apply</button>
+  <section id="buttons">
+    <button id="editparser" class="btn">Edit parser</button>
+    <button id="apply" class="btn">Apply</button>
+  </section>
 </body>
 </html>
