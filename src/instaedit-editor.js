@@ -5,14 +5,12 @@ window.console.log = function() {
   instaedit.editorLog.apply(this, arguments);
 }
 
-/*
 window.onresize = function(event) {
   console.log('Editor resizing.');
   var Editors = new EditorsManager();
-  Editors.getEditor().contentEditor.resize();
-  Editors.getEditor().parserEditor.resize();
+  Editors.toggleParserEditor();
+  Editors.toggleParserEditor();
 }
-*/
 
 window.onload = function() {
   var Editors = new EditorsManager();

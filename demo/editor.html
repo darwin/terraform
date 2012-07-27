@@ -87,16 +87,35 @@
       text-indent: 30px;
       top: 30px;
     }
+
+    #select-file {
+      position: relative;
+      top: -5px;
+
+      margin-bottom: -5px;
+    }
+
+    #select-file select {
+      width: 100px;
+    }
   </style>
 </head>
 <body>
+  <section id="select-file">
+    <select id="select-file-selectbox">
+      
+    </select>
+  </section>
+
   <section id="editors">
     <pre id="editor">Instaedit rocks!</pre>
     <pre id="parsereditor">Parser source code here.</pre>
     <div id="error-info"></div>
   </section>
 
-  <button id="editparser" class="btn">Edit parser</button>
-  <button id="apply" class="btn">Apply</button>
+  <section id="buttons">
+    <button id="editparser" class="btn">Edit parser</button>
+    <button id="apply" class="btn">Apply</button>
+  </section>
 </body>
 </html>

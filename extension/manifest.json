@@ -1,0 +1,22 @@
+{
+  "name": "Instaedit",
+  "version": "1.0",
+  "manifest_version": 2,
+  "description": "Instaedit - pixel perfect web editor",
+  "browser_action": {
+    "default_icon": "icon/icon2.png",
+    "default_popup": "popup.html"
+  },
+  "content_scripts": [
+  {
+      "matches": ["*"],
+      "js": ["js/content.js"],
+      "run_at": "document_end"
+    }
+  ]
+  "permissions": [
+    "tabs",
+    "background",
+    "http://github.com/"
+  ]
+}

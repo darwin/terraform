@@ -15,6 +15,15 @@ EditorsManager.prototype.updateParserCode = function () {
   instaedit.evalParser();
 }
 
+EditorsManager.prototype.addSelectListOption = function (elementName, value) {
+  var option = document.createElement('option');
+  option.setAttribute('value', value.toLowerCase());
+  option.innerHTML = value;
+
+  var list = document.getElementById(elementName);
+  list.appendChild(option);
+}
+
 EditorsManager.prototype.handleApplyButton = function () {
   var self = this;
   var applyButton = document.getElementById('apply');
@@ -69,22 +78,30 @@ EditorsManager.prototype.setUpEditors = function () {
 
 EditorsManager.prototype.toggleParserEditor = function () {
   console.log('toggling');
-  var parserEditorWrapper = document.getElementById('parsereditor');
+  var parserEditor = document.getElementById('parsereditor');
   var contentEditor = document.getElementById('editor');
   var applyButton = document.getElementById('apply');
 
-  if(parserEditorWrapper.style.visibility == 'hidden') {
+  if(parserEditor.style.visibility == 'hidden') {
     console.log('up');
-    parserEditorWrapper.style.visibility = 'visible';
+    parserEditor.style.visibility = 'visible';
     applyButton.style.visibility = 'visible';
 
-    contentEditor.style.height = (window.innerHeight * 0.6 - 45).toString() + 'px';
+    var parserEditorHeight = (window.innerHeight * 0.4).toString() + 'px';
+    var contentEditorHeight = (window.innerHeight * 0.6 - 60).toString() + 'px';
+
+    console.log('Computing new heights of editors.');
+    console.log('Parser editor ' + parserEditorHeight);
+    console.log('Content editor ' + contentEditorHeight);
+
+    parserEditor.style.height = (window.innerHeight * 0.4).toString() + 'px';
+    contentEditor.style.height = (window.innerHeight * 0.6 - 60).toString() + 'px';
   } else {
     console.log('down');
-    parserEditorWrapper.style.visibility = 'hidden';
+    parserEditor.style.visibility = 'hidden';
     applyButton.style.visibility = 'hidden';
 
-    contentEditor.style.height = (window.innerHeight - 45).toString() + 'px';
+    contentEditor.style.height = (window.innerHeight - 60).toString() + 'px';
   }
 }
 
@@ -92,22 +109,11 @@ EditorsManager.prototype.handleError = function (err) {
   console.log('error occurred', err, err.stack);
 
   instaedit.displayNotification(err + '<div id="description">' + err.stack + '</div>', 'error', document);
-/*
- * var errorWindow = document.getElementById('error-info');
- * errorWindow.innerHTML = '<div class="error">' + err + '</div>';
- * errorWindow.style.visibility = 'visible';
- */
 }
 
-EditorsManager.prototype.init = function () {
-  var self = this;
-
-  this.setUpEditors();
-
-  this.updateParserCode();
-  this.handleApplyButton();
-
+EditorsManager.prototype.handleParserEditorBehavior = function (self) {
   var editor = this.getEditor();
+  console.log(editor);
 
   // Parser editor stuff
   document.getElementById('parsereditor').style.visibility = 'hidden';
@@ -117,6 +123,11 @@ EditorsManager.prototype.init = function () {
     editor.contentEditor.resize();
     editor.parsereditor.resize();
   }
+}
+
+EditorsManager.prototype.handleContentEditorBehavior = function (self) {
+  var editor = this.getEditor();
+  console.log(editor);
 
   // Editor stuff
   addEventListener('keyup', function () {
@@ -125,4 +136,15 @@ EditorsManager.prototype.init = function () {
     instaedit.setSiteContent(content);
     instaedit.evalParser();
   });
+}
+
+EditorsManager.prototype.init = function () {
+  this.setUpEditors();
+
+  this.updateParserCode();
+  this.handleApplyButton();
+  this.handleParserEditorBehavior(this);
+  this.handleContentEditorBehavior(this);
+
+  this.addSelectListOption('select-file-selectbox', instaedit.getContentSourceUrl().split('/')[instaedit.getContentSourceUrl().split('/').length - 1]);
 }

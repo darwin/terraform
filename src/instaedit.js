@@ -6,7 +6,9 @@ if (typeof InstaEditConfig == "undefined") {
     logScope: this // scope where we expect console.log for editor logging
   };
 }
+/*
 
+*/
 // make our stuff private, the only exported variable will be instaedit into InstaEditConfig.defScope
 (function(config) {
   var content;
