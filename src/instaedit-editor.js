@@ -12,7 +12,7 @@ window.onresize = function(event) {
   Editors.toggleParserEditor();
 }
 
-window.onload = function() {
+window.onload = function () {
   var Editors = new EditorsManager();
   Editors.init();
 }

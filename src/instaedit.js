@@ -6,9 +6,7 @@ if (typeof InstaEditConfig == "undefined") {
     logScope: this // scope where we expect console.log for editor logging
   };
 }
-/*
 
-*/
 // make our stuff private, the only exported variable will be instaedit into InstaEditConfig.defScope
 (function(config) {
   var content;
@@ -16,6 +14,8 @@ if (typeof InstaEditConfig == "undefined") {
   var editor;
   var contentSourceUrl;
   var actualNotification;
+  var dataOrigins = new Array();
+  var dataContents = {};
   
   var getParserCode = function() {
     return code;
@@ -47,6 +47,23 @@ if (typeof InstaEditConfig == "undefined") {
 
   var getContentSourceUrl = function () {
     return getMetaContent('instaeditsource');
+  }
+
+  var addDataOrigin = function (origin) {
+    console.log(origin);
+    dataOrigins.push(origin);
+  }
+
+  var addDataContent = function (name, content) {
+    dataContents[name] = content;
+  }
+
+  var getDataOrigins = function () {
+    return dataOrigins;
+  }
+
+  var getDataContents = function () {
+    return dataContents;
   }
 
   var httpRequest = function (url, cb) {
@@ -148,40 +165,7 @@ if (typeof InstaEditConfig == "undefined") {
       });
     });
   }
-
-  // By Fitzgerald 2009 - http://fitzgeraldnick.com/ - Thank you for it!
-  var post = function (url, vals) {
-        var
-        form = document.createElement("form"),
-        iframe = document.createElement("iframe");
-
-        // Need to insert the iframe now so contentDocument and contentWindow are defined
-        document.body.appendChild(iframe);
-
-        var
-        doc = iframe.contentDocument !== undefined ?
-            iframe.contentDocument :
-            iframe.contentWindow.document,
-        key, field;
-        vals = vals || {};
-
-        form.setAttribute("method", "post");
-        form.setAttribute("action", url);
-        for (key in vals) {
-            if (vals.hasOwnProperty(key)) {
-                field = document.createElement("input");
-                field.type = "hidden";
-                field.value = encodeURIComponent(vals[key]);
-                form.appendChild(field);
-            }
-        }
-
-        iframe.setAttribute("style", "display: none;");
-        doc.body.appendChild(form);
-        form.submit();
-  }
-
-
+  
   var encode64 = function (input) {
     var keyStr = "ABCDEFGHIJKLMNOP" +
           "QRSTUVWXYZabcdef" +
@@ -304,7 +288,7 @@ if (typeof InstaEditConfig == "undefined") {
     request.send();
   }
   
-  var fetchSiteContent = function (url, res) {
+  var fetchSiteContent = function (url, res, indexed) {
     var scriptType = 'instaedit/rawdata';
 
     importSiteContentFromMetaTag(scriptType, url, function (content) {
@@ -312,7 +296,15 @@ if (typeof InstaEditConfig == "undefined") {
         content = importSiteContentFromScriptTag(scriptType);
       }
 
-      res(content);
+      console.log(indexed);
+      if((typeof indexed != 'undefined') && (indexed == true)) {
+        var data = {};
+        data.name = url;
+        data.content = content;
+        res(data);
+      } else {
+        res(content);
+      }
     });
   }
 
@@ -441,25 +433,75 @@ if (typeof InstaEditConfig == "undefined") {
       notification.style.visibility = 'hidden';
     }, 3000);
 }
+  var getElementsWithAttribute = function (name) {
+    var body = document.getElementsByTagName('body');
+    var body = body[0];
+    var elements = new Array();
+
+    for(var i in body.childNodes) {
+      if(body.childNodes[i].nodeType == 1) {
+        if(body.childNodes[i].getAttribute(name) != null) {
+          elements.push(body.childNodes[i]);
+        }
+      }
+    }
+
+    return elements;
+  }
+
+  var fetchDataOrigins = function (cb)  {
+    var origins = new Array();
+    var elements = getElementsWithAttribute('data-origin');
+    for(var i in elements) {
+      var origin = elements[i].getAttribute('data-origin');
+      addDataOrigin(origin)
+      origins.push(origin);
+    }
+
+    cb(origins);
+  }
+
+  fetchData = function (repo, origins, cb)  {
+    for(var i in origins) {
+      fetchSiteContent(repo + origins[i], function (content) {
+        console.log('Content of ' + content.name + ' successfully fetched.');
+        addDataContent(content.name.replace(getMetaContent('instaedit-repo'), ''), content.content);
+      }, true);
+    }
+    cb();
+  }
 
   var bootstrap = function (cb) {
     console.log('Worker loaded');
 
+    addScript('https://raw.github.com/binaryage/instaedit/master/demo/js/Markdown.Converter.js', function () {
+      console.log('Markdown converter loaded.');
+    });
+
     displayNotification('Instaedit is booting.', 'notification');
-    fetchSiteContent(getContentSourceUrl(), function (content) {
-      if(content == 404) {
-        displayNotification('Site source is undefined in meta tag.', 'error');
-      } else {
-        console.log('Site content loaded');
-        fetchParserCode(getMetaContent('instaeditparser'), function (code) {
-          if(code == 404) {
-            displayNotification('Parser is undefined in meta tag.', 'error');
-          } else {
-            console.log('ParserCode loaded');
-            cb(content, code);
-          }
-        });
-      }
+
+    var repo = getMetaContent('instaedit-repo');
+
+    fetchDataOrigins(function (origins) {
+      fetchData(repo, origins, function () {
+        console.log('Data loading finished');
+      });
+
+      fetchSiteContent(repo + origins[0], function (content) {
+        if(content == 404) {
+          displayNotification('Site source is undefined in meta tag.', 'error');
+        } else {
+          console.log('Site content loaded');
+          fetchSiteContent(getMetaContent('instaedit-parser'), function (code) {
+            if(code == 404) {
+              displayNotification('Parser is undefined in meta tag.', 'error');
+            } else {
+              console.log('ParserCode loaded');
+              cb(content, code);
+            }
+          });
+        }
+      });
     });
   }
   
@@ -479,8 +521,10 @@ if (typeof InstaEditConfig == "undefined") {
     editorLog: editorLog,
     getSiteContent: getSiteContent,
     setSiteContent: setSiteContent,
+    getDataOrigins: getDataOrigins,
     getParserCode: getParserCode,
     setParserCode: setParserCode,
+    getDataContents: getDataContents,
     evalParser: evalParser,
     setEditor: setEditor,
     displayNotification: displayNotification,

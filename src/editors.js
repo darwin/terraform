@@ -138,6 +138,26 @@ EditorsManager.prototype.handleContentEditorBehavior = function (self) {
   });
 }
 
+EditorsManager.prototype.handleFileChooseBehavior = function (self) {
+  var origins = instaedit.getDataOrigins();
+  for(var i in origins) {
+    this.addSelectListOption('select-file-selectbox', origins[i]);
+  }
+
+  console.log(instaedit.getDataContents());
+  var options = document.getElementsByTagName('option');
+  var contents = instaedit.getDataContents();
+
+  for(var i in options) {
+    if(typeof options[i] == 'object') {
+      options[i].onclick = function () {
+        console.log('clicked ' + options[i].getAttribute('value'));
+        instaedit.setSiteContent(contents[options[i].getAttribute('value')]);
+      }
+    }
+  }
+}
+
 EditorsManager.prototype.init = function () {
   this.setUpEditors();
 
@@ -145,6 +165,5 @@ EditorsManager.prototype.init = function () {
   this.handleApplyButton();
   this.handleParserEditorBehavior(this);
   this.handleContentEditorBehavior(this);
-
-  this.addSelectListOption('select-file-selectbox', instaedit.getContentSourceUrl().split('/')[instaedit.getContentSourceUrl().split('/').length - 1]);
+  this.handleFileChooseBehavior(this);
 }
