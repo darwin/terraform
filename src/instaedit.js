@@ -58,6 +58,11 @@ if (typeof InstaEditConfig == "undefined") {
     dataContents[name] = content;
   }
 
+  var updateDataContent = function (name, content) {
+    console.log('Updating content of ' + name);
+    dataContents[name] = content;
+  }
+
   var getDataOrigins = function () {
     return dataOrigins;
   }
@@ -525,6 +530,7 @@ if (typeof InstaEditConfig == "undefined") {
     getParserCode: getParserCode,
     setParserCode: setParserCode,
     getDataContents: getDataContents,
+    updateDataContent: updateDataContent,
     evalParser: evalParser,
     setEditor: setEditor,
     displayNotification: displayNotification,

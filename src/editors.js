@@ -139,22 +139,24 @@ EditorsManager.prototype.handleContentEditorBehavior = function (self) {
 }
 
 EditorsManager.prototype.handleFileChooseBehavior = function (self) {
+  // Divide
   var origins = instaedit.getDataOrigins();
+  var that = self;
   for(var i in origins) {
     this.addSelectListOption('select-file-selectbox', origins[i]);
   }
 
-  console.log(instaedit.getDataContents());
-  var options = document.getElementsByTagName('option');
+  // Impera
   var contents = instaedit.getDataContents();
+  document.getElementById('select-file-selectbox').onfocus = function () {
+    console.log('Saving actual version.');
+    instaedit.updateDataContent(document.getElementById('select-file-selectbox').value, that.getEditor().contentEditor.getSession().getValue());
+  }
 
-  for(var i in options) {
-    if(typeof options[i] == 'object') {
-      options[i].onclick = function () {
-        console.log('clicked ' + options[i].getAttribute('value'));
-        instaedit.setSiteContent(contents[options[i].getAttribute('value')]);
-      }
-    }
+  document.getElementById('select-file-selectbox').onchange = function () {
+    console.log('Switching file to ' + document.getElementById('select-file-selectbox').value);
+
+    that.getEditor().contentEditor.getSession().setValue(contents[document.getElementById('select-file-selectbox').value]);
   }
 }
 
