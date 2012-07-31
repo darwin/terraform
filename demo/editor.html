@@ -9,7 +9,8 @@
 
   <script type="text/javascript">
     Deps.provide('https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js');
-    Deps.provide('../libs/ace/ace-uncompressed-noconflict.js');
+    // -uncompressed-noconflict
+    Deps.provide('../libs/ace/ace.js');
     Deps.provide('../src/editors.js');
     Deps.provide('../src/instaedit-editor.js');
   </script>
@@ -97,6 +98,12 @@
 
     #select-file-selectbox {
       width: 500px;
+    }
+
+    .ace_marker-layer .parser-selected {
+      position: absolute;
+      z-index: 5;
+      background-color: grey;
     }
   </style>
 </head>

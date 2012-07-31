@@ -113,7 +113,6 @@ EditorsManager.prototype.handleError = function (err) {
 
 EditorsManager.prototype.handleParserEditorBehavior = function (self) {
   var editor = this.getEditor();
-  console.log(editor);
 
   // Parser editor stuff
   document.getElementById('parsereditor').style.visibility = 'hidden';
@@ -121,7 +120,7 @@ EditorsManager.prototype.handleParserEditorBehavior = function (self) {
   document.getElementById('editparser').onclick = function () {
     self.toggleParserEditor();
     editor.contentEditor.resize();
-    editor.parsereditor.resize();
+    editor.parserEditor.resize();
   }
 }
 
