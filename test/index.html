@@ -12,13 +12,12 @@
     // Libs
     Deps.provide('https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js');
     Deps.provide('../libs/ace/ace-uncompressed-noconflict.js');
-    Deps.provide('../src/github.js');
     Deps.provide('../src/editors.js');
     Deps.provide('../src/instaedit.js');
 
     // Tests
     window.onload = function () {
-      Deps.provide('api.js');
+      Deps.provide('parser-compiler.js');
     }
   </script>
 
@@ -42,13 +41,11 @@
   </script>
 </head>
 <body>
-  <div id="env-simuation">
-    <button id="commit" class="btn">Commit</button>
-  </div>
+  <div id="env-simuation"></div>
 
   <h1> Instaedit testsuite </h1>
 
-  <h2> API </h2>
+  <h2> Parser compiler </h2>
   <table>
     <tr>
       <th class="name"> Name </th>
@@ -56,7 +53,7 @@
       <th class="result"> Result </th>
     </tr>
     <tr>
-      <td>Commit</td> <td id="apitest-commit-time"> <img src="visual/img/spinner.gif"> </td> <td id="apitest-commit-result"> <img src="visual/img/spinner.gif"> </td>
+      <td>Compile</td> <td id="parser-compiler-time"> <img src="visual/img/spinner.gif"> </td> <td id="parser-compiler-result"> <img src="visual/img/spinner.gif"> </td>
     </tr>
   </table>
 </body>

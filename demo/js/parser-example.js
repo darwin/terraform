@@ -15,4 +15,4 @@ document.getElementById('content2').innerHTML = '<b>' + html + '</b>';
 // -> General directive
 var converter = new Markdown.Converter();
 document.getElementById('content1').innerHTML = html;
-// ->
+// <-

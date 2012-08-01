@@ -1,6 +1,7 @@
 var EditorsManager = function () {};
 
 EditorsManager.editor = {};
+EditorsManager.appliedDirectives = {};
 
 EditorsManager.prototype.setEditor = function (val) {
   this.editor = val;
@@ -10,8 +11,8 @@ EditorsManager.prototype.getEditor = function () {
   return this.editor;
 }
 
-EditorsManager.prototype.updateParserCode = function () {
-  instaedit.setParserCode(this.getEditor().parserEditor.getSession().getValue());
+EditorsManager.prototype.updateParserCode = function (code) {
+  instaedit.setParserCode(code);
   instaedit.evalParser();
 }
 
@@ -24,6 +25,67 @@ EditorsManager.prototype.addSelectListOption = function (elementName, value) {
   list.appendChild(option);
 }
 
+EditorsManager.prototype.trim = function (str) {
+  var trimed = str.replace(/^\s\s*/, '').replace(/\s\s*$/, '');
+  return str.replace(/^\s\s*/, '').replace(/\s\s*$/, '');
+}
+
+EditorsManager.prototype.compileParser = function (code, actualFile, actualLocation) {
+  // Identify unapplicable blocks
+  // Get all "Apply when directives"
+  var applyWhen = code.split('// -> Apply when editting ');
+  var applyFilters = {};
+  if(applyWhen.length > 0) {
+    for(var i in applyWhen) {
+      var j = parseInt(i) + 1;
+      if(typeof applyWhen[j] != 'undefined') {
+        applyWhen[j] = applyWhen[j].split('// <-')[0];
+        var name = applyWhen[j].split('\n')[0];
+        var context = '';
+
+        if(name != name.split(' in context of ')) {
+          context = name.split(' in context of ')[1];
+          name = name.split(' in context of ')[0];
+        }
+
+        applyFilters[name] = {};
+        applyFilters[name].code = applyWhen[j].split(applyWhen[j].split('\n')[0]).join('');
+        applyFilters[name].context = context;
+      }
+    }
+  }
+
+  // Replace unmatched directives
+  for(var i in applyFilters) {
+    if((i != actualFile) || ((applyFilters[i].context != actualLocation) && (applyFilters[i].context != ''))) {
+      if(applyFilters[i].context == '') {
+        directive = this.trim('// -> Apply when editting ' + i);
+      } else {
+        directive = this.trim('// -> Apply when editting ' + i + ' in context of ' + applyFilters[i].context);
+      }
+
+      code = code.split(directive).join('');
+      code = code.split(applyFilters[i].code + '// <-').join('');
+
+      delete applyFilters[i];
+    }
+  }
+
+  // Search for general directive if nothing matched, else remove it
+  if(applyFilters.length != 0) {
+    console.log('Matched some directive - general directive will no be longer needed.');
+    directive = code.split('// -> General directive')[1].split('// <-')[0];
+
+    code = code.split('// -> General directive').join('');
+    code = code.split(directive).join('');
+  }
+
+  code = code.split('\n\n\n').join('\n');
+
+  this.appliedDirectives = applyFilters;
+  return code;
+}
+
 EditorsManager.prototype.handleApplyButton = function () {
   var self = this;
   var applyButton = document.getElementById('apply');
@@ -31,6 +93,8 @@ EditorsManager.prototype.handleApplyButton = function () {
 
   applyButton.onclick = function () {
     console.log("apply clicked!");
+    var code = this.getEditor().parserEditor.getSession().getValue();
+    var compiled = this.compileParser(code, this.getActualContentFile(), window.opener.location);
     self.updateParserCode();
   }
 }
@@ -137,6 +201,10 @@ EditorsManager.prototype.handleContentEditorBehavior = function (self) {
   });
 }
 
+EditorsManager.prototype.getActualContentFile = function () {
+  return document.getElementById('select-file-selectbox').value;
+}
+
 EditorsManager.prototype.handleFileChooseBehavior = function (self) {
   // Divide
   var origins = instaedit.getDataOrigins();
@@ -149,13 +217,13 @@ EditorsManager.prototype.handleFileChooseBehavior = function (self) {
   var contents = instaedit.getDataContents();
   document.getElementById('select-file-selectbox').onfocus = function () {
     console.log('Saving actual version.');
-    instaedit.updateDataContent(document.getElementById('select-file-selectbox').value, that.getEditor().contentEditor.getSession().getValue());
+    instaedit.updateDataContent(this.getActualContentFile(), that.getEditor().contentEditor.getSession().getValue());
   }
 
   document.getElementById('select-file-selectbox').onchange = function () {
-    console.log('Switching file to ' + document.getElementById('select-file-selectbox').value);
+    console.log('Switching file to ' + this.getActualContentFile());
 
-    that.getEditor().contentEditor.getSession().setValue(contents[document.getElementById('select-file-selectbox').value]);
+    that.getEditor().contentEditor.getSession().setValue(contents[this.getActualContentFile()]);
   }
 }
 

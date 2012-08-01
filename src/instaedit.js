@@ -314,17 +314,9 @@ if (typeof InstaEditConfig == "undefined") {
   }
 
   var fetchParserCode = function (scriptUrl, cb) {
-    if(scriptUrl == 404) {
-      cb(404);
-    }
-
-    var request = new XMLHttpRequest();  
-    request.onloadend = function () { 
-      console.log(request.responseText);
-      cb(request.responseText);
-    }
-    request.open('GET', scriptUrl, true);  
-    request.send();  
+    loadFromGithuAPI(scriptUrl, function (code) {
+      cb(code);
+    });
   }
   
   var openEditor = function() {
@@ -535,7 +527,8 @@ if (typeof InstaEditConfig == "undefined") {
     setEditor: setEditor,
     displayNotification: displayNotification,
     getEditor: getEditor,
-    getContentSourceUrl: getContentSourceUrl
+    getContentSourceUrl: getContentSourceUrl,
+    fetchParserCode: fetchParserCode
   };
 
   // export public interface into selected scope
