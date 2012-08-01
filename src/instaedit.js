@@ -50,7 +50,6 @@ if (typeof InstaEditConfig == "undefined") {
   }
 
   var addDataOrigin = function (origin) {
-    console.log(origin);
     dataOrigins.push(origin);
   }
 
@@ -540,6 +539,7 @@ if (typeof InstaEditConfig == "undefined") {
   if (!config.preventBootstrapping) {
     bootstrap(function (site, parser) {
       if((content != 404) || (code != 404)) {
+        console.log(parser)
         setParserCode(parser);
         setSiteContent(site);
         openEditor();
