@@ -17,8 +17,15 @@ EditorsManager.prototype.updateParserCode = function (code) {
 
   var rangeSelected = this.identifyBlockInParserCode(compiled);
   var Range = require('ace/range').Range;
-  var range = new Range(rangeSelected.start, 0, rangeSelected.stop, 0);
-  var markerId = this.getEditor().parserEditor.getSession().addMarker(range, "parser-selected", "line");
+
+  var markers = {};
+  if(rangeSelected.starts.length != 0) {
+    for (i in rangeSelected.starts) {
+      var range = new Range(rangeSelected.starts[i], 0, rangeSelected.stops[i], 0);
+      markers[this.getEditor().parserEditor.getSession().addMarker(range, "parser-selected", "line")].start == rangeSelected.starts[i];
+      markers[this.getEditor().parserEditor.getSession().addMarker(range, "parser-selected", "line")].stop == rangeSelected.stops[i];
+    }
+  }
 
   instaedit.setParserCode(compiled);
   instaedit.evalParser();
@@ -79,7 +86,11 @@ EditorsManager.prototype.compileParser = function (code, actualFile, actualLocat
     }
   }
 
-  if(typeof applyFilters.length != 'undefined') {
+  // Get count of applied directives
+  var count = 0;
+  for(var p in applyFilters) if(applyFilters.hasOwnProperty(p))++count;
+
+  if(count != 0) {
     console.log('Matched some directive - general directive will no be longer needed.');
     directive = code.split('// -> General directive')[1].split('// <-')[0];
 
@@ -96,10 +107,42 @@ EditorsManager.prototype.compileParser = function (code, actualFile, actualLocat
 }
 
 EditorsManager.prototype.identifyBlockInParserCode = function (code) {
-  var range = {};
-  range.start = 2;
-  range.stop = 5;
+  // console.log('Identify ' + code + ' in ' + instaedit.getParserCode());
+  var a = code.split('\n');
+  var b = this.appliedDirectives;
 
+  var starts = new Array();
+  var stops = new Array();
+
+  // Identify blocks
+  for (var i in a) {
+    // Is line start of any block?
+    if(this.trim(a[i]).split('// ->').length != 1) {
+      // Was this rule applied?
+      if(this.trim(a[i]).split('// -> Apply when editing ').length != 1) {
+        var rule = this.trim(a[i]).split('// -> Apply when editing ')[1].split(' ')[0]
+        if(typeof b[rule] == 'object') {
+          starts.push(parseInt(i) - 1);
+        }        
+      }
+    }
+  }
+
+  if(starts.length != 0) {
+    for (var i in starts) {
+       var line = code.split('\n')[starts[i]];
+       var block = code.split(line)[1];
+       var block = block.split('// ->')[0];
+       var blockLength = block.split('\n').length;
+       stops.push(parseInt(starts[i]) + 1 + blockLength);
+    }
+  }
+
+  var range = {};
+  range.starts = starts;
+  range.stops = stops;
+
+  console.log(range);
   return range;
 }
 
