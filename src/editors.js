@@ -37,8 +37,8 @@ EditorsManager.prototype.getEditor = function () {
 }
 
 EditorsManager.prototype.updateParserCode = function (code) {
-  var compiled = this.compileParser(instaedit.getParserOrigin(), this.getActualContentFile(), window.opener.location.toString().split('/')[window.opener.location.toString().split('/').length - 1]);
-  var rangeSelected = this.identifyBlockInParserCode(compiled);
+  var compiled = this.compileParser(this.getEditor().parserEditor.getSession().getValue(), this.getActualContentFile(), window.opener.location.toString().split('/')[window.opener.location.toString().split('/').length - 1]);
+  var rangeSelected = this.identifyBlockInParserCode(this.getEditor().parserEditor.getSession().getValue());
 
   this.removeAllMarkers();
 
