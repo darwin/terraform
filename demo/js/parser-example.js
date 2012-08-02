@@ -2,6 +2,7 @@
 
 var converter = new Markdown.Converter();
 var html = converter.makeHtml(content);
+html = html.split('{{site.url}}').join('http://blog.binaryage.com/');
 
 // -> Apply when editing /_posts/2012-04-26-totalspaces-brings-back-grid-spaces.md in context of index.html
 document.getElementById('content1').innerHTML = html;

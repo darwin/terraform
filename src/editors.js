@@ -38,13 +38,13 @@ EditorsManager.prototype.getEditor = function () {
 
 EditorsManager.prototype.updateParserCode = function (code) {
   var compiled = this.compileParser(this.getEditor().parserEditor.getSession().getValue(), this.getActualContentFile(), window.opener.location.toString().split('/')[window.opener.location.toString().split('/').length - 1]);
-  var rangeSelected = this.identifyBlockInParserCode(this.getEditor().parserEditor.getSession().getValue());
+  var markers = this.identifyBlockInParserCode(this.getEditor().parserEditor.getSession().getValue());
 
   this.removeAllMarkers();
 
-  for (i in rangeSelected.starts) {
-    console.log('Creating marker from ' + rangeSelected.starts[i] + ' to ' + rangeSelected.stops[i]);
-    this.addMarker(rangeSelected.starts[i], rangeSelected.stops[i]);
+  for (i in markers) {
+    console.log('Creating marker from ' + markers[i].start + ' to ' + markers[i].stop);
+    this.addMarker(markers[i].start, markers[i].stop);
   }
 
   instaedit.setParserCode(compiled);
@@ -127,27 +127,40 @@ EditorsManager.prototype.compileParser = function (code, actualFile, actualLocat
 }
 
 EditorsManager.prototype.identifyBlockInParserCode = function (code) {
-  console.log('Identify ' + this.appliedDirectives + ' in ' + code);
+  console.log('Identify ' + code + ' in ');
+  console.log(this.appliedDirectives);
+
   var a = code.split('\n');
   var b = this.appliedDirectives;
 
-  var starts = new Array();
-  var stops = new Array();
+  var blocks = {};
 
   // Identify blocks
   for (var i in a) {
     // Is line start of any block?
-    if(this.trim(a[i]).split('// ->').length != 1) {
-      // Was this rule applied?
-      if(this.trim(a[i]).split('// -> Apply when editing ').length != 1) {
-        var rule = this.trim(a[i]).split('// -> Apply when editing ')[1].split(' ')[0]
-        if(typeof b[rule] == 'object') {
-          starts.push(parseInt(i));
-        }        
-      }
+    if(this.trim(a[i]).split('// -> Apply when editing ').length != 1) {
+      var rule = this.trim(a[i]).split('// -> Apply when editing ')[1].split(' ')[0];
+      blocks[rule] = {};
+      blocks[rule].start = parseInt(i);
+      console.log('Found rule for ' + rule + ' block is starting at ' + i);
     }
   }
 
+  // Found blocks ends
+  for (var i in blocks) {
+    var rest = code.split(a[blocks[i].start])[1];
+    rest = rest.split('// <-')[0];
+    rest = rest.split('\n');
+    blocks[i].stop = blocks[i].start + rest.length;
+    console.log('Found rule end for ' + i + ' block is ending at ' + rest.length);
+  }
+
+  for (var i in blocks) {
+    if(typeof b[i] != 'object') {
+      delete blocks[i];
+    }
+  }
+/*
   if(starts.length != 0) {
     for (var i in starts) {
        var line = code.split('\n')[starts[i]];
@@ -157,13 +170,10 @@ EditorsManager.prototype.identifyBlockInParserCode = function (code) {
        stops.push(parseInt(starts[i]) + 1 + blockLength);
     }
   }
+*/
+console.log(blocks);
 
-  var range = {};
-  range.starts = starts;
-  range.stops = stops;
-
-  console.log(range);
-  return range;
+  return blocks;
 }
 
 EditorsManager.prototype.handleApplyButton = function () {

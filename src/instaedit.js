@@ -346,6 +346,8 @@ if (typeof InstaEditConfig == "undefined") {
     // TODO: alternatively we could encode site content into postfix as a parameter string
     config.evalScope[tempVarName] = getSiteContent();
     try {
+      console.log('-------------------------------------------------------------------------------->');
+      console.log(code);
       config.evalScope.eval(code);
     } catch (ex) {
       if (editor && editor.onError) {

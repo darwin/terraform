@@ -13,9 +13,9 @@
 
   // Demo parser
   instaedit.fetchParserCode('https://raw.github.com/binaryage/instaedit/master/demo/js/parser-example.js', function (code) {
-  	console.log(code);
+  	// console.log(code);
     var result = Editors.compileParser(code, '/_posts/2012-04-07-hello-san-francisco.md', 'index.html');
-    var coverage = Editors.identifyBlockInParserCode(result);
+    var coverage = Editors.identifyBlockInParserCode(code);
     done('Succeeded');
   });
 }(document));
