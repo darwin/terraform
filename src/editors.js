@@ -12,7 +12,15 @@ EditorsManager.prototype.getEditor = function () {
 }
 
 EditorsManager.prototype.updateParserCode = function (code) {
-  instaedit.setParserCode(code);
+  var code = this.getEditor().parserEditor.getSession().getValue();
+  var compiled = this.compileParser(code, this.getActualContentFile(), window.opener.location.toString().split('/')[window.opener.location.toString().split('/').length - 1]);
+
+  var rangeSelected = this.identifyBlockInParserCode(compiled);
+  var Range = require('ace/range').Range;
+  var range = new Range(rangeSelected.start, 0, rangeSelected.stop, 0);
+  var markerId = this.getEditor().parserEditor.getSession().addMarker(range, "parser-selected", "line");
+
+  instaedit.setParserCode(compiled);
   instaedit.evalParser();
 }
 
@@ -31,6 +39,7 @@ EditorsManager.prototype.trim = function (str) {
 }
 
 EditorsManager.prototype.compileParser = function (code, actualFile, actualLocation) {
+  console.log('Compile parser for ' + actualFile + ' in context of ' + actualLocation);
   // Identify unapplicable blocks
   // Get all "Apply when directives"
   var applyWhen = code.split('// -> Apply when editing ');
@@ -89,7 +98,7 @@ EditorsManager.prototype.compileParser = function (code, actualFile, actualLocat
 EditorsManager.prototype.identifyBlockInParserCode = function (code) {
   var range = {};
   range.start = 2;
-  range.stop = 2;
+  range.stop = 5;
 
   return range;
 }
@@ -101,15 +110,7 @@ EditorsManager.prototype.handleApplyButton = function () {
 
   applyButton.onclick = function () {
     console.log("apply clicked!");
-    var code = self.getEditor().parserEditor.getSession().getValue();
-    var compiled = self.compileParser(code, self.getActualContentFile(), window.opener.location.toString().split('/')[window.opener.location.toString().split('/').length]);
-
-    var rangeSelected = self.identifyBlockInParserCode(compiled);
-    var Range = require('ace/range').Range;
-    var range = new Range(rangeSelected.start, 0, rangeSelected.stop, 0);
-    var markerId = self.getEditor().parserEditor.getSession().addMarker(range, "parser-selected", "line");
-
-    self.updateParserCode(compiled);
+    self.updateParserCode(self.getEditor().parserEditor.getSession().getValue());
   }
 }
 
@@ -243,7 +244,7 @@ EditorsManager.prototype.handleFileChooseBehavior = function (self) {
 EditorsManager.prototype.init = function () {
   this.setUpEditors();
 
-  this.updateParserCode();
+  this.updateParserCode(this.getEditor().parserEditor.getSession().getValue());
   this.handleApplyButton();
   this.handleParserEditorBehavior(this);
   this.handleContentEditorBehavior(this);

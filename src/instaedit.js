@@ -331,7 +331,7 @@ if (typeof InstaEditConfig == "undefined") {
     prefix = "(function(content){";
     postfix = "})(" + tempVarName + ")";
 
-    var code = prefix + getParserCode() + postfix;
+    var code = prefix + '\n' + getParserCode() + '\n' + postfix;
 
     // eval in wrapper function using global temporary variable
     // TODO: alternatively we could encode site content into postfix as a parameter string
@@ -539,7 +539,6 @@ if (typeof InstaEditConfig == "undefined") {
   if (!config.preventBootstrapping) {
     bootstrap(function (site, parser) {
       if((content != 404) || (code != 404)) {
-        console.log(parser)
         setParserCode(parser);
         setSiteContent(site);
         openEditor();
