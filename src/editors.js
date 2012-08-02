@@ -2,6 +2,31 @@ var EditorsManager = function () {};
 
 EditorsManager.editor = {};
 EditorsManager.appliedDirectives = {};
+EditorsManager.markers = [];
+
+EditorsManager.prototype.addMarker = function (start, stop) {
+  var Range = require('ace/range').Range;
+
+  var range = new Range(start, 0, stop, 0);
+  var marker = this.getEditor().parserEditor.getSession().addMarker(range, "parser-selected", "line");
+
+  newMarker = {};
+  newMarker.start = start;
+  newMarker.stop = stop;
+  EditorsManager.markers.push(newMarker);
+}
+
+EditorsManager.prototype.removeAllMarkers = function (start, stop) {
+  var Range = require('ace/range').Range;
+  var markers = EditorsManager.markers;
+
+  for(var i in markers) {
+    console.log('Removing marker from ' + markers[i].start + ' to ' + markers[i].stop)
+    var range = new Range(markers[i].start, 0, markers[i].stop, 0);
+    this.getEditor().parserEditor.getSession().removeMarker(range);
+    delete EditorsManager.markers[i];
+  }
+}
 
 EditorsManager.prototype.setEditor = function (val) {
   this.editor = val;
@@ -11,23 +36,15 @@ EditorsManager.prototype.getEditor = function () {
   return this.editor;
 }
 
-EditorsManager.prototype.markers = {};
-
 EditorsManager.prototype.updateParserCode = function (code) {
-  var code = this.getEditor().parserEditor.getSession().getValue();
-  var compiled = this.compileParser(code, this.getActualContentFile(), window.opener.location.toString().split('/')[window.opener.location.toString().split('/').length - 1]);
-
+  var compiled = this.compileParser(instaedit.getParserOrigin(), this.getActualContentFile(), window.opener.location.toString().split('/')[window.opener.location.toString().split('/').length - 1]);
   var rangeSelected = this.identifyBlockInParserCode(compiled);
-  var Range = require('ace/range').Range;
 
-  
-  if(rangeSelected.starts.length != 0) {
-    for (i in rangeSelected.starts) {
-      var range = new Range(rangeSelected.starts[i], 0, rangeSelected.stops[i], 0);
-      console.log('Creating marker from ' + rangeSelected.starts[i] + ' to ' + rangeSelected.stops[i]);
-      this.markers[this.getEditor().parserEditor.getSession().addMarker(range, "parser-selected", "line")].start == rangeSelected.starts[i];
-      this.markers[this.getEditor().parserEditor.getSession().addMarker(range, "parser-selected", "line")].stop == rangeSelected.stops[i];
-    }
+  this.removeAllMarkers();
+
+  for (i in rangeSelected.starts) {
+    console.log('Creating marker from ' + rangeSelected.starts[i] + ' to ' + rangeSelected.stops[i]);
+    this.addMarker(rangeSelected.starts[i], rangeSelected.stops[i]);
   }
 
   instaedit.setParserCode(compiled);
@@ -110,7 +127,7 @@ EditorsManager.prototype.compileParser = function (code, actualFile, actualLocat
 }
 
 EditorsManager.prototype.identifyBlockInParserCode = function (code) {
-  // console.log('Identify ' + code + ' in ' + instaedit.getParserCode());
+  console.log('Identify ' + this.appliedDirectives + ' in ' + code);
   var a = code.split('\n');
   var b = this.appliedDirectives;
 
@@ -125,7 +142,7 @@ EditorsManager.prototype.identifyBlockInParserCode = function (code) {
       if(this.trim(a[i]).split('// -> Apply when editing ').length != 1) {
         var rule = this.trim(a[i]).split('// -> Apply when editing ')[1].split(' ')[0]
         if(typeof b[rule] == 'object') {
-          starts.push(parseInt(i) - 1);
+          starts.push(parseInt(i));
         }        
       }
     }

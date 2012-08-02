@@ -16,6 +16,7 @@ if (typeof InstaEditConfig == "undefined") {
   var actualNotification;
   var dataOrigins = new Array();
   var dataContents = {};
+  var parserOrigin;
   
   var getParserCode = function() {
     return code;
@@ -23,6 +24,14 @@ if (typeof InstaEditConfig == "undefined") {
 
   var setParserCode = function(newCode) {
     code = newCode;
+  }
+
+  var setParserOrigin = function(code) {
+    parserOrigin = code;
+  }
+  
+  var getParserOrigin = function() {
+    return parserOrigin;
   }
 
   var getSiteContent = function() {
@@ -527,7 +536,8 @@ if (typeof InstaEditConfig == "undefined") {
     displayNotification: displayNotification,
     getEditor: getEditor,
     getContentSourceUrl: getContentSourceUrl,
-    fetchParserCode: fetchParserCode
+    fetchParserCode: fetchParserCode,
+    getParserOrigin: getParserOrigin
   };
 
   // export public interface into selected scope
@@ -539,6 +549,8 @@ if (typeof InstaEditConfig == "undefined") {
   if (!config.preventBootstrapping) {
     bootstrap(function (site, parser) {
       if((content != 404) || (code != 404)) {
+        parser
+        setParserOrigin(parser);
         setParserCode(parser);
         setSiteContent(site);
         openEditor();
