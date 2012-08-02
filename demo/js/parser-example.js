@@ -3,11 +3,11 @@
 var converter = new Markdown.Converter();
 var html = converter.makeHtml(content);
 
-// -> Apply when editing /_posts/2012-04-26-totalspaces-brings-back-grid-spaces.mds in context of index.html
+// -> Apply when editing /_posts/2012-04-26-totalspaces-brings-back-grid-spaces.md in context of index.html
 document.getElementById('content1').innerHTML = html;
 // <-
 
-// -> Apply when editing /_posts/2012-04-07-hello-san-francisco.mds
+// -> Apply when editing /_posts/2012-04-07-hello-san-francisco.md
 document.getElementById('content2').innerHTML = '<b>' + html + '</b>';
 // <-
 

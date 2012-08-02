@@ -11,6 +11,8 @@ EditorsManager.prototype.getEditor = function () {
   return this.editor;
 }
 
+EditorsManager.prototype.markers = {};
+
 EditorsManager.prototype.updateParserCode = function (code) {
   var code = this.getEditor().parserEditor.getSession().getValue();
   var compiled = this.compileParser(code, this.getActualContentFile(), window.opener.location.toString().split('/')[window.opener.location.toString().split('/').length - 1]);
@@ -18,12 +20,13 @@ EditorsManager.prototype.updateParserCode = function (code) {
   var rangeSelected = this.identifyBlockInParserCode(compiled);
   var Range = require('ace/range').Range;
 
-  var markers = {};
+  
   if(rangeSelected.starts.length != 0) {
     for (i in rangeSelected.starts) {
       var range = new Range(rangeSelected.starts[i], 0, rangeSelected.stops[i], 0);
-      markers[this.getEditor().parserEditor.getSession().addMarker(range, "parser-selected", "line")].start == rangeSelected.starts[i];
-      markers[this.getEditor().parserEditor.getSession().addMarker(range, "parser-selected", "line")].stop == rangeSelected.stops[i];
+      console.log('Creating marker from ' + rangeSelected.starts[i] + ' to ' + rangeSelected.stops[i]);
+      this.markers[this.getEditor().parserEditor.getSession().addMarker(range, "parser-selected", "line")].start == rangeSelected.starts[i];
+      this.markers[this.getEditor().parserEditor.getSession().addMarker(range, "parser-selected", "line")].stop == rangeSelected.stops[i];
     }
   }
 
