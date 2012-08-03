@@ -7,15 +7,12 @@
     "default_icon": "icon/icon2.png",
     "default_popup": "popup.html"
   },
-  "content_scripts": [
-  {
-      "matches": ["*"],
-      "js": ["js/content.js"],
-      "run_at": "document_end"
-  }],
-  "permissions": [
+  "background": {
+    "scripts": []
+  },
+  "permissions":  [
     "tabs",
-    "background",
-    "http://github.com/"
+    "http://*/*",
+    "https://*/*"
   ]
 }
