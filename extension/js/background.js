@@ -22,15 +22,25 @@ function getEditUrl(raw) {
 }
 
 function commitFiles(data) {
-  document.getElementById('dump').innerHTML = data.contentScript.source;
+  document.getElementById('dump').innerHTML = 'Done';
+  var map = {};
 
   for(var i in data) {
     if(i != 'contentScript') {
+      map[getEditUrl(i)] = i;
       chrome.tabs.create({
       	url: getEditUrl(i),
       	active: false
       }, function (tab) {
-      	console.log(tab)
+      	chrome.tabs.executeScript(tab.id, { file: "./js/commit.js" }, function() {
+          console.log('Requesting edit of ');
+          console.log(data);
+          console.log(map[tab.url]);
+          console.log(data[map[tab.url]]);
+      		chrome.tabs.sendRequest(tab.id, {code: data[map[tab.url]], url: map[tab.url]}, function(result) {
+          		console.log(result);
+          });
+      	});
       });
     }
   }
@@ -40,12 +50,12 @@ window.onload = function () {
   document.getElementById('dump').innerHTML = '<img class="spinner" src="icon/spinner.gif">';
   document.getElementById('button').onclick = function () {
     chrome.tabs.getSelected(null, function (tab) { 
-	  var tabId = tab.id; 
-	  chrome.tabs.executeScript(tabId, { file: "./js/content.js" }, function() {
-	    chrome.tabs.sendRequest(tabId, {}, function(data) {
-	      commitFiles(data);
+	    var tabId = tab.id; 
+	    chrome.tabs.executeScript(tabId, { file: "./js/content.js" }, function() {
+	      chrome.tabs.sendRequest(tabId, {}, function(data) {
+	        commitFiles(data);
         });
-	  });
+	    });
     });
   }
 }
