@@ -19,7 +19,7 @@ function fetchData(cb) {
   var elements = getElementsWithAttribute('data-origin');
 
   for(var i in elements) {
-  	data[elements[i].getAttribute('data-origin')] = elements[i].innerHTML;
+  	data[getMetaContent('instaedit-repo') + elements[i].getAttribute('data-origin')] = elements[i].innerHTML;
   }
 
   cb(data);
@@ -44,8 +44,6 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
   	data.contentScript = {};
   	data.contentScript.source = getMetaContent('instaedit-parser');
   	data.contentScript.code = document.getElementById('instaedit-parser-container').innerText;
-
-  	console.log(data);
     sendResponse(data);
   });
 });
