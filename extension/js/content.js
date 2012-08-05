@@ -1,3 +1,30 @@
+function getElementsWithAttribute(name) {
+  var body = document.getElementsByTagName('body');
+  var body = body[0];
+  var elements = new Array();
+
+  for(var i in body.childNodes) {
+    if(body.childNodes[i].nodeType == 1) {
+      if(body.childNodes[i].getAttribute(name) != null) {
+        elements.push(body.childNodes[i]);
+      }
+    }
+  }
+
+  return elements;
+}
+
+function fetchData(cb) {
+  var data = {};
+  var elements = getElementsWithAttribute('data-origin');
+
+  for(var i in elements) {
+  	data[elements[i].getAttribute('data-origin')] = elements[i].innerHTML;
+  }
+
+  cb(data);
+}
+
 function getMetaContent(name) {
   var content = 404;
 
@@ -12,16 +39,13 @@ function getMetaContent(name) {
   return content;
 }
 
-function getCommitables() {
-  var data = {};
-
-  console.log(getMetaContent('instaedit-repo'));
-  data.repo = getMetaContent('instaedit-repo');
-  // data.contents = window['instaedit314159265'].getDataContents();
-
-  return data;
-}
-
 chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
-  sendResponse(getCommitables());
+  fetchData(function (data) {
+  	data.contentScript = {};
+  	data.contentScript.source = getMetaContent('instaedit-parser');
+  	data.contentScript.code = document.getElementById('instaedit-parser-container').innerText;
+
+  	console.log(data);
+    sendResponse(data);
+  });
 });

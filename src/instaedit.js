@@ -482,6 +482,7 @@ if (typeof InstaEditConfig == "undefined") {
   var createScriptTagForParserCode = function (origin, code) {
     var head = document.getElementsByTagName('head')[0];
     var scr = document.createElement('script');
+    scr.setAttribute('type', 'instaedit/content-script');
     scr.setAttribute('data-origin', origin);
     scr.setAttribute('data-application', 'instaedit');
     scr.setAttribute('id', 'instaedit-parser-container');
