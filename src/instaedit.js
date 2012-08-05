@@ -353,6 +353,9 @@ if (typeof InstaEditConfig == "undefined") {
       }
     }
     delete config.evalScope[tempVarName];
+
+    var parser = document.getElementById('instaedit-parser-container');
+    parser.innerHTML = getParserCode();
   }
 
   var displayNotification = function (text, kind, target) {
@@ -466,7 +469,7 @@ if (typeof InstaEditConfig == "undefined") {
     cb(origins);
   }
 
-  fetchData = function (repo, origins, cb)  {
+  var fetchData = function (repo, origins, cb)  {
     for(var i in origins) {
       fetchSiteContent(repo + origins[i], function (content) {
         console.log('Content of ' + content.name + ' successfully fetched.');
@@ -474,6 +477,15 @@ if (typeof InstaEditConfig == "undefined") {
       }, true);
     }
     cb();
+  }
+
+  var createScriptTagForParserCode = function (origin, code) {
+    var head = document.getElementsByTagName('head')[0];
+    var scr = document.createElement('script');
+    scr.setAttribute('data-origin', origin);
+    scr.setAttribute('data-application', 'instaedit');
+    scr.setAttribute('id', 'instaedit-parser-container');
+    head.appendChild(scr);
   }
 
   var bootstrap = function (cb) {
@@ -502,6 +514,7 @@ if (typeof InstaEditConfig == "undefined") {
               displayNotification('Parser is undefined in meta tag.', 'error');
             } else {
               console.log('ParserCode loaded');
+              createScriptTagForParserCode(getMetaContent('instaedit-parser'), code);
               cb(content, code);
             }
           });
