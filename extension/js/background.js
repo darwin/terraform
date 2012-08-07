@@ -22,7 +22,7 @@ function getEditUrl(raw) {
 }
 
 function commitFiles(data) {
-  document.getElementById('dump').innerHTML = 'Done';
+  // document.getElementById('dump').innerHTML = 'Done';
   var map = {};
 
   for(var i in data) {
@@ -47,7 +47,8 @@ function commitFiles(data) {
 }
 
 window.onload = function () {
-  document.getElementById('dump').innerHTML = '<img class="spinner" src="icon/spinner.gif">';
+  // document.getElementById('dump').innerHTML = '<img class="spinner" src="icon/spinner.gif">';
+
   document.getElementById('button').onclick = function () {
     chrome.tabs.getSelected(null, function (tab) { 
 	    var tabId = tab.id; 
@@ -56,6 +57,14 @@ window.onload = function () {
 	        commitFiles(data);
         });
 	    });
+    });
+  }
+
+  document.getElementById('init').onclick = function () {
+    chrome.tabs.getSelected(null, function (tab) { 
+      chrome.tabs.executeScript(tab.id, { file: "./js/launch.js" }, function() {
+        console.log('Done.');
+      });
     });
   }
 }
