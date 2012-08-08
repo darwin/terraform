@@ -17,7 +17,16 @@ if (typeof InstaEditConfig == "undefined") {
   var dataOrigins = new Array();
   var dataContents = {};
   var parserOrigin;
-  
+  var actualContentFile;
+
+  var setActualContentFile = function (fileName) {
+    actualContentFile = fileName;
+  }
+
+  var getActualContentFile = function (fileName) {
+    return actualContentFile;
+  }
+
   var getParserCode = function() {
     return code;
   }
@@ -334,17 +343,34 @@ if (typeof InstaEditConfig == "undefined") {
     editor.instaedit = instaedit;
     editor.focus();
   }
+
+  var hasOwnContentScript = function (file) {
+    var scripts = new Array();
+    var elements = getElementsWithAttribute('data-script-target');
+    for(var i in elements) {
+      if(elements[i].getAttribute('data-script-target') == file) {
+        return elements[i].innerText;
+      }
+    }
+    return false;
+  }
   
   var evalParser = function() {
     var tempVarName = "__instaedit_gen_" + Math.floor(Math.random() * 5000);
-    prefix = "(function(contents){";
     postfix = "})(" + tempVarName + ")";
 
-    var code = prefix + '\n' + getParserCode() + '\n' + postfix;
+    if(!hasOwnContentScript(actualContentFile)) {
+      prefix = "(function(contents){";
+      var code = prefix + '\n' + getParserCode() + '\n' + postfix;
+      config.evalScope[tempVarName] = dataContents;
+    } else {
+      prefix = "(function(content){";
+      var code = prefix + '\n' + hasOwnContentScript(actualContentFile) + '\n' + postfix;
+      config.evalScope[tempVarName] = dataContents[actualContentFile];
+    }
 
     // eval in wrapper function using global temporary variable
     // TODO: alternatively we could encode site content into postfix as a parameter string
-    config.evalScope[tempVarName] = dataContents;
     try {
       config.evalScope.eval(code);
     } catch (ex) {
@@ -537,6 +563,7 @@ if (typeof InstaEditConfig == "undefined") {
   var instaedit = {
     bootstrap: bootstrap,
     openEditor: openEditor,
+    setActualContentFile: setActualContentFile,
     editorLog: editorLog,
     getSiteContent: getSiteContent,
     setSiteContent: setSiteContent,

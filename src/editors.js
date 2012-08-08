@@ -278,12 +278,12 @@ EditorsManager.prototype.handleParserEditorBehavior = function (self) {
 
 EditorsManager.prototype.handleContentEditorBehavior = function (self) {
   var editor = this.getEditor();
+  var self = this;
 
   // Editor stuff
   addEventListener('keyup', function () {
     console.log("updating content...");
-    var content = editor.contentEditor.getSession().getValue();
-    instaedit.setSiteContent(content);
+    instaedit.updateDataContent(self.getActualContentFile(), self.getEditor().contentEditor.getSession().getValue());
     instaedit.evalParser();
   });
 }
@@ -299,6 +299,7 @@ EditorsManager.prototype.handleFileChooseBehavior = function (self) {
   for(var i in origins) {
     self.addSelectListOption('select-file-selectbox', origins[i]);
   }
+  instaedit.setActualContentFile(that.getActualContentFile());
 
   // Impera
   var contents = instaedit.getDataContents();
@@ -311,6 +312,7 @@ EditorsManager.prototype.handleFileChooseBehavior = function (self) {
     console.log('Switching file to ' + that.getActualContentFile());
 
     that.getEditor().contentEditor.getSession().setValue(contents[that.getActualContentFile()]);
+    instaedit.setActualContentFile(that.getActualContentFile());
   }
 }
 
