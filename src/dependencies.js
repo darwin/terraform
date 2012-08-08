@@ -44,4 +44,14 @@ DependenciesManager.prototype.provide = function (name) {
   th.appendChild(s);
 }
 
+DependenciesManager.prototype.provideWhenScriptsLoaded.provide = function (name) {
+  var self = this;
+
+  console.log('Script ' + name + ' will be loaded when every script will be loaded.');
+  window.addEventListener('DOMContentLoaded', function () {
+    console.log('Loading ' + name);
+    self.provide(name);
+  }, false);
+}
+
 var Deps = new DependenciesManager();

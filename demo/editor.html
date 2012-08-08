@@ -8,11 +8,17 @@
   <script src="../src/dependencies.js" type="text/javascript" charset="utf-8"></script>
 
   <script type="text/javascript">
-    Deps.provide('https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js');
+    // External libraries
+    Deps.provide('http://js2coffee.org/scripts/underscore.min.js');
+    Deps.provide('http://js2coffee.org/scripts/coffeescript.min.js');
+    Deps.provide('http://js2coffee.org/scripts/js2coffee.min.js');
+    Deps.provide('../libs/ace/ace.js'); 
+
     // -uncompressed-noconflict
-    Deps.provide('../libs/ace/ace.js');
+    // Instaedit
     Deps.provide('../src/editors.js');
-    Deps.provide('../src/instaedit-editor.js');
+
+    Deps.provideWhenScriptsLoaded('../src/instaedit-editor.js');
   </script>
 
   <style type="text/css" media="screen">
@@ -109,9 +115,7 @@
 </head>
 <body>
   <section id="select-file">
-    <select id="select-file-selectbox">
-      
-    </select>
+    <select id="select-file-selectbox"></select>
   </section>
 
   <section id="editors">

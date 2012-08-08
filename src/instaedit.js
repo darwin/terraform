@@ -18,6 +18,7 @@ if (typeof InstaEditConfig == "undefined") {
   var dataContents = {};
   var parserOrigin;
   var actualContentFile;
+  var coffeeScriptParser;
 
   var setActualContentFile = function (fileName) {
     actualContentFile = fileName;
@@ -111,22 +112,6 @@ if (typeof InstaEditConfig == "undefined") {
     th.appendChild(s);
   }
 
-  function _request(method, path, data, token, cb) {
-    $.ajax({
-        type: method,
-        url: path,
-        data: JSON.stringify(data),
-        dataType: 'json',
-        contentType: 'application/x-www-form-urlencoded',
-        success: function(res) { cb(null, res); },
-        error: function (request, status, error) {
-          jQuery.parseJSON( request.responseText );
-          console.log(status);
-        },
-        headers : 'Authorization: token ' + token
-    });
-  }
-
   var addJQuery = function (data, cb) {
     if (typeof jQuery != 'undefined') {
        console.log('jQuery already loaded.');
@@ -179,6 +164,7 @@ if (typeof InstaEditConfig == "undefined") {
               var url = data.data.tree[j].url;
               jQuery.getJSON(url + "?callback=?", {recursive: 1}, function(data) {
                 var data = decode64(data.data.content)
+                console.log('Data from github with url ' + originUrl + ' received.');
                 cb(data);
               });
             }
@@ -286,7 +272,7 @@ if (typeof InstaEditConfig == "undefined") {
     return content;
   }
 
-  var importSiteContentFromMetaTag = function (scriptType, scriptUrl, cb) {
+  var importSiteContentFromMetaTag = function (scriptUrl, cb) {
     // handle github specially
     var githubUrlRe = /github\.com/;
     if (githubUrlRe.test(scriptUrl)) {
@@ -311,14 +297,8 @@ if (typeof InstaEditConfig == "undefined") {
   }
   
   var fetchSiteContent = function (url, res, indexed) {
-    var scriptType = 'instaedit/rawdata';
+    importSiteContentFromMetaTag(url, function (content) {
 
-    importSiteContentFromMetaTag(scriptType, url, function (content) {
-      if(content == 404) {
-        content = importSiteContentFromScriptTag(scriptType);
-      }
-
-      console.log(indexed);
       if((typeof indexed != 'undefined') && (indexed == true)) {
         var data = {};
         data.name = url;
@@ -332,6 +312,16 @@ if (typeof InstaEditConfig == "undefined") {
 
   var fetchParserCode = function (scriptUrl, cb) {
     loadFromGithuAPI(scriptUrl, function (code) {
+      console.log('Received content-script');
+      console.log(scriptUrl.split('.'));
+      console.log(scriptUrl.split('.')[scriptUrl.split('.').length - 1]);
+      if(scriptUrl.split('.')[scriptUrl.split('.').length - 1] == 'coffee') {
+        console.log('coffeescript recognized' + scriptUrl + ' in ' + scriptUrl.split('.')[scriptUrl.split('.').length - 1]);
+        coffeeScriptParser = true;
+      } else {
+        console.log('coffeescript not recognized' + scriptUrl + ' in ' + scriptUrl.split('.')[scriptUrl.split('.').length - 1]);
+        coffeeScriptParser = false;
+      }
       cb(code);
     });
   }
@@ -361,13 +351,23 @@ if (typeof InstaEditConfig == "undefined") {
 
     if(!hasOwnContentScript(actualContentFile)) {
       prefix = "(function(contents){";
-      var code = prefix + '\n' + getParserCode() + '\n' + postfix;
       config.evalScope[tempVarName] = dataContents;
+      var parserCode = getParserCode();
     } else {
       prefix = "(function(content){";
-      var code = prefix + '\n' + hasOwnContentScript(actualContentFile) + '\n' + postfix;
       config.evalScope[tempVarName] = dataContents[actualContentFile];
+      var parserCode = hasOwnContentScript(actualContentFile);
     }
+
+    if(coffeeScriptParser) {
+      parserCode = CoffeeScript.compile(input, { bare: "on" });
+
+      console.log('Errors found during coffeescript compilation: ');
+      console.log($("#coffee2js .error").show());
+    }
+
+    var code = prefix + '\n' + parserCode + '\n' + postfix;
+    
 
     // eval in wrapper function using global temporary variable
     // TODO: alternatively we could encode site content into postfix as a parameter string
@@ -498,8 +498,8 @@ if (typeof InstaEditConfig == "undefined") {
   var fetchData = function (repo, origins, cb)  {
     for(var i in origins) {
       fetchSiteContent(repo + origins[i], function (content) {
-        console.log('Content of ' + content.name + ' successfully fetched.');
         addDataContent(content.name.replace(getMetaContent('instaedit-repo'), ''), content.content);
+        console.log('Content of ' + content.name + ' successfully fetched.');
       }, true);
     }
     cb();
@@ -533,11 +533,14 @@ if (typeof InstaEditConfig == "undefined") {
 
       fetchSiteContent(repo + origins[0], function (content) {
         if(content == 404) {
+          console.log('Site source is undefined in meta tag.');
           displayNotification('Site source is undefined in meta tag.', 'error');
         } else {
           console.log('Site content loaded');
-          fetchSiteContent(getMetaContent('instaedit-parser'), function (code) {
+          fetchParserCode(getMetaContent('instaedit-parser'), function (code) {
+            console.log(code);
             if(code == 404) {
+              console.log('Parser is undefined in meta tag.');
               displayNotification('Parser is undefined in meta tag.', 'error');
             } else {
               console.log('ParserCode loaded');
