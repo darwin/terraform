@@ -9,16 +9,13 @@
 
   <script type="text/javascript">
     // External libraries
-    Deps.provide('http://js2coffee.org/scripts/underscore.min.js');
-    Deps.provide('http://js2coffee.org/scripts/coffeescript.min.js');
-    Deps.provide('http://js2coffee.org/scripts/js2coffee.min.js');
-    Deps.provide('../libs/ace/ace.js'); 
-
-    // -uncompressed-noconflict
-    // Instaedit
-    Deps.provide('../src/editors.js');
-
-    Deps.provideWhenScriptsLoaded('../src/instaedit-editor.js');
+    Deps.provide('../libs/ace/ace.js', function () {
+      Deps.provide('../src/editors.js', function () {
+        Deps.provide('../src/instaedit-editor.js', function () {
+          console.log('Scripts loaded.')
+        });    
+      });
+    }); 
   </script>
 
   <style type="text/css" media="screen">

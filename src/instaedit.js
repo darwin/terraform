@@ -312,9 +312,6 @@ if (typeof InstaEditConfig == "undefined") {
 
   var fetchParserCode = function (scriptUrl, cb) {
     loadFromGithuAPI(scriptUrl, function (code) {
-      console.log('Received content-script');
-      console.log(scriptUrl.split('.'));
-      console.log(scriptUrl.split('.')[scriptUrl.split('.').length - 1]);
       if(scriptUrl.split('.')[scriptUrl.split('.').length - 1] == 'coffee') {
         console.log('coffeescript recognized' + scriptUrl + ' in ' + scriptUrl.split('.')[scriptUrl.split('.').length - 1]);
         coffeeScriptParser = true;
@@ -360,7 +357,7 @@ if (typeof InstaEditConfig == "undefined") {
     }
 
     if(coffeeScriptParser) {
-      parserCode = CoffeeScript.compile(input, { bare: "on" });
+      parserCode = CoffeeScript.compile(parserCode, { bare: "on" });
 
       console.log('Errors found during coffeescript compilation: ');
       console.log($("#coffee2js .error").show());
@@ -581,7 +578,8 @@ if (typeof InstaEditConfig == "undefined") {
     getEditor: getEditor,
     getContentSourceUrl: getContentSourceUrl,
     fetchParserCode: fetchParserCode,
-    getParserOrigin: getParserOrigin
+    getParserOrigin: getParserOrigin,
+    addScript: addScript
   };
 
   // export public interface into selected scope

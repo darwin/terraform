@@ -207,7 +207,8 @@ EditorsManager.prototype.setUpEditors = function () {
   var contentEditor = ace.edit("editor");
   var parsereditor = ace.edit("parsereditor");
 
-  parsereditor.getSession().setMode("ace/mode/javascript");
+  parsereditor.getSession().setMode("ace/mode/coffee");
+
 
   contentEditor.resize();
   parsereditor.resize();
@@ -316,12 +317,25 @@ EditorsManager.prototype.handleFileChooseBehavior = function (self) {
   }
 }
 
-EditorsManager.prototype.init = function () {
-  this.setUpEditors();
+EditorsManager.prototype.loadCoffee = function (cb) {
+  instaedit.addScript('../libs/coffee/underscore.js', function () {
+    instaedit.addScript('../libs/coffee/coffeescript.js', function () {
+      instaedit.addScript('../libs/coffee/js2coffee.js', function () {
+        console.log('Script js2coffee.js loaded.')
+        cb();
+      });
+    });
+  });
+}
 
-  this.updateParserCode(this.getEditor().parserEditor.getSession().getValue());
-  this.handleApplyButton();
-  this.handleParserEditorBehavior(this);
-  this.handleContentEditorBehavior(this);
-  this.handleFileChooseBehavior(this);
+EditorsManager.prototype.init = function () {
+  var self = this;
+  this.loadCoffee(function () {
+    self.setUpEditors();
+    self.updateParserCode(self.getEditor().parserEditor.getSession().getValue());
+    self.handleApplyButton();
+    self.handleParserEditorBehavior(self);
+    self.handleContentEditorBehavior(self);
+    self.handleFileChooseBehavior(self);
+  });
 }

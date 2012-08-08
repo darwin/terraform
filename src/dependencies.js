@@ -27,7 +27,7 @@ DependenciesManager.prototype.isLoaded = function (name) {
   return found;
 }
 
-DependenciesManager.prototype.provide = function (name) {
+DependenciesManager.prototype.provide = function (name, cb) {
   var self = this;
   var th = document.getElementsByTagName('head')[0];
 
@@ -38,13 +38,13 @@ DependenciesManager.prototype.provide = function (name) {
   s.onload = function () {
     console.log('Script ' + name + ' loaded.');
     self.addDependency(name);
-    // cb();
+    cb();
   }
 
   th.appendChild(s);
 }
 
-DependenciesManager.prototype.provideWhenScriptsLoaded.provide = function (name) {
+DependenciesManager.prototype.provideWhenScriptsLoaded = function (name) {
   var self = this;
 
   console.log('Script ' + name + ' will be loaded when every script will be loaded.');
