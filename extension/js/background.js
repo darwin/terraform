@@ -22,7 +22,6 @@ function getEditUrl(raw) {
 }
 
 function commitFiles(data) {
-  // document.getElementById('dump').innerHTML = 'Done';
   var map = {};
 
   for(var i in data) {

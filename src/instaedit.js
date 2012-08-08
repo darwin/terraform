@@ -337,14 +337,14 @@ if (typeof InstaEditConfig == "undefined") {
   
   var evalParser = function() {
     var tempVarName = "__instaedit_gen_" + Math.floor(Math.random() * 5000);
-    prefix = "(function(content){";
+    prefix = "(function(contents){";
     postfix = "})(" + tempVarName + ")";
 
     var code = prefix + '\n' + getParserCode() + '\n' + postfix;
 
     // eval in wrapper function using global temporary variable
     // TODO: alternatively we could encode site content into postfix as a parameter string
-    config.evalScope[tempVarName] = getSiteContent();
+    config.evalScope[tempVarName] = dataContents;
     try {
       config.evalScope.eval(code);
     } catch (ex) {
