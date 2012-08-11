@@ -271,7 +271,7 @@ if (typeof InstaEditConfig == "undefined") {
 
     return content;
   }
-
+/*
   var importSiteContentFromMetaTag = function (scriptUrl, cb) {
     // handle github specially
     var githubUrlRe = /github\.com/;
@@ -295,9 +295,10 @@ if (typeof InstaEditConfig == "undefined") {
     request.open('GET', scriptUrl, true);
     request.send();
   }
-  
+  */
   var fetchSiteContent = function (url, res, indexed) {
-    importSiteContentFromMetaTag(url, function (content) {
+    // importSiteContentFromMetaTag(url, function (content) {
+    loadFromGithuAPI(url, function (content) {
 
       if((typeof indexed != 'undefined') && (indexed == true)) {
         var data = {};
@@ -311,6 +312,7 @@ if (typeof InstaEditConfig == "undefined") {
   }
 
   var fetchParserCode = function (scriptUrl, cb) {
+    console.log('---<' + scriptUrl)
     loadFromGithuAPI(scriptUrl, function (code) {
       if(scriptUrl.split('.')[scriptUrl.split('.').length - 1] == 'coffee') {
         console.log('coffeescript recognized' + scriptUrl + ' in ' + scriptUrl.split('.')[scriptUrl.split('.').length - 1]);
@@ -321,6 +323,16 @@ if (typeof InstaEditConfig == "undefined") {
       }
       cb(code);
     });
+  }
+
+  var getElementByScriptType = function (type) {
+    var scripts = document.getElementsByTagName('script');
+    for(var i in scripts) {
+      if(scripts[i].getAttribute('type') == type) {
+        return scripts[i];
+      }
+    }
+    return scripts[i];
   }
   
   var openEditor = function() {
@@ -341,19 +353,44 @@ if (typeof InstaEditConfig == "undefined") {
     }
     return false;
   }
+
+  var shrinkPath = function (full) {
+    return full.replace('https://raw.github.com/', '');
+  }
+
+  var fullPath = function (shrinked) {
+    return 'https://raw.github.com' + shrinked;
+  }
+
+  var fullPathes = function (code) {
+    var links = code.split('contents["');
+    delete links[0]
+    var shrinked = [];
+    for(var i in links) {
+      shrinked.push(links[i].split('"]')[0]);
+    }
+    for(var i in shrinked) {
+      code = code.split(shrinked[i]).join(fullPath(shrinked[i]));
+    }
+    return code;
+  }
   
   var evalParser = function() {
     var tempVarName = "__instaedit_gen_" + Math.floor(Math.random() * 5000);
     postfix = "})(" + tempVarName + ")";
 
-    if(!hasOwnContentScript(actualContentFile)) {
+    if(!hasOwnContentScript(getActualContentFile())) {
       prefix = "(function(contents){";
       config.evalScope[tempVarName] = dataContents;
+
       var parserCode = getParserCode();
+
+      // Make shrined pathes full
+      parserCode = fullPathes(parserCode);
     } else {
       prefix = "(function(content){";
-      config.evalScope[tempVarName] = dataContents[actualContentFile];
-      var parserCode = hasOwnContentScript(actualContentFile);
+      config.evalScope[tempVarName] = dataContents[getActualContentFile()];
+      var parserCode = hasOwnContentScript(getActualContentFile());
     }
 
     if(coffeeScriptParser) {
@@ -363,7 +400,8 @@ if (typeof InstaEditConfig == "undefined") {
       console.log($("#coffee2js .error").show());
     }
 
-    var code = prefix + '\n' + parserCode + '\n' + postfix;
+    // var code = prefix + '\n' + parserCode + '\n' + postfix;
+    var code = prefix + '\n' + getParserCode() + '\n' + postfix;
     
 
     // eval in wrapper function using global temporary variable
@@ -492,10 +530,10 @@ if (typeof InstaEditConfig == "undefined") {
     cb(origins);
   }
 
-  var fetchData = function (repo, origins, cb)  {
+  var fetchData = function (origins, cb)  {
     for(var i in origins) {
-      fetchSiteContent(repo + origins[i], function (content) {
-        addDataContent(content.name.replace(getMetaContent('instaedit-repo'), ''), content.content);
+      fetchSiteContent(origins[i], function (content) {
+        addDataContent(content.name, content.content);
         console.log('Content of ' + content.name + ' successfully fetched.');
       }, true);
     }
@@ -521,20 +559,22 @@ if (typeof InstaEditConfig == "undefined") {
 
     displayNotification('Instaedit is booting.', 'notification');
 
-    var repo = getMetaContent('instaedit-repo');
+    //var repo = getMetaContent('instaedit-repo');
 
     fetchDataOrigins(function (origins) {
-      fetchData(repo, origins, function () {
+      fetchData(origins, function () {
         console.log('Data loading finished');
       });
 
-      fetchSiteContent(repo + origins[0], function (content) {
+      setActualContentFile(origins[0]);
+
+      fetchSiteContent(origins[0], function (content) {
         if(content == 404) {
           console.log('Site source is undefined in meta tag.');
           displayNotification('Site source is undefined in meta tag.', 'error');
         } else {
           console.log('Site content loaded');
-          fetchParserCode(getMetaContent('instaedit-parser'), function (code) {
+          fetchParserCode(getElementByScriptType('instaedit/contentscript').getAttribute('src'), function (code) {
             console.log(code);
             if(code == 404) {
               console.log('Parser is undefined in meta tag.');

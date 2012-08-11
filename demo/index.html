@@ -18,31 +18,30 @@
 				}
 			}
 		</script>
-
-		<meta name="instaedit-repo" content="https://raw.github.com/binaryage/blog/gh-pages">
-		<meta name="instaedit-parser" content="https://raw.github.com/binaryage/instaedit/master/demo/js/content-script.coffee">
 	</head>
 	<body>
 		<h1> Instaedit demo </h1>
-
-		<script type="text/javascript" data-script-target="/_posts/2012-04-26-totalspaces-brings-back-grid-spaces.md">
+		<!--
+		<script type="text/javascript" data-script-target="https://raw.github.com/binaryage/blog/gh-pages/_posts/2012-04-26-totalspaces-brings-back-grid-spaces.md">
 			if(typeof content != 'undefined') {
 				content = content.split('{{site.url}}').join('http://blog.binaryage.com/');
 				document.getElementById('content1').innerText = content;
 			}
 
 			// document.getElementById('content1').innerHTML = '<i>' + content + '</i>';
-		</script>
-		<section id="content1" data-origin="/_posts/2012-04-26-totalspaces-brings-back-grid-spaces.md">
+		</script>-->
+		<section id="content1" data-origin="https://raw.github.com/binaryage/blog/gh-pages/_posts/2012-04-26-totalspaces-brings-back-grid-spaces.md">
 			Click edit to edit site with source located in - https://raw.github.com/binaryage/blog/gh-pages/_posts/2012-04-26-totalspaces-brings-back-grid-spaces.md
 			<br><br>
 		</section>
 
-		<div id="content2" data-origin="/_posts/2012-04-07-hello-san-francisco.md">
+		<div id="content2" data-origin="https://raw.github.com/binaryage/blog/gh-pages/_posts/2012-04-07-hello-san-francisco.md">
 			Click edit to edit site with source located in - https://raw.github.com/binaryage/blog/gh-pages/_posts/2012-04-07-hello-san-francisco.md
 			<br><br>
 		</div>
 
 		<button id="instaedit-edit">Edit</button>
+
+		<script type="instaedit/contentscript" src="https://raw.github.com/binaryage/instaedit/master/demo/js/content-script.coffee"></script>
 	</body>
 </html>
