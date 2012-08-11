@@ -138,7 +138,7 @@ if (typeof InstaEditConfig == "undefined") {
   }
 
   var loadFromGithuAPI = function (url, cb) {
-    console.log('Loading ' + url + ' from githu api.');
+    console.log('Loading ' + url + ' from github api.');
     addJQuery(url, function (url) {
       var originUrl = url;
       var url = url.split('/');
@@ -475,19 +475,19 @@ if (typeof InstaEditConfig == "undefined") {
       notification.style.visibility = 'hidden';
     }, 3000);
 }
-  var getElementsWithAttribute = function (name) {
-    var body = document.getElementsByTagName('body');
-    var body = body[0];
-    var elements = new Array();
 
-    for(var i in body.childNodes) {
-      if(body.childNodes[i].nodeType == 1) {
-        if(body.childNodes[i].getAttribute(name) != null) {
-          elements.push(body.childNodes[i]);
+  var getElementsWithAttribute = function (name) {
+    var spans = document.getElementsByTagName('span');
+
+    elements = [];
+    for(var i in spans) {
+      if(typeof spans[i].getAttribute == 'function') {
+        if(typeof spans[i].getAttribute('data-content-origin') != null) {
+          elements.push(spans[i]);
         }
       }
     }
-
+    
     return elements;
   }
 
