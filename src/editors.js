@@ -188,6 +188,8 @@ EditorsManager.prototype.handleApplyButton = function () {
 }
 
 EditorsManager.prototype.setUpEditors = function () {
+  var coffeescript = true;
+
   // Load data
   var siteContent = instaedit.getSiteContent();
   var parserScript = instaedit.getParserCode();
@@ -207,7 +209,12 @@ EditorsManager.prototype.setUpEditors = function () {
   var contentEditor = ace.edit("editor");
   var parsereditor = ace.edit("parsereditor");
 
-  parsereditor.getSession().setMode("ace/mode/coffee");
+  if(coffeescript) {
+    parsereditor.getSession().setMode("ace/mode/coffee");
+  } else {
+    parsereditor.getSession().setMode("ace/mode/javascript");
+  }
+  
 
 
   contentEditor.resize();

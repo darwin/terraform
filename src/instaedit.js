@@ -579,6 +579,7 @@ if (typeof InstaEditConfig == "undefined") {
     getContentSourceUrl: getContentSourceUrl,
     fetchParserCode: fetchParserCode,
     getParserOrigin: getParserOrigin,
+    coffeeScriptParser: coffeeScriptParser,
     addScript: addScript
   };
 
