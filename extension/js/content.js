@@ -1,25 +1,22 @@
 function getElementsWithAttribute(name) {
-  var body = document.getElementsByTagName('body');
-  var body = body[0];
-  var elements = new Array();
+  var spans = document.getElementsByTagName('span');
 
-  for(var i in body.childNodes) {
-    if(body.childNodes[i].nodeType == 1) {
-      if(body.childNodes[i].getAttribute(name) != null) {
-        elements.push(body.childNodes[i]);
-      }
+  elements = [];
+  for(var i in spans) {
+    if(spans[i].getAttribute('data-content-origin') != null) {
+      elements.push(spans[i]);
     }
   }
-
   return elements;
 }
 
 function fetchData(cb) {
   var data = {};
-  var elements = getElementsWithAttribute('data-origin');
+  var elements = getElementsWithAttribute('data-content-origin');
+  console.log(elements)
 
   for(var i in elements) {
-  	data[elements[i].getAttribute('data-origin')] = elements[i].innerHTML;
+  	data[elements[i].getAttribute('data-content-origin')] = elements[i].innerHTML;
   }
 
   cb(data);
