@@ -3,8 +3,10 @@ function getElementsWithAttribute(name) {
 
   elements = [];
   for(var i in spans) {
-    if(spans[i].getAttribute('data-content-origin') != null) {
-      elements.push(spans[i]);
+    if(typeof spans[i].getAttribute == 'function') {
+      if(typeof spans[i].getAttribute('data-content-origin') != null) {
+        elements.push(spans[i]);
+      }
     }
   }
   return elements;
@@ -13,8 +15,7 @@ function getElementsWithAttribute(name) {
 function fetchData(cb) {
   var data = {};
   var elements = getElementsWithAttribute('data-content-origin');
-  console.log(elements)
-
+  
   for(var i in elements) {
   	data[elements[i].getAttribute('data-content-origin')] = elements[i].innerHTML;
   }

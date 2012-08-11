@@ -138,6 +138,7 @@ if (typeof InstaEditConfig == "undefined") {
   }
 
   var loadFromGithuAPI = function (url, cb) {
+    console.log('Loading ' + url + ' from githu api.');
     addJQuery(url, function (url) {
       var originUrl = url;
       var url = url.split('/');
