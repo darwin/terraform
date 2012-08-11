@@ -4,6 +4,7 @@
  * Options
  *  -d - directory - Input directory
  *  -r - recursive - Walk through directory tree
+ *  -c - contentscript - Content script raw url
  *  -h, --help - Display help
  */
 
@@ -14,7 +15,8 @@ var args = process.argv.splice(2);
 // Default params
 var options = {
 	dir: './',
-	recursive: true
+	recursive: true,
+	content_script: ''
 }
 
 function displayHelp() {
@@ -49,13 +51,16 @@ function walkThrough(dir, done) {
   });
 };
 
-for (var i in args) {
+for(var i in args) {
 	switch(args[i]) {
 		case '-d':
 			options.dir = args[parseInt(i) + 1];
 			break;
 		case '-r':
 			options.recursive = true;
+			break;
+		case '-c':
+			options.content_script = args[parseInt(i) + 1];
 			break;
 		case '-h':
 			displayHelp();
@@ -65,6 +70,10 @@ for (var i in args) {
 
 if(args.length == 0) {
 	displayHelp();
+}
+
+if(options.content_script == '') {
+	console.log('!! Error - Content script is required !!')
 }
 
 // Filter files from input dir
@@ -108,7 +117,7 @@ filterMds(options.dir, function(mds) {
 	
 		replaceIn(repo, mds, function (replaced) {
 			for(var i in replaced) {
-				fs.writeFile(/*'_site/' + */i, replaced[i], function (err) {
+				fs.writeFile(/*'_site/' + */i, replaced[i] + options.content_script, function (err) {
   					if (err) throw err;
 				});
 			}
