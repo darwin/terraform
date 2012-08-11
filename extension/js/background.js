@@ -1,5 +1,5 @@
 function getEditUrl(raw) {
-  var url = raw.replace('https://', '').replace('http://', '').replace('raw.github.com/', '').split('/');
+  var url = raw.replace('404https://', '').replace('https://', '').replace('http://', '').replace('raw.github.com/', '').split('/');
 
   var result = {
     username: url[0],
@@ -17,6 +17,7 @@ function getEditUrl(raw) {
   }
 
   result.path = path;
+  console.log(result);
 
   return 'https://github.com/' + result.username + '/' + result.repo + '/edit/' + result.branch + '/' + path;
 }

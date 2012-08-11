@@ -271,33 +271,8 @@ if (typeof InstaEditConfig == "undefined") {
 
     return content;
   }
-/*
-  var importSiteContentFromMetaTag = function (scriptUrl, cb) {
-    // handle github specially
-    var githubUrlRe = /github\.com/;
-    if (githubUrlRe.test(scriptUrl)) {
-      loadFromGithuAPI(scriptUrl, function(content) {
-        cb(content);
-      });
-      return;
-    }
-    
-    // standard path
-    // TODO: this won't work because of CROSS-DOMAIN restrictons
-    var request = new XMLHttpRequest();  
-    request.onloadend = function () { 
-      if(request.statusCode == 200) {
-        cb(request.responseText);
-      } else {
-        cb(404); // TODO: this is so ugly
-      }
-    }
-    request.open('GET', scriptUrl, true);
-    request.send();
-  }
-  */
+
   var fetchSiteContent = function (url, res, indexed) {
-    // importSiteContentFromMetaTag(url, function (content) {
     loadFromGithuAPI(url, function (content) {
 
       if((typeof indexed != 'undefined') && (indexed == true)) {

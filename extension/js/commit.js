@@ -41,7 +41,6 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
   var fileName = request.url.split('/')[request.url.split('/').length - 1];
   
   console.log(fileName)
-
-    injectCommitData(request.code, 'Update of ' + fileName + ' created with instaedit.', request.url);
-    sendResponse('Commited!');
+  injectCommitData(request.code, 'Update of ' + fileName + ' created with instaedit.', request.url);
+  sendResponse('Commited!');
 });
