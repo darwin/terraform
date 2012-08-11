@@ -482,24 +482,27 @@ if (typeof InstaEditConfig == "undefined") {
     elements = [];
     for(var i in spans) {
       if(typeof spans[i].getAttribute == 'function') {
-        if(typeof spans[i].getAttribute('data-content-origin') != null) {
+        if(spans[i].getAttribute(name) != null) {
+          console.log('Found element with attr ' + name);
+          console.log(spans[i]);
           elements.push(spans[i]);
         }
       }
     }
-    
+
     return elements;
   }
 
   var fetchDataOrigins = function (cb)  {
     var origins = new Array();
-    var elements = getElementsWithAttribute('data-origin');
+    var elements = getElementsWithAttribute('data-content-origin');
     for(var i in elements) {
-      var origin = elements[i].getAttribute('data-origin');
+      var origin = elements[i].getAttribute('data-content-origin');
       addDataOrigin(origin)
       origins.push(origin);
     }
 
+    console.log(getDataOrigins());
     cb(origins);
   }
 
@@ -531,8 +534,6 @@ if (typeof InstaEditConfig == "undefined") {
     });
 
     displayNotification('Instaedit is booting.', 'notification');
-
-    //var repo = getMetaContent('instaedit-repo');
 
     fetchDataOrigins(function (origins) {
       fetchData(origins, function () {
