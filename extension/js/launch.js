@@ -1,15 +1,11 @@
-function getMetaContent (name) {
-  var content = 404;
-  var metas = document.getElementsByTagName('meta');
-
-  for(var i in metas) {
-    var meta = metas[i];
-    if(meta.name == name) {
-      content = meta.content;
-    }    
+function getElementByScriptType(type) {
+  var scripts = document.getElementsByTagName('script');
+  for(var i in scripts) {
+    if(scripts[i].getAttribute('type') == type) {
+      return scripts[i];
+    }
   }
-
-  return content;
+  return scripts[i];
 }
 
 var head = document.getElementsByTagName('head')[0];
@@ -20,11 +16,9 @@ scr.setAttribute('type', 'text/javascript');
 scr.setAttribute('src', 'https://raw.github.com/binaryage/instaedit/master/src/instaedit.js');
 head.appendChild(scr);
 
-
-// Recognize if site is instaeditable
-scr.onload = function () {
-	console.log('Getting meta content' + getMetaContent('instaedit-repo'));
-	if(getMetaContent('instaedit-repo') == 404) {
-		window.location = 'http://instaedit.binaryage.com';
-	}
+// Redirect to docs when error occured.
+window.onerror = function (err) {
+  console.log('error occurred', err, err.stack);
+  window.open('http://instaedit.binaryage.com', '_blank');
+  window.focus();
 }

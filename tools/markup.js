@@ -24,6 +24,7 @@ function displayHelp() {
  	console.log('by Jan Palounek 2012, binaryage.com');
  	console.log('Options:');
  	console.log(' -d - directory - Input directory');
+ 	console.log(' -c - contentscript - Content script raw url');
  	// console.log(' -r - recursive - Walk through directory tree');
  	console.log(' -h, --help - Display help');
 }
@@ -74,10 +75,9 @@ if(args.length == 0) {
 
 if(options.content_script == '') {
 	console.log('!! Error - Content script is required !!')
+} else {
+	options.content_script = '<script type="instaedit/contentscript" src="' + options.content_script + '"></script>';
 }
-
-// Filter files from input dir
-console.log('Will markup: ');
 
 function filterMds(dir, mds) {
 	var markupable = [];
@@ -100,7 +100,8 @@ function replaceIn(repo, markupable, cb) {
 		var source = file;
 			
 		file = file.split('---\n');
-
+		//https://raw.github.com/JPalounek/totalfinder-web/gh-pages/licensing.md
+		//https://raw.github.com/JPalounek/totalfinder-web.git/licensing.md
 		var content = file[2];
 		var marked = '<span data-content-origin="' + repo + markupable[i].replace(options.dir, '') + '">' + file[2] + '</span>';
 
@@ -110,17 +111,36 @@ function replaceIn(repo, markupable, cb) {
 	cb(replaced);
 }
 
+function getBranch(cons) {
+	cons = cons.split('\n');
+	for (var i in cons) {
+		if(cons[i][0] == '*') {
+			return cons[0].split(' ')[1];
+		}
+	}
+}
+
+// Filter files from input dir
+console.log('Will markup: ');
+
 filterMds(options.dir, function(mds) {
 	// Iterate and markup
 	exec('git remote -v', function (error, stdout, stderr) {
-		repo = stdout.split('origin	')[1].split(' (fetch)')[0].split(' ').join('');
+		exec('git branch -v', function (branchError, branchStdout, branchStderr) {
+			var branch = getBranch(branchStdout);
+
+			repo = stdout.split('origin	')[1].split(' (fetch)')[0].split(' ').join('');
+			repo = repo.replace('.git', '')
+			repo = repo.replace('https://github.com/', 'https://raw.github.com/');
+			repo = repo + '/' + branch;
 	
-		replaceIn(repo, mds, function (replaced) {
-			for(var i in replaced) {
-				fs.writeFile(/*'_site/' + */i, replaced[i] + options.content_script, function (err) {
-  					if (err) throw err;
-				});
-			}
+			replaceIn(repo, mds, function (replaced) {
+				for(var i in replaced) {
+					fs.writeFile(/*'_site/' + */i, replaced[i] + options.content_script, function (err) {
+  						if (err) throw err;
+					});
+				}
+			});
 		});
 	});
 });
