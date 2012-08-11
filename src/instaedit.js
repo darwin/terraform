@@ -312,7 +312,6 @@ if (typeof InstaEditConfig == "undefined") {
   }
 
   var fetchParserCode = function (scriptUrl, cb) {
-    console.log('---<' + scriptUrl)
     loadFromGithuAPI(scriptUrl, function (code) {
       if(scriptUrl.split('.')[scriptUrl.split('.').length - 1] == 'coffee') {
         console.log('coffeescript recognized' + scriptUrl + ' in ' + scriptUrl.split('.')[scriptUrl.split('.').length - 1]);
@@ -400,9 +399,7 @@ if (typeof InstaEditConfig == "undefined") {
       console.log($("#coffee2js .error").show());
     }
 
-    // var code = prefix + '\n' + parserCode + '\n' + postfix;
-    var code = prefix + '\n' + getParserCode() + '\n' + postfix;
-    
+    var code = prefix + '\n' + parserCode + '\n' + postfix;
 
     // eval in wrapper function using global temporary variable
     // TODO: alternatively we could encode site content into postfix as a parameter string
