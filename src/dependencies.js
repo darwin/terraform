@@ -36,7 +36,7 @@ DependenciesManager.prototype.provide = function (name, cb) {
 
   var location = (window.location + '');
   if(location.split('instaedit.local').length == 1) {
-    console.log('Identified foreign use - warm welcome, new user! Data will be load from gh automatically.')
+    console.log('Identified foreign use - warm welcome, user! Data will be load from gh automatically.')
     s.setAttribute('src', name.replace('../', 'https://raw.github.com/binaryage/instaedit/master/'));
   } else {
     console.log('Identified localhost.');

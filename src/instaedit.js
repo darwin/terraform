@@ -380,6 +380,7 @@ if (typeof InstaEditConfig == "undefined") {
     // eval in wrapper function using global temporary variable
     // TODO: alternatively we could encode site content into postfix as a parameter string
     try {
+      console.log(code);
       config.evalScope.eval(code);
     } catch (ex) {
       if (editor && editor.onError) {
@@ -476,18 +477,27 @@ if (typeof InstaEditConfig == "undefined") {
     }, 3000);
 }
 
-  var getElementsWithAttribute = function (name) {
-    var spans = document.getElementsByTagName('span');
-
+  var getElementWithAttribute = function (element, name) {
+    var elems = document.getElementsByTagName(element);
+  
     elements = [];
-    for(var i in spans) {
-      if(typeof spans[i].getAttribute == 'function') {
-        if(spans[i].getAttribute(name) != null) {
-          console.log('Found element with attr ' + name);
-          console.log(spans[i]);
-          elements.push(spans[i]);
+    for(var i in elems) {
+      if(typeof elems[i].getAttribute == 'function') {
+        if(elems[i].getAttribute(name) != null) {
+          elements.push(elems[i]);
         }
       }
+    }
+
+    return elements;
+  }
+
+  var getElementsWithAttribute = function (name) {
+    var elems = ['span', 'div', 'section'];
+
+    var elements = [];
+    for(var i in elems) {
+      elements = elements.concat(getElementWithAttribute(elems[i], name));
     }
 
     return elements;
