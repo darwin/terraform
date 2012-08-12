@@ -8,7 +8,10 @@
   <script src="https://raw.github.com/binaryage/instaedit/master/src/dependencies.js" type="text/javascript" charset="utf-8"></script>
 
   <script type="text/javascript">
-    console.log(instaedit);
+    if(instaedit != 'undefined') {
+      var instaedit = window.opener.instaedit;
+    }
+
     // External libraries
     Deps.provide('../libs/ace/ace.js', function () {
       Deps.provide('../src/editors.js', function () {
