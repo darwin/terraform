@@ -103,7 +103,17 @@ if (typeof InstaEditConfig == "undefined") {
 
     var s = document.createElement('script');
     s.setAttribute('type', 'text/javascript');
-    s.setAttribute('src', name);
+
+    var location = (window.location + '');
+    if(location.split('instaedit.local').length == 1) {
+      console.log('Identified foreign use - warm welcome, user! Data will be load from gh automatically.')
+      s.setAttribute('src', name.replace('../', 'https://raw.github.com/binaryage/instaedit/master/'));
+    } else {
+      console.log('Identified localhost.');
+
+      s.setAttribute('src', name);
+  }
+
 
     s.onload = function () {
       cb();

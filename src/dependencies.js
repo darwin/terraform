@@ -40,9 +40,6 @@ DependenciesManager.prototype.provide = function (name, cb) {
     s.setAttribute('src', name.replace('../', 'https://raw.github.com/binaryage/instaedit/master/'));
   } else {
     console.log('Identified localhost.');
-    console.log(location);
-    console.log(location.split('local'));
-    console.log(location.split('local').length);
 
     s.setAttribute('src', name);
   }
