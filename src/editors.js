@@ -54,7 +54,8 @@ EditorsManager.prototype.updateParserCode = function (code) {
 EditorsManager.prototype.addSelectListOption = function (elementName, value) {
   var option = document.createElement('option');
   option.setAttribute('value', value.toLowerCase());
-  option.innerHTML = value;
+  console.log('Adding option ' + value + ' -> ' + value.replace('https://raw.github.com', ''))
+  option.innerHTML = value.replace('https://raw.github.com', '');
 
   var list = document.getElementById(elementName);
   list.appendChild(option);
