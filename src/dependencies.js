@@ -1,6 +1,6 @@
 var DependenciesManager = function () {};
 
-DependenciesManager.dependencies = new Array();
+DependenciesManager.dependencies = [];
 
 DependenciesManager.prototype.getDependenciesList = function () {
   return this.dependencies;
