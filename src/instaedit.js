@@ -546,6 +546,16 @@ if (typeof InstaEditConfig == "undefined") {
     head.appendChild(scr);
   }
 
+  var getParserLocation = function () {
+    var location = getMetaContent('instaedit/contentscript');
+
+    if(location == 404) {
+      location = getElementByScriptType('instaedit/contentscript').getAttribute('src');
+    }
+
+    return location;
+  }
+
   var bootstrap = function (cb) {
     console.log('Worker loaded');
 
@@ -568,7 +578,7 @@ if (typeof InstaEditConfig == "undefined") {
           displayNotification('Site source is undefined in meta tag.', 'error');
         } else {
           console.log('Site content loaded');
-          fetchParserCode(getElementByScriptType('instaedit/contentscript').getAttribute('src'), function (code) {
+          fetchParserCode(getParserLocation(), function (code) {
             console.log(code);
             if(code == 404) {
               console.log('Parser is undefined in meta tag.');
