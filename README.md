@@ -47,18 +47,19 @@ but you will loose a "commit" feature.
 
 # Start editing
 After clicking "Launch" button in extension
-![Chrome extension](doc/extension-screen.png "Chrome extension")
+![Chrome extension](instaedit/raw/master/doc/extension-screen.png "Chrome extension")
 
 or Edit button on your site. You will see instaedit editor
 
-![Editor screenshot](doc/editor-screen.png "Editor screenshot")
+![Editor screenshot](instaedit/raw/master/doc/editor-screen.png "Editor screenshot")
 
 # Edit a content-script
-After clicking "Edit parser" button you will get another editor with your content script code in it. Editor will be informing you about syntax errors during editing. When you will be satisfied with new version then click "Apply" button. Instaedit compiler will compile the code and immediately start applying it on content - eventually you will can see you concrete mistakes in code via notifications on the right side of editor - like that ![Errors screenshot](doc/errors-screen.png "Editor errors screenshot")
+After clicking "Edit parser" button you will get another editor with your content script code in it. Editor will be informing you about syntax errors during editing. When you will be satisfied with new version then click "Apply" button. Instaedit compiler will compile the code and immediately start applying it on content - eventually you will can see you concrete mistakes in code via notifications on the right side of editor - like that 
+![Errors screenshot](instaedit/raw/master/doc/errors-screen.png "Editor errors screenshot")
 
 # Commit
 If you want commit new version of site then click on commit button in extension. Extension will open tabs with "edit links" - as you can see here : 
-![Extension commit](doc/extension-commit-screen.png "Extension commit")
+![Extension commit](instaedit/raw/master/doc/extension-commit-screen.png "Extension commit")
 
 You should be signed to github and have appropriate privileges for editing. Extension will let you click on "Commit" button yourselves (you can check it one more time and make sure about changes)
 
