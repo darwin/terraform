@@ -6,10 +6,10 @@ Instaedit is wysiwyg editor of your page content, designed for editing of websit
 
 Put data-content-origin attribute on top level element wrapping content of some of your site source code on github.
 
-Eg.:
-`<section id="page" data-content-origin="https://raw.github.com/binaryage/blog/gh-pages/_posts/2012-04-26-totalspaces-brings-back-grid-spaces.md">
-	Content of https://raw.github.com/binaryage/blog/gh-pages/_posts/2012-04-26-totalspaces-brings-back-grid-spaces.md
-</section>`
+Eg.: 
+`<section id="page" data-content-origin="https://raw.github.com/binaryage/blog/gh-pages/_posts/2012-04-26-totalspaces-brings-back-grid-spaces.md">`
+`	Content of https://raw.github.com/binaryage/blog/gh-pages/_posts/2012-04-26-totalspaces-brings-back-grid-spaces.md`
+`</section>`
 
 # Add a content-script
 Its a script which defines a way of applying changes. Code is executed in isolated scope with content variables defined in it - see content-script example - https://github.com/binaryage/instaedit/blob/master/demo/js/content-script.coffee - as you can see, coffee script is also supported, instaedit automatically recognizes the language by postfix - .coffee and .js.
@@ -25,11 +25,11 @@ or meta in head
 # Install a browser extension
 You should install a browser extension because of restrictions in github api policy, if you want to just try instaedit, then you can add this code to your site
 
-`<script>
-		window.onload = function () {
-				document.getElementById('instaedit-edit').onclick = function () {
-					(function () {
-						var th = document.getElementsByTagName('head')[0];
+`<script>`
+`		window.onload = function () {`
+`				document.getElementById('instaedit-edit').onclick = function () {`
+`					(function () {`
+`						var th = document.getElementsByTagName('head')[0];`
 
 						var s = document.createElement('script');
 						s.setAttribute('type', 'text/javascript');
@@ -39,7 +39,7 @@ You should install a browser extension because of restrictions in github api pol
 					})();
 				}
 			}
-</script>`
+`</script>`
 
 `<button id="instaedit-edit">Edit</button>`
 
