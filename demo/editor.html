@@ -12,7 +12,7 @@
       var instaedit = window.opener.instaedit;
     }
 
-    // External libraries
+    // Provide external libraries - if files are unavailable then Deps will load it from github!
     Deps.provide('../libs/ace/ace.js', function () {
       Deps.provide('../src/editors.js', function () {
         Deps.provide('../src/instaedit-editor.js', function () {

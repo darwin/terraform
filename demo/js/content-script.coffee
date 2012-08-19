@@ -1,3 +1,8 @@
+#
+# Content script example
+# example of coffeescript support availability
+#
+
 # INFO: content variable is passed from the outside
 # See also - https://raw.github.com/binaryage/instaedit/master/demo/js/content-script-example.js - to see what is possible 
 

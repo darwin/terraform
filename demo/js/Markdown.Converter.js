@@ -1,10 +1,3 @@
-var Markdown;
-
-if (typeof exports === "object" && typeof require === "function") // we're in a CommonJS (e.g. Node.js) module
-    Markdown = exports;
-else
-    Markdown = {};
-    
 // The following text is included for historical reasons, but should
 // be taken with a pinch of salt; it's not all true anymore.
 
@@ -35,7 +28,6 @@ else
 // and line endings.
 //
 
-
 //
 // Usage:
 //
@@ -49,6 +41,13 @@ else
 // Note: move the sample code to the bottom of this
 // file before uncommenting it.
 //
+
+var Markdown;
+
+if (typeof exports === "object" && typeof require === "function") // we're in a CommonJS (e.g. Node.js) module
+    Markdown = exports;
+else
+    Markdown = {};
 
 (function () {
 

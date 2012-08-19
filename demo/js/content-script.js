@@ -1,3 +1,7 @@
+/*
+ * Content script example
+ * simplest possible way - alternative in coffeescript is available in content-script.coffee
+ */
 // INFO: content variable is passed from the outside
 // See also - https://raw.github.com/binaryage/instaedit/master/demo/js/content-script-example.js - to see what is possible
 

@@ -4,15 +4,17 @@ EditorsManager.editor = {};
 EditorsManager.appliedDirectives = {};
 EditorsManager.markers = [];
 
-EditorsManager.prototype.addMarker = function (start, stop) {
+EditorsManager.prototype.addMarker = function (markerStart, markerStop) {
   var Range = require('ace/range').Range;
 
   var range = new Range(start, 0, stop, 0);
   var marker = this.getEditor().parserEditor.getSession().addMarker(range, "parser-selected", "line");
 
-  newMarker = {};
-  newMarker.start = start;
-  newMarker.stop = stop;
+  newMarker = {
+    start: markerStart,
+    stop: markerStop
+  };
+
   EditorsManager.markers.push(newMarker);
 }
 

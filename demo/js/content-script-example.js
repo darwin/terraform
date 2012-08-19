@@ -1,3 +1,9 @@
+/*
+ * Content script example
+ * example of conditional rule applying 
+ * Eg.: // -> Apply when editting <source-file>
+ * 	Or if you need to apply block only in specific context - // -> Apply when editting <source-file> in context of <actual-file>
+ */
 // INFO: content variable is passed from the outside
 
 var converter = new Markdown.Converter();

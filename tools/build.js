@@ -27,7 +27,7 @@ function displayHelp() {
  	console.log('Options:');
  	console.log(' -o - output - Output file specification');
  	console.log(' -s - shrink - Shrink file, replace spaces, tabs and new lines');
- 	console.log(' -c - remove console.log - Removes all console logging');
+ 	console.log(' -c - remove console.log calls - Removes all console logging');
  	console.log(' -h, --help - Display help');
 }
 
@@ -60,6 +60,7 @@ for(var i in files) {
 		}
 	}
 }
+
 console.log(' -> Merged all files');
 
 if(removeConsoleLogs) {

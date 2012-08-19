@@ -1,32 +1,5 @@
 var DependenciesManager = function () {};
 
-DependenciesManager.dependencies = [];
-
-DependenciesManager.prototype.getDependenciesList = function () {
-  return this.dependencies;
-}
-
-DependenciesManager.prototype.addDependency = function (name) {
-  console.log(name);
-  // this.dependencies.push(name);
-}
-
-DependenciesManager.prototype.isLoaded = function (name) {
-  var deps = this.getDependenciesList();
-  var found = false;
-
-  if(deps.length != 0) {
-    for(var i in deps) {
-      if(deps[i] == name) {
-        found = true;
-        break;
-      }
-    }    
-  }
-
-  return found;
-}
-
 DependenciesManager.prototype.provide = function (name, cb) {
   var self = this;
   var th = document.getElementsByTagName('head')[0];
@@ -36,17 +9,15 @@ DependenciesManager.prototype.provide = function (name, cb) {
 
   var location = (window.location + '');
   if(location.split('instaedit.local').length == 1) {
-    console.log('Identified foreign use - warm welcome, user! Data will be load from gh automatically.')
+    console.log('Files are not available - DependenciesManager will be load them from gh automatically.')
     s.setAttribute('src', name.replace('../', 'https://raw.github.com/binaryage/instaedit/master/'));
   } else {
-    console.log('Identified localhost.');
-
+    console.log('Files are available.');
     s.setAttribute('src', name);
   }
 
   s.onload = function () {
     console.log('Script ' + name + ' loaded.');
-    self.addDependency(name);
     cb();
   }
 
