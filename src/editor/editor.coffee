@@ -1,8 +1,8 @@
 # send logs also to terraformed page
 window.console.originalLog = window.console.log
-window.console.log = ->
-  window.console.originalLog.apply this, arguments_
-  terraform.logger.apply this, arguments_
+window.console.log = (args...) ->
+  window.console.originalLog.apply window.console, args
+  terraform.logger.apply terraform, args
 
 $ ->
   console.log "Editor loaded."

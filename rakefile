@@ -31,7 +31,7 @@ end
 
 desc "dev"
 task :dev do
-  sys("coffee -cw src")
+  sys("coffee -cbw src")
 end
 
 task :default => :dev
