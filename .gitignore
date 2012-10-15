@@ -1,3 +1,5 @@
 _site
 .DS_Store
 *.zip
+src/terraform.js
+src/editor/editor.js
