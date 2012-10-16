@@ -8,14 +8,17 @@
   <body>
     <h1>Terraform demo</h1>
     <div class="terraform" style="display:none">
-        <script type="terraform/data" data-push="/some/github/file1">
-            Some text here. Edit me!
+        <script id="data1" type="terraform/data" data-push="/some/github/file1">
+          Some text here. Edit me!
         </script>
-        <script type="terraform/data" data-push="/some/github/file2">
-            Another section.
+        <script id="data2" type="terraform/data" data-push="/some/github/file2">
+          Another section.
         </script>
         <script type="terraform/js">
-            console.log("hello world from terraform script");
+          console.log("hello world from terraform script");
+          var stage = $('#stage');
+          stage.empty();
+          stage.append($('#data1').text())
         </script>
     </div>
     <div id="stage">

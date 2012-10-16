@@ -2,10 +2,7 @@ body {
   overflow: hidden;
 }
 
-#select-file {
-}
-
-#select-file-selectbox {
+#file-picker {
   width: 100%;
 }
 
@@ -20,7 +17,7 @@ body {
 
 #apply {
   position: absolute;
-  left: 55%;
+  left: 10px;
   bottom: 5px;
 }
 

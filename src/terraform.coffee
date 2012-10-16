@@ -5,50 +5,62 @@ unless this.TerraformConfig?
     evalScope: this # target scope where we eval parser code
     logScope: this # scope where we expect console.log for editor logging
 
-class TerraformScript
-  constructor: (@el) ->
+class TerraformItem
+
+  constructor: (@terraform, @el) ->
+
+  name: ->
+    $el = jQuery(@el)
+    id = $el.attr('id')
+    push = $el.attr('data-push')
+    res = ""
+    res += id if id?
+    res += " (#{push})" if push?
 
   read: ->
-    @code = jQuery(@el).text()
+    @content = @terraform.unindentContent jQuery(@el).text()
+
+  write: ->
+    jQuery(@el).text(@content)
+
+class TerraformScript extends TerraformItem
 
 class TerraformJsScript extends TerraformScript
-  constructor: (@el) ->
+  type: "javascript"
 
-  execute: (terraform) ->
-    jQuery(@el).text(@code)
-    terraform.evalCode(@code)
+  execute: () ->
+    @write()
+    @terraform.evalCode(@content)
 
 class TerraformCoffeeScript extends TerraformScript
-  constructor: (@el) ->
+  type: "coffee"
 
-  execute: (terraform) ->
+  execute: () ->
     # TODO: parse & eval coffeescript
 
-class TerraformData
-  constructor: (@el) ->
+class TerraformData extends TerraformItem
+  type: "text"
 
-  read: ->
-    @data = jQuery(@el).text()
-
-  execute: (terraform) ->
-    jQuery(@el).text(@data)
+  execute: () ->
+    @write()
 
 class TerraformGroup
-  constructor: (@el) ->
+
+  constructor: (@terraform, @el) ->
 
   read: ->
     @items = []
     for script in jQuery(@el).children('script')
       type = jQuery(script).attr('type')
-      item = new TerraformData(script) if type is "terraform/data"
-      item = new TerraformJsScript(script) if type is "terraform/js"
-      item = new TerraformCoffeeScript(script) if type is "terraform/coffee"
+      item = new TerraformData(@terraform, script) if type is "terraform/data"
+      item = new TerraformJsScript(@terraform, script) if type is "terraform/js"
+      item = new TerraformCoffeeScript(@terraform, script) if type is "terraform/coffee"
       item.read()
       @items.push item
 
-  execute: (terraform) ->
+  execute: () ->
     for item in @items
-      item.execute(terraform)
+      item.execute()
 
 # Terraform singleton
 class Terraform
@@ -70,6 +82,29 @@ class Terraform
       @addScript "https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js", ->
         cb?()
 
+  unindentContent: (text) ->
+    text = text.replace "\t", "  "
+    lines = text.split("\n")
+
+    # detect minimal left indentation
+    mini = 1000000
+    for line in lines
+      i = 0
+      while line[i]==" "
+        i += 1
+      mini = i if i < mini and i != line.length
+
+    # move text body to the left
+    unlines = []
+    for line in lines
+      line = line.substring(mini)
+      line = line.replace(/\s+$/g, '')
+      unlines.push line
+    res = unlines.join("\n")
+
+    # strip empty newlines before and after text body
+    res = res.replace(/^[\n]*/, "").replace(/[\n]*$/, "")
+
   openEditor: ->
     @editor = window.open("../src/editor/editor.html", "_blank", "resizable=yes, scrollbars=yes, titlebar=yes, width=800, height=900, top=10, left=10")
     @editor.terraform = terraform
@@ -85,10 +120,9 @@ class Terraform
   readModel: ->
     @model = []
     for el in jQuery('.terraform')
-      group = new TerraformGroup(el)
+      group = new TerraformGroup(@, el)
       group.read()
       @model.push group
-    console.log(@)
 
   fetchExternals: (cb) ->
     cb?()
@@ -100,7 +134,7 @@ class Terraform
 
   executeModel: ->
     for item in @model
-      item.execute(@)
+      item.execute()
 
   populate: ->
     @readModel() unless @model
