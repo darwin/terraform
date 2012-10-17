@@ -1,7 +1,14 @@
 class TerraformMarkdown extends TerraformItem
   type: "markdown"
 
-  execute: () ->
-    # TODO: parse
+  fetch: (deferrable) ->
+    cb = deferrable.callback =>
+      super deferrable
+
+    @fetchDependencies "../src/lib/markdown.js", =>
+      cb()
+
+  getValue: ->
+    markdown.toHTML @content
 
 registerItemClass TerraformMarkdown
