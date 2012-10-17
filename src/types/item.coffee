@@ -5,9 +5,16 @@ class TerraformItem
     (@el.attr 'id') or ''
 
   name: ->
-    push = @el.attr 'data-push'
-    res = @id()
-    res += " (#{push})" if push?
+    id = @id()
+    res = ""
+    res += '#'+id if id
+    res
+
+  title: ->
+    href = @el.attr 'href'
+    res = @name()
+    res += " #{href}" if href
+    res
 
   fetch: (deferrable) ->
     url = @el.attr 'href'
@@ -29,3 +36,20 @@ class TerraformItem
 
   execute: ->
     # no-op
+
+  fetchDependencies: (scripts, cb) ->
+    scripts = [].concat scripts
+    # shared loader accross all instances
+    loader = TerraformCoffee::loader
+
+    unless loader?
+      loader = new Deferrable
+      for script in scripts
+        loadScript script, loader.callback =>
+          @terraform.info "loaded dependency '#{script}' for #{@type} files"
+
+    if loader.fired
+      cb?()
+
+    loader.onSuccess =>
+      cb?()

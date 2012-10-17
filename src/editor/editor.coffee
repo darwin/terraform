@@ -39,11 +39,11 @@ class Editor
     @files = []
     unit_index = 0
     for unit in model
-      unit_index += 1
+      unit_index++
       for item in unit.items
         continue unless item.content
         @files.push item
-        title = "#{@files.length}. [\##{unit_index}]: #{item.name()}"
+        title = "#{@files.length}. #{item.title()}"
         @picker.append($("<option />").val(@files.length-1).text(title));
 
   setupAceForFile: (file) ->

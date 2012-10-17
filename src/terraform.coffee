@@ -7,6 +7,7 @@ defaultConfig =
   evalScope: this # target scope where we eval parser code
   logScope: this # scope where we expect console.log for editor logging
   contextVariableName: "ctx"
+  editorUrl: "../src/editor/editor.html?#{Math.floor(Math.random() * 10000)}"
   editorMode: 'iframe'
   itemClasses: []
 
@@ -72,7 +73,7 @@ class Terraform
 
   openEditor: ->
     if @config.editorMode == 'iframe'
-      frame = $("<iframe src='../src/editor/editor.html'><iframe>")
+      frame = $("<iframe src='#{@config.editorUrl}'><iframe>")
       frame.css
         position: "fixed"
         top: 0
@@ -94,7 +95,7 @@ class Terraform
       $("html").append(frame) # HACK: put our iframe on BODY level, we don't want to screw up scripts running on the page
       @editor = frame.contents()[0].defaultView
     else
-      @editor = window.open("../src/editor/editor.html", "_blank", "resizable=yes, scrollbars=yes, titlebar=yes, width=800, height=900, top=10, left=10")
+      @editor = window.open(@config.editorUrl, "_blank", "resizable=yes, scrollbars=yes, titlebar=yes, width=800, height=900, top=10, left=10")
 
     @editor.terraform = terraform
     @editor.focus()

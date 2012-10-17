@@ -1,0 +1,5 @@
+source "http://rubygems.org"
+gem "listen"
+gem "term-ansicolor"
+gem "terminal-notifier"
+gem "systemu"

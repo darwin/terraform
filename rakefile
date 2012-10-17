@@ -1,15 +1,9 @@
-def colorize(text, color_code)
-  "#{color_code}#{text}\e[0m"
-end
+require 'listen' # https://github.com/guard/listen
+require 'term/ansicolor'
+require 'terminal-notifier'
+require 'systemu'
 
-def red(text); colorize(text, "\e[31m"); end
-def green(text); colorize(text, "\e[32m"); end
-def yellow(text); colorize(text, "\e[33m"); end
-def blue(text); colorize(text, "\e[34m"); end
-def magenta(text); colorize(text, "\e[35m"); end
-def azure(text); colorize(text, "\e[36m"); end
-def white(text); colorize(text, "\e[37m"); end
-def black(text); colorize(text, "\e[30m"); end
+include Term::ANSIColor
 
 def announce(cmd)
   puts "> " + yellow(cmd)
@@ -20,18 +14,38 @@ def die(msg, status=1)
   exit status||$?
 end
 
-def sys(cmd)
+def sys(cmd, check_status=true)
   announce(cmd)
-  if not system(cmd) then
-    die "failed!"
-  end
+  res = system(cmd)
+  return res unless check_status
+  die "failed!" if res
+end
+
+def compile
+  cmd = "./node_modules/.bin/coffee --require ./util/include.coffee --require ./util/license.coffee -c src/terraform.coffee src/editor/editor.coffee"
+  announce(cmd)
+  status = systemu cmd, 1=>out=$stdout, 2=>err=''
+  $stderr.print err
+  return if status.exitstatus == 0
+  puts "\x07" # bell!
+  # TerminalNotifier.notify(err, { :title => "Terraform", :group => Process.pid } )
 end
 
 ############################################################
 
+desc "init"
+task :init do
+  sys("bundle install")
+  sys("npm install")
+end
+
 desc "dev"
 task :dev do
-  sys("./node_modules/.bin/coffee --require ./util/include.coffee --require ./util/license.coffee -cw src/terraform.coffee src/editor/editor.coffee")
+  puts "listening to changes under src folder..."
+  compile()
+  Listen.to('src', :filter => /\.coffee$/) do |modified, added, removed|
+    compile()
+  end
 end
 
 task :default => :dev
