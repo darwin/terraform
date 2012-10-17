@@ -1,8 +1,9 @@
 # send logs also to the terraformed page
-window.console.originalLog = window.console.log
+window.console.originalLogReplacedByTerraformEditor = window.console.log
 window.console.log = (args...) ->
-  window.console.originalLog.apply window.console, args
-  terraform.logger.apply terraform, args
+  # window.console.window.console.originalLogReplacedByTerraformEditor.apply window.console, args
+  args.unshift "log"
+  terraform?.logger.apply terraform, args
 
 class Editor
   constructor: (@terraform) ->
@@ -15,7 +16,6 @@ class Editor
         name: 'myCommand'
         bindKey: {win: 'Ctrl-S', mac: 'Command-S'}
         exec: =>
-          console.log "exec save"
           @saveFile()
           true
 
@@ -23,26 +23,32 @@ class Editor
     @picker.on 'change', (event) =>
       @selectFile @picker.val()
 
+    @apply = $('#apply')
+    @apply.on 'click', =>
+      @saveFile()
+      @ace.focus()
+
     @updateFromModel(@terraform.model)
 
   updateFromModel: (model) ->
-    @updateFilePickerFromModel(model)
+    @updateFilePicker model
     @selectFile 0
 
-  updateFilePickerFromModel: (model) ->
-    # update file picker
+  updateFilePicker: (model) ->
     @picker.empty()
     @files = []
-    group_index = 0
-    for group in model
-      group_index += 1
-      for item in group.items
+    unit_index = 0
+    for unit in model
+      unit_index += 1
+      for item in unit.items
+        continue unless item.content
         @files.push item
-        title = "#{@files.length}. [\##{group_index}]: #{item.name()}"
+        title = "#{@files.length}. [\##{unit_index}]: #{item.name()}"
         @picker.append($("<option />").val(@files.length-1).text(title));
 
   setupAceForFile: (file) ->
-    @ace.getSession().setMode "ace/mode/#{file.type}"
+    aceModes = {}
+    @ace.getSession().setMode "ace/mode/#{aceModes[file.type] or file.type}"
 
   selectFile: (index) ->
     file = @files[index]
@@ -59,10 +65,9 @@ class Editor
 
   saveFile: ->
     return unless @currentFile
-    @currentFile.content = @ace.getValue()
-    @currentFile.write()
-    @terraform.executeModel()
+    @currentFile.setContent @ace.getValue()
+    @terraform.executeModel() # TODO: execute only affected unit (optimization)
 
 $ ->
-  console.log "Editor loaded."
   window.terraformEditor = new Editor(terraform)
+  console.log "Editor ready!"

@@ -31,7 +31,7 @@ end
 
 desc "dev"
 task :dev do
-  sys("coffee -cbw src")
+  sys("./node_modules/.bin/coffee --require ./util/include.coffee --require ./util/license.coffee -cw src/terraform.coffee src/editor/editor.coffee")
 end
 
 task :default => :dev

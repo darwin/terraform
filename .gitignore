@@ -3,3 +3,4 @@ _site
 *.zip
 src/terraform.js
 src/editor/editor.js
+node_modules

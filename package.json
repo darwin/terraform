@@ -1,0 +1,19 @@
+{
+  "name": "terraform",
+  "version": "0.0.0",
+  "description": "Terraforming static web sites with bits of javascript.",
+  "main": "index.js",
+  "dependencies": {
+    "coffee-script": "~1.3.3"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/darwin/terraform.git"
+  },
+  "author": "Antonin Hildebrand",
+  "license": "BSD"
+}

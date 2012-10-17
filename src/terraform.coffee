@@ -1,165 +1,181 @@
+#include "includes/deferrable"
+#include "includes/jquery-helpers"
+
 # create a default config if not provided
-unless this.TerraformConfig?
-  this.TerraformConfig =
-    defScope: this # scope where we define terraform object
-    evalScope: this # target scope where we eval parser code
-    logScope: this # scope where we expect console.log for editor logging
+defaultConfig =
+  defScope: this # scope where we define terraform object
+  evalScope: this # target scope where we eval parser code
+  logScope: this # scope where we expect console.log for editor logging
+  contextVariableName: "ctx"
+  editorMode: 'iframe'
+  itemClasses: []
 
-class TerraformItem
+registerItemClass = (itemClass) ->
+  defaultConfig.itemClasses.push itemClass
 
+#include "types/item"
+#include "types/text"
+#include "types/coffee"
+#include "types/json"
+#include "types/javascript"
+#include "types/dependency"
+#include "types/yaml"
+#include "types/xml"
+#include "types/markdown"
+
+#-----------------------------------------------------------------------------
+# unit holds information from single <div class="terraform">...</div>
+class TerraformUnit
   constructor: (@terraform, @el) ->
 
-  name: ->
-    $el = jQuery(@el)
-    id = $el.attr('id')
-    push = $el.attr('data-push')
-    res = ""
-    res += id if id?
-    res += " (#{push})" if push?
+  factory: (type, el) ->
+    for klass in @terraform.config.itemClasses
+      if type is klass::type
+        return new klass @terraform, el
 
-  read: ->
-    @content = @terraform.unindentContent jQuery(@el).text()
+    @terraform.warn "type '#{type}' not recognized, using text instead"
+    new TerraformText @terraform, el
 
-  write: ->
-    jQuery(@el).text(@content)
-
-class TerraformScript extends TerraformItem
-
-class TerraformJsScript extends TerraformScript
-  type: "javascript"
-
-  execute: () ->
-    @write()
-    @terraform.evalCode(@content)
-
-class TerraformCoffeeScript extends TerraformScript
-  type: "coffee"
-
-  execute: () ->
-    # TODO: parse & eval coffeescript
-
-class TerraformData extends TerraformItem
-  type: "text"
-
-  execute: () ->
-    @write()
-
-class TerraformGroup
-
-  constructor: (@terraform, @el) ->
-
-  read: ->
+  parse: ->
     @items = []
-    for script in jQuery(@el).children('script')
-      type = jQuery(script).attr('type')
-      item = new TerraformData(@terraform, script) if type is "terraform/data"
-      item = new TerraformJsScript(@terraform, script) if type is "terraform/js"
-      item = new TerraformCoffeeScript(@terraform, script) if type is "terraform/coffee"
-      item.read()
+    for el in $$ @el.children()
+      type = el.attr('type') # e.g. terraform/javascript
+      type = type.split("/")[1]
+      item = @factory type, el
+      item.parse?()
       @items.push item
 
-  execute: () ->
+  fetch: (deferrable) ->
     for item in @items
-      item.execute()
+      item.fetch deferrable
 
+  prepareContext: ->
+    context = {}
+    for item in @items
+      value = item.getValue()
+      continue unless value
+      context[item.id()] = value
+    context
+
+  execute: ->
+    context = @prepareContext()
+    for item in @items
+      item.execute(context)
+
+#-----------------------------------------------------------------------------
 # Terraform singleton
 class Terraform
+  version: "0.0.1"
+  evalCounter: 0
+
   constructor: (@config) ->
 
-  addScript: (url, cb) ->
-    th = document.getElementsByTagName("head")[0]
-    s = document.createElement("script")
-    s.onload = -> cb?()
-    s.setAttribute "type", "text/javascript"
-    s.setAttribute "src", url
-    th.appendChild s
-
-  addJQuery: (cb) ->
-    if jQuery?
-      console.log "jQuery already present."
-      cb?()
-    else
-      @addScript "https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js", ->
-        cb?()
-
-  unindentContent: (text) ->
-    text = text.replace "\t", "  "
-    lines = text.split("\n")
-
-    # detect minimal left indentation
-    mini = 1000000
-    for line in lines
-      i = 0
-      while line[i]==" "
-        i += 1
-      mini = i if i < mini and i != line.length
-
-    # move text body to the left
-    unlines = []
-    for line in lines
-      line = line.substring(mini)
-      line = line.replace(/\s+$/g, '')
-      unlines.push line
-    res = unlines.join("\n")
-
-    # strip empty newlines before and after text body
-    res = res.replace(/^[\n]*/, "").replace(/[\n]*$/, "")
-
   openEditor: ->
-    @editor = window.open("../src/editor/editor.html", "_blank", "resizable=yes, scrollbars=yes, titlebar=yes, width=800, height=900, top=10, left=10")
+    if @config.editorMode == 'iframe'
+      frame = $("<iframe src='../src/editor/editor.html'><iframe>")
+      frame.css
+        position: "fixed"
+        top: 0
+        bottom: 0
+        right: 0
+        width: "50%"
+        height: "100%",
+        border: "none"
+      $("html").css
+        position: "relative"
+        height: "100%"
+      $("body").css
+        marginTop: 0 # TODO: more advanced margin detection to prevent page jump
+        position: "absolute"
+        top: 0
+        left: 0
+        width: "50%",
+        height: "100%",
+      $("html").append(frame) # HACK: put our iframe on BODY level, we don't want to screw up scripts running on the page
+      @editor = frame.contents()[0].defaultView
+    else
+      @editor = window.open("../src/editor/editor.html", "_blank", "resizable=yes, scrollbars=yes, titlebar=yes, width=800, height=900, top=10, left=10")
+
     @editor.terraform = terraform
     @editor.focus()
 
-  evalCode: (code) ->
+  evalCode: (code, context) ->
+    temporaryVariableName = "__terraform_eval_" + @evalCounter++
+    @config.evalScope[temporaryVariableName] = context
     try
       # try to eval in wrapper function
-      @config.evalScope.eval "(function(){#{code}})()"
+      @config.evalScope.eval "(function(#{@config.contextVariableName}){#{code}})(#{temporaryVariableName})"
     catch ex
       @editor?.onError? ex
+    delete @config.evalScope[temporaryVariableName]
 
-  readModel: ->
+  parseModel: ->
     @model = []
-    for el in jQuery('.terraform')
-      group = new TerraformGroup(@, el)
-      group.read()
-      @model.push group
+    for el in $$ $('.terraform')
+      unit = new TerraformUnit(@, el)
+      unit.parse()
+      @model.push unit
 
   fetchExternals: (cb) ->
-    cb?()
+    deferrable = new Deferrable()
+    deferrable.onSuccess ->
+      cb?()
+
+    for item in @model
+      item.fetch deferrable
 
   bootstrap: (cb) ->
-    @addJQuery =>
-      @fetchExternals =>
-        cb?()
+    @parseModel() unless @model
+    @fetchExternals =>
+      @info "successfully fetched all externals"
+      @executeModel()
 
   executeModel: ->
-    for item in @model
-      item.execute()
+    @info "executing model", @model
+    for unit in @model
+      unit.execute()
 
-  populate: ->
-    @readModel() unless @model
-    @executeModel()
-
-  logger: (args...) ->
+  logger: (method, args...) ->
     return unless @config.logScope
-    args.unshift "Terraform Editor:"
-    @config.logScope.console.log.apply @config.logScope.console, args
+    args.unshift "Terraform:"
+    @config.logScope.console[method].apply @config.logScope.console, args
+
+  error: (args...) ->
+    args.unshift "error"
+    @logger args...
+
+  warn: (args...) ->
+    args.unshift "warn"
+    @logger args...
+
+  info: (args...) ->
+    args.unshift "info"
+    @logger args...
 
   edit: ->
     @openEditor()
 
+#################################################################################
 # bootstrap!
 ((config) ->
-  return unless config.defScope
+  # load our separate instance of jQuery
+  loadScript "https://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.js", =>
 
-  terraform = new Terraform(config)
+    # setup jQuery
+    $ = jQuery.noConflict(true)
+    converters = $.ajaxSetup().converters
+    converters["text javascript"] = true # recognizes javascript jquery type
 
-  # export public interface
-  config.defScope.terraform = terraform
+    # instantiate singleton
+    effectiveConfig = $.extend defaultConfig, config
+    return if effectiveConfig.preventInstantiation
+    terraform = new Terraform(effectiveConfig)
 
-  # perform intial editor bootstraping, this enables user to call it later by hand via terraform.bootstrap() if needed
-  unless config.preventBootstrapping
-    terraform.bootstrap ->
-      terraform.populate()
+    # export public interface
+    effectiveConfig .defScope?.terraform = terraform
 
-)(this.TerraformConfig)
+    # perform intial bootstrap
+    unless effectiveConfig.preventBootstrapping
+      terraform.bootstrap()
+
+)(@TerraformConfig)

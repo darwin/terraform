@@ -3,13 +3,16 @@ body {
 }
 
 #file-picker {
-  width: 100%;
+  position: absolute;
+  bottom: 5px;
+  left: 10px;
+  right: 120px;
 }
 
 #editor {
   position: absolute;
-  top: 40px;
-  bottom: 40px;
+  top: 10px;
+  bottom: 30px;
   left: 10px;
   right: 10px;
   border: 1px solid silver;
@@ -17,8 +20,8 @@ body {
 
 #apply {
   position: absolute;
-  left: 10px;
   bottom: 5px;
+  right: 10px;
 }
 
 .ace_marker-layer .parser-selected {
