@@ -7,8 +7,8 @@ defaultConfig =
   evalScope: this # target scope where we eval parser code
   logScope: this # scope where we expect console.log for editor logging
   contextVariableName: "ctx"
-  editorUrl: "../src/editor/editor.html?#{Math.floor(Math.random() * 10000)}"
   editorMode: 'iframe'
+  editorUrl: "../src/editor/editor.html?#{Math.floor(Math.random() * 10000)}"
   jQueryUrl: "../src/lib/jquery.js"
   underscoreUrl: "../src/lib/underscore.js"
 

@@ -20,6 +20,6 @@ class Deferrable
     @fired = yes
 
   onSuccess: (callback) ->
-    throw new Error('Deferrable has already fired.') if @fired
+    return callback?() if @fired
     @callbacks.push callback
     @fire() if @counter == 0

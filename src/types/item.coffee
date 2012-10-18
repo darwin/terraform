@@ -22,7 +22,7 @@ class TerraformItem
     cb = deferrable.callback (data, status) =>
       @terraform.info "loaded '#{url}' as #{@type}"
       @content = data
-    request= $.get url, cb, "text"
+    request = $.get url, cb, "text"
     request.error (x, t, err) =>
       msg = "unable to fetch #{@name()}: [#{t}]"
       msg += " " + err.message if err.message?
@@ -34,8 +34,7 @@ class TerraformItem
   setContent: (val) ->
     @content = val
 
-  execute: ->
-    # no-op
+  execute: -> # no-op
 
   fetchDependencies: (scripts, cb) ->
     scripts = [].concat scripts
@@ -47,9 +46,6 @@ class TerraformItem
       for script in scripts
         loadScript script, loader.callback =>
           @terraform.info "loaded dependency '#{script}' for #{@type} files"
-
-    if loader.fired
-      cb?()
 
     loader.onSuccess =>
       cb?()
