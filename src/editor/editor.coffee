@@ -1,18 +1,28 @@
-# send logs also to the terraformed page
-window.console.originalLogReplacedByTerraformEditor = window.console.log
-window.console.log = (args...) ->
-  # window.console.window.console.originalLogReplacedByTerraformEditor.apply window.console, args
-  args.unshift "log"
-  terraform?.logger.apply terraform, args
+#include "includes/console"
 
 class Editor
   constructor: (@terraform) ->
-    @ace = ace.edit("editor")
+    @setupAce()
+
+    @$picker = $ '#file-picker'
+    @$picker.on 'change', (event) =>
+      @selectFile @$picker.val()
+
+    @$apply = $ '#apply'
+    @$apply.on 'click', =>
+      @saveFile()
+      @ace.focus()
+
+    @updateFromModel @terraform.model
+
+  setupAce: ->
+    @ace = ace.edit "editor"
     @ace.setTheme "ace/theme/twilight"
     @ace.setShowPrintMargin no
     @ace.setShowInvisibles yes
     @ace.setDisplayIndentGuides no
     @ace.setShowFoldWidgets no
+
     session = @ace.getSession()
     session.setUseSoftTabs yes
     session.setUseWrapMode yes
@@ -21,30 +31,19 @@ class Editor
 
     @ace.commands.addCommand
         name: 'Save Changes'
-        bindKey: {win: 'Ctrl-S', mac: 'Command-S'}
+        bindKey: { win: 'Ctrl-S', mac: 'Command-S' }
         exec: =>
           @saveFile()
           true
 
-    @terraform.config.setupAce?(@ace)
-
-    @picker = $('#file-picker')
-    @picker.on 'change', (event) =>
-      @selectFile @picker.val()
-
-    @apply = $('#apply')
-    @apply.on 'click', =>
-      @saveFile()
-      @ace.focus()
-
-    @updateFromModel(@terraform.model)
+    @terraform.config.setupAce? @ace
 
   updateFromModel: (model) ->
     @updateFilePicker model
     @selectFile 0
 
   updateFilePicker: (model) ->
-    @picker.empty()
+    @$picker.empty()
     @files = []
     unit_index = 0
     for unit in model
@@ -53,15 +52,16 @@ class Editor
         continue unless item.content
         @files.push item
         title = "#{@files.length}. #{item.title()}"
-        @picker.append($("<option />").val(@files.length-1).text(title));
+        @$picker.append($("<option/>").val(@files.length-1).text(title));
+
+  fileTypeToAceMode: (type) ->
+    type
 
   setupAceForFile: (file) ->
-    aceModes = {}
-    @ace.getSession().setMode "ace/mode/#{aceModes[file.type] or file.type}"
+    @ace.getSession().setMode "ace/mode/#{@fileTypeToAceMode file.type}"
 
   selectFile: (index) ->
     file = @files[index]
-    console.log("selectFile", file)
     return unless file?
 
     @currentFile = file

@@ -9,9 +9,9 @@ defaultConfig =
   contextVariableName: "ctx"
   editorUrl: "../src/editor/editor.html?#{Math.floor(Math.random() * 10000)}"
   editorMode: 'iframe'
-  itemClasses: []
 
 registerItemClass = (itemClass) ->
+  defaultConfig.itemClasses ||= []
   defaultConfig.itemClasses.push itemClass
 
 #include "types/item"
