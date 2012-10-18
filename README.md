@@ -21,6 +21,7 @@ Simply we get the best of both worlds. Plus some nice integration with GitHub as
 
 * ruby, rubygems, bundler
 * nodejs, npm, phantomjs
+* nginx
 
 **Initial setup:**
 

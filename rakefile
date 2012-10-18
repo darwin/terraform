@@ -22,7 +22,7 @@ def sys(cmd, check_status=true)
 end
 
 def compile
-  cmd = "./node_modules/.bin/coffee --require ./util/include.coffee --require ./util/license.coffee -c src/terraform.coffee src/editor/editor.coffee"
+  cmd = "./node_modules/.bin/coffee --require ./util/include.coffee --require ./util/license.coffee -c src/terraform.coffee src/editor/editor.coffee baker/cli.coffee baker/baker.coffee baker/server.coffee"
   announce(cmd)
   status = systemu cmd, 1=>out=$stdout, 2=>err=''
   $stderr.print err
@@ -43,7 +43,7 @@ desc "dev"
 task :dev do
   puts "listening to changes under src folder..."
   compile()
-  Listen.to('src', :filter => /\.coffee$/) do |modified, added, removed|
+  Listen.to('src', 'baker', :filter => /\.coffee$/) do |modified, added, removed|
     compile()
   end
 end

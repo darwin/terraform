@@ -9,6 +9,6 @@ class TerraformYaml extends TerraformItem
       cb()
 
   getValue: ->
-    jsyaml.load @content
+    YAML.eval @content
 
 registerItemClass TerraformYaml

@@ -1,6 +1,8 @@
 #include "includes/deferrable"
 #include "includes/helpers"
 
+inBakingMode = no
+
 # create a default config if not provided
 defaultConfig =
   defScope: this # scope where we define terraform object
@@ -74,6 +76,7 @@ class Terraform
   evalCounter: 0
 
   constructor: (@config) ->
+    @executionCounter = 0
 
   openEditor: ->
     if @config.editorMode == 'iframe'
@@ -134,7 +137,9 @@ class Terraform
   executeModel: ->
     @info "executing model", @model
     for unit in @model
+      console.log "u"
       unit.execute()
+    @executionCounter++
 
   logger: (method, args...) ->
     return unless @config.logScope
@@ -175,6 +180,8 @@ class Terraform
     converters["text javascript"] = true # recognizes javascript jquery type
 
   loader.onSuccess ->
+    inBakingMode = location.search.substring(1)=="terraform-baking"
+
     # when we have all libraries available
     # instantiate the singleton
     return if config.preventInstantiation
@@ -184,7 +191,7 @@ class Terraform
     config .defScope?.terraform = terraform
 
     # perform intial bootstrap
-    unless config.preventBootstrapping
+    unless config.preventBootstrappingo or inBakingMode
       terraform.bootstrap()
 
 )(@TerraformConfig)

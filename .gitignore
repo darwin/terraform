@@ -4,3 +4,8 @@ _site
 src/terraform.js
 src/editor/editor.js
 node_modules
+baker/cli.js
+baker/baker.js
+baker/server.js
+baker/logs
+baker/nginx.conf
