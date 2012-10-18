@@ -58,7 +58,8 @@ class TerraformUnit
     for item in @items
       value = item.getValue()
       continue unless value
-      context[item.id()] = value
+      id = camelize(item.id(), true) # JSON-style, e.g. attr-html => attrHtml
+      context[id] = value
     context
 
   execute: ->

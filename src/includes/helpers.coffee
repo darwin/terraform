@@ -20,3 +20,20 @@ loadScript = (url, cb) ->
   s.setAttribute "type", "text/javascript"
   s.setAttribute "src", url
   h.appendChild s
+
+# from batman.js:
+camelize_rx = /(?:^|_|\-)(.)/g
+capitalize_rx = /(^|\s)([a-z])/g
+underscore_rx1 = /([A-Z]+)([A-Z][a-z])/g
+underscore_rx2 = /([a-z\d])([A-Z])/g
+
+camelize = (string, firstLetterLower) ->
+  string = string.replace camelize_rx, (str, p1) -> p1.toUpperCase()
+  if firstLetterLower then string.substr(0,1).toLowerCase() + string.substr(1) else string
+
+underscore = (string) ->
+  string.replace(underscore_rx1, '$1_$2')
+        .replace(underscore_rx2, '$1_$2')
+        .replace('-', '_').toLowerCase()
+
+capitalize = (string) -> string.replace capitalize_rx, (m,p1,p2) -> p1 + p2.toUpperCase()
