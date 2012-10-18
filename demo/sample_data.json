@@ -1,8 +1,8 @@
 {
-    "planets": [
-        "Mercury",
-        "Venus",
-        "Earth",
-        "..."
-    ]
+  "planets": [
+    "Mercury",
+    "Venus",
+    "Earth",
+    "..."
+  ]
 }

@@ -9,15 +9,24 @@ class Editor
   constructor: (@terraform) ->
     @ace = ace.edit("editor")
     @ace.setTheme "ace/theme/twilight"
-    @ace.getSession().setUseSoftTabs yes
     @ace.setShowPrintMargin no
+    @ace.setShowInvisibles yes
+    @ace.setDisplayIndentGuides no
+    @ace.setShowFoldWidgets no
+    session = @ace.getSession()
+    session.setUseSoftTabs yes
+    session.setUseWrapMode yes
+    session.setTabSize 2
+    session.setFoldStyle "manual"
 
     @ace.commands.addCommand
-        name: 'myCommand'
+        name: 'Save Changes'
         bindKey: {win: 'Ctrl-S', mac: 'Command-S'}
         exec: =>
           @saveFile()
           true
+
+    @terraform.config.setupAce?(@ace)
 
     @picker = $('#file-picker')
     @picker.on 'change', (event) =>

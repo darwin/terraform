@@ -34,7 +34,7 @@ class TerraformUnit
       if type is klass::type
         return new klass @terraform, el
 
-    @terraform.warn "type '#{type}' not recognized, using text instead"
+    @terraform.warn "type '#{type}' not recognized, treating it as a plain text"
     new TerraformText @terraform, el
 
   parse: ->
@@ -73,29 +73,25 @@ class Terraform
 
   openEditor: ->
     if @config.editorMode == 'iframe'
-      frame = $("<iframe src='#{@config.editorUrl}'><iframe>")
-      frame.css
-        position: "fixed"
-        top: 0
-        bottom: 0
-        right: 0
-        width: "50%"
-        height: "100%",
-        border: "none"
-      $("html").css
-        position: "relative"
-        height: "100%"
-      $("body").css
-        marginTop: 0 # TODO: more advanced margin detection to prevent page jump
-        position: "absolute"
-        top: 0
-        left: 0
-        width: "50%",
-        height: "100%",
-      $("html").append(frame) # HACK: put our iframe on BODY level, we don't want to screw up scripts running on the page
-      @editor = frame.contents()[0].defaultView
+      $frame = $("<iframe/>").attr 'src', @config.editorUrl
+      $frame.css position: "fixed", top: 0, bottom: 0, right: 0, width: "50%", height: "100%", border: "none"
+
+      $html = $ "html"
+      $html.css position: "relative", height: "100%"
+
+      $body = $ "body"
+      margin = $html.width() - $body.width()
+      $body.css marginTop: 0, position: "absolute", top: 0, left: 0, height: "100%"
+      $body.css width: "50%"
+      $body.css width: "-moz-calc(50% - #{margin}px)"
+      $body.css width: "-webkit-calc(50% - #{margin}px)"
+
+      # HACK: put our iframe on BODY level, we don't want to screw up scripts running on the page
+      $html.append $frame
+
+      @editor = $frame.contents()[0].defaultView
     else
-      @editor = window.open(@config.editorUrl, "_blank", "resizable=yes, scrollbars=yes, titlebar=yes, width=800, height=900, top=10, left=10")
+      @editor = window.open @config.editorUrl, "_blank", "resizable=yes, scrollbars=yes, titlebar=yes, width=800, height=900, top=10, left=10"
 
     @editor.terraform = terraform
     @editor.focus()

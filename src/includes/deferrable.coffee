@@ -14,7 +14,7 @@ class Deferrable
       @counter--
       @fire() if @counter == 0
 
-  fire: () ->
+  fire: ->
     for callback in @callbacks
       callback()
     @fired = yes
