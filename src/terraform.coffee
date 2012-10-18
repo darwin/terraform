@@ -1,5 +1,6 @@
 #include "includes/deferrable"
 #include "includes/helpers"
+#include "includes/mirror"
 
 inBakingMode = no
 
@@ -13,6 +14,7 @@ defaultConfig =
   editorUrl: "../src/editor/editor.html?#{Math.floor(Math.random() * 10000)}"
   jQueryUrl: "../src/lib/jquery.js"
   underscoreUrl: "../src/lib/underscore.js"
+  mutationSummaryUrl: "../src/lib/mutation-summary.js"
 
 registerItemClass = (itemClass) ->
   defaultConfig.itemClasses ||= []
@@ -76,7 +78,6 @@ class Terraform
   evalCounter: 0
 
   constructor: (@config) ->
-    @executionCounter = 0
 
   openEditor: ->
     if @config.editorMode == 'iframe'
@@ -134,12 +135,33 @@ class Terraform
       @info "successfully fetched all externals"
       @executeModel()
 
+  startRecorder: ->
+    @recording = []
+
+    @mirrorClient = new TreeMirrorClient document,
+      initialize: (rootId, children) ->
+        console.log rootId, children
+
+      applyChanged: (args...) =>
+        # removed, addedOrMoved, attributes, text
+        @recording.push args
+        console.log @recording
+
+  stopRecorder: ->
+    @mirrorClient.disconnect()
+
   executeModel: ->
     @info "executing model", @model
+    @startRecorder() if inBakingMode
     for unit in @model
-      console.log "u"
       unit.execute()
-    @executionCounter++
+
+    # we have to wait for event loop to catch up
+    if inBakingMode
+      setTimeout =>
+        @stopRecorder()
+        @executionFinished = true if inBakingMode
+      , 0
 
   logger: (method, args...) ->
     return unless @config.logScope
@@ -164,6 +186,7 @@ class Terraform
 #################################################################################
 # bootstrap!
 ((userConfig) ->
+  inBakingMode = location.search.substring(1)=="terraform-baking"
   config = extend defaultConfig, userConfig
   loader = new Deferrable
 
@@ -179,19 +202,24 @@ class Terraform
     converters = $.ajaxSetup().converters
     converters["text javascript"] = true # recognizes javascript jquery type
 
-  loader.onSuccess ->
-    inBakingMode = location.search.substring(1)=="terraform-baking"
+  if inBakingMode
+    loadScript config.mutationSummaryUrl, loader.callback =>
+      console.log("Terraform: loaded base library mutation-summary.js from '#{config.mutationSummaryUrl}'")
+      console.log (typeof MutationSummary)
 
+  loader.onSuccess ->
     # when we have all libraries available
     # instantiate the singleton
     return if config.preventInstantiation
     terraform = new Terraform(config)
 
     # export public interface
-    config .defScope?.terraform = terraform
+    config.defScope?.terraform = terraform
 
     # perform intial bootstrap
     unless config.preventBootstrappingo or inBakingMode
       terraform.bootstrap()
+    else
+      terraform.readyForBootstrap = true
 
 )(@TerraformConfig)

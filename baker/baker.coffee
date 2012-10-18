@@ -17,7 +17,7 @@ class Baker
     phantomProxy.create {}, (proxy) =>
         page = proxy.page
 
-        page.waitForFlag = (selector, callbackFn, timeout) ->
+        page.waitForFlag = (flag, callbackFn, timeout) ->
             self = this
             startTime = Date.now()
             timeoutInterval = 150
@@ -28,13 +28,13 @@ class Baker
                   callbackFn? false
                   return
 
-              self.evaluate (selectorToEvaluate) ->
-                return "nah!" unless window["terraform"].executionCounter
-                return "got it"
+              self.evaluate (flag) ->
+                return "got it" if window["terraform"][flag]
+                return "nah!"
               , (result) ->
                 return callbackFn? true if result == "got it"
                 setTimeout testForFlag, timeoutInterval
-              , selector
+              , flag
 
             timeout = timeout || 10000
             setTimeout testForFlag, timeoutInterval
@@ -52,11 +52,13 @@ class Baker
           console.log JSON.stringify(event)
 
         page.open 'http://localhost:9721/demo?terraform-baking', ->
-          page.waitForSelector 'body', ->
+          page.waitForFlag 'readyForBootstrap', ->
             page.evaluate driver, (res) ->
-              page.waitForFlag '#terraformbakingdone', ->
+              page.waitForFlag 'executionFinished', ->
                 page.evaluate collector, (res) ->
-                  phantomProxy.end()
+                  setTimeout -> # wait for log messages
+                    phantomProxy.end()
+                  , 2000
                   cb?()
 
 module.exports = Baker
