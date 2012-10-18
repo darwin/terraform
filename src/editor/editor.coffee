@@ -55,10 +55,10 @@ class Editor
         @$picker.append($("<option/>").val(@files.length-1).text(title));
 
   fileTypeToAceMode: (type) ->
-    type
+    "ace/mode/#{type}"
 
   setupAceForFile: (file) ->
-    @ace.getSession().setMode "ace/mode/#{@fileTypeToAceMode file.type}"
+    @ace.getSession().setMode @fileTypeToAceMode(file.type)
 
   selectFile: (index) ->
     file = @files[index]

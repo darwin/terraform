@@ -15,11 +15,12 @@ registerItemClass = (itemClass) ->
   defaultConfig.itemClasses.push itemClass
 
 #include "types/item"
+#include "types/dependency"
 #include "types/text"
+#include "types/html"
+#include "types/javascript"
 #include "types/coffee"
 #include "types/json"
-#include "types/javascript"
-#include "types/dependency"
 #include "types/yaml"
 #include "types/xml"
 #include "types/markdown"
