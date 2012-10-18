@@ -1,5 +1,5 @@
 #include "includes/deferrable"
-#include "includes/jquery-helpers"
+#include "includes/helpers"
 
 # create a default config if not provided
 defaultConfig =
@@ -9,6 +9,8 @@ defaultConfig =
   contextVariableName: "ctx"
   editorUrl: "../src/editor/editor.html?#{Math.floor(Math.random() * 10000)}"
   editorMode: 'iframe'
+  jQueryUrl: "../src/lib/jquery.js"
+  underscoreUrl: "../src/lib/underscore.js"
 
 registerItemClass = (itemClass) ->
   defaultConfig.itemClasses ||= []
@@ -116,11 +118,11 @@ class Terraform
 
   fetchExternals: (cb) ->
     deferrable = new Deferrable()
-    deferrable.onSuccess ->
-      cb?()
-
     for item in @model
       item.fetch deferrable
+
+    deferrable.onSuccess ->
+      cb?()
 
   bootstrap: (cb) ->
     @parseModel() unless @model
@@ -155,25 +157,33 @@ class Terraform
 
 #################################################################################
 # bootstrap!
-((config) ->
-  # load our separate instance of jQuery
-  loadScript "https://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.js", =>
+((userConfig) ->
+  config = extend defaultConfig, userConfig
+  loader = new Deferrable
 
-    # setup jQuery
-    $ = jQuery.noConflict(true)
+  # load our separate instance of underscore
+  loadScript config.underscoreUrl, loader.callback =>
+    console.log("Terraform: loaded base library underscore.js from '#{config.underscoreUrl}'")
+    _ = window._.noConflict()
+
+  # load our separate instace of jQuery
+  loadScript config.jQueryUrl, loader.callback =>
+    console.log("Terraform: loaded base library jQuery from '#{config.jQueryUrl}'")
+    $ = window.jQuery.noConflict(true)
     converters = $.ajaxSetup().converters
     converters["text javascript"] = true # recognizes javascript jquery type
 
-    # instantiate singleton
-    effectiveConfig = $.extend defaultConfig, config
-    return if effectiveConfig.preventInstantiation
-    terraform = new Terraform(effectiveConfig)
+  loader.onSuccess ->
+    # when we have all libraries available
+    # instantiate the singleton
+    return if config.preventInstantiation
+    terraform = new Terraform(config)
 
     # export public interface
-    effectiveConfig .defScope?.terraform = terraform
+    config .defScope?.terraform = terraform
 
     # perform intial bootstrap
-    unless effectiveConfig.preventBootstrapping
+    unless config.preventBootstrapping
       terraform.bootstrap()
 
 )(@TerraformConfig)

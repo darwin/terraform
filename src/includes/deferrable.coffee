@@ -12,12 +12,14 @@ class Deferrable
       throw new Error('Too late. Deferrable has already fired.') if @fired
       fn?(args...)
       @counter--
-      @fire() if @counter == 0
+      @fire() if @counter == 0 and @callbacks.length>0
 
   fire: ->
     for callback in @callbacks
-      callback()
+      callback?()
     @fired = yes
 
   onSuccess: (callback) ->
-    @callbacks.push callback if callback
+    throw new Error('Deferrable has already fired.') if @fired
+    @callbacks.push callback
+    @fire() if @counter == 0
