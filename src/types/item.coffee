@@ -22,8 +22,8 @@ class TerraformItem
     cb = deferrable.callback (data, status) =>
       @terraform.info "loaded '#{url}' as #{@type}"
       @content = data
-    call = $.get url, cb, "text"
-    call.error (x, t, err) =>
+    request= $.get url, cb, "text"
+    request.error (x, t, err) =>
       msg = "unable to fetch #{@name()}: [#{t}]"
       msg += " " + err.message if err.message?
       @terraform.error msg

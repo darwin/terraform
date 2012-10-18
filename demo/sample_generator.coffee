@@ -11,4 +11,6 @@ list = ctx.data4.shopping_list
 items = list[0..-2].join(", ")+" and "+list[-1..-1]
 stage.append "when your mom says \"YAML\" you go and buy: #{items}"
 
-stage.append ctx.data5
+stage.append ctx.data5 # from html file
+
+stage.append ctx.data6.note.body # from xml file
