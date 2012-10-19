@@ -18,7 +18,7 @@ def sys(cmd, check_status=true)
   announce(cmd)
   res = system(cmd)
   return res unless check_status
-  die "failed!" if res
+  die "failed!" unless res
 end
 
 def compile
@@ -46,6 +46,13 @@ task :dev do
   Listen.to('src', 'baker', :filter => /\.coffee$/) do |modified, added, removed|
     compile()
   end
+end
+
+desc "sample demo patching, for testing purposes until we get MutationObservers support in PhantomJS"
+task :patch do
+  sys("./bin/terraform-patch --payload test/sample-payload.json --output demo/index-baked.html demo/index.html")
+  puts("try: diff demo/index.html demo/index-baked.html")
+
 end
 
 task :default => :dev

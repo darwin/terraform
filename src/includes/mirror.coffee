@@ -14,81 +14,81 @@
 
 # for Terraform modified by Antonin Hildebrand
 
-class TreeMirror
-  constructor: (root, delegate) ->
-    @root = root
-    @idMap = {}
-    @delegate = delegate
-
-  initialize: (rootId, children) ->
-    @idMap[rootId] = @root
-    i = 0
-
-    while i < children.length
-      @deserializeNode children[i], @root
-      i++
-
-  deserializeNode: (nodeData, parent) ->
-    return null  if nodeData is null
-    return @idMap[nodeData]  if typeof nodeData is "number"
-    doc = (if @root instanceof HTMLDocument then @root else @root.ownerDocument)
-    node = undefined
-    switch nodeData.nodeType
-      when Node.COMMENT_NODE
-        node = doc.createComment(nodeData.textContent)
-      when Node.TEXT_NODE
-        node = doc.createTextNode(nodeData.textContent)
-      when Node.DOCUMENT_TYPE_NODE
-        node = doc.implementation.createDocumentType(nodeData.name, nodeData.publicId, nodeData.systemId)
-      when Node.ELEMENT_NODE
-        node = @delegate.createElement(nodeData.tagName)  if @delegate and @delegate.createElement
-        node = doc.createElement(nodeData.tagName)  unless node
-        Object.keys(nodeData.attributes).forEach ((name) ->
-          node.setAttribute name, nodeData.attributes[name]  if not @delegate or not @delegate.setAttribute or not @delegate.setAttribute(node, name, nodeData.attributes[name])
-        ), this
-    @idMap[nodeData.id] = node
-    parent.appendChild node  if parent
-    if nodeData.childNodes
-      i = 0
-
-      while i < nodeData.childNodes.length
-        @deserializeNode nodeData.childNodes[i], node
-        i++
-    node
-
-  applyChanged: (removed, addedOrMoved, attributes, text) ->
-    removeNode = (node) ->
-      node.parentNode.removeChild node  if node.parentNode
-    moveOrInsertNode = (data) ->
-      parent = data.parentNode
-      previous = data.previousSibling
-      node = data.node
-      parent.insertBefore node, (if previous then previous.nextSibling else parent.firstChild)
-    updateAttributes = (data) ->
-      node = @deserializeNode(data.node)
-      Object.keys(data.attributes).forEach ((attrName) ->
-        newVal = data.attributes[attrName]
-        if newVal is null
-          node.removeAttribute attrName
-        else
-          node.setAttribute attrName, newVal  if not @delegate or not @delegate.setAttribute or not @delegate.setAttribute(node, attrName, newVal)
-      ), this
-    updateText = (data) ->
-      node = @deserializeNode(data.node)
-      node.textContent = data.textContent
-    addedOrMoved.forEach ((data) ->
-      data.node = @deserializeNode(data.node)
-      data.previousSibling = @deserializeNode(data.previousSibling)
-      data.parentNode = @deserializeNode(data.parentNode)
-      removeNode data.node
-    ), this
-    removed.map(@deserializeNode, this).forEach removeNode
-    addedOrMoved.forEach moveOrInsertNode
-    attributes.forEach updateAttributes, this
-    text.forEach updateText, this
-    removed.forEach ((id) ->
-      delete @idMap[id]
-    ), this
+# class TreeMirror
+#   constructor: (root, delegate) ->
+#     @root = root
+#     @idMap = {}
+#     @delegate = delegate
+#
+#   initialize: (rootId, children) ->
+#     @idMap[rootId] = @root
+#     i = 0
+#
+#     while i < children.length
+#       @deserializeNode children[i], @root
+#       i++
+#
+#   deserializeNode: (nodeData, parent) ->
+#     return null  if nodeData is null
+#     return @idMap[nodeData]  if typeof nodeData is "number"
+#     doc = (if @root instanceof HTMLDocument then @root else @root.ownerDocument)
+#     node = undefined
+#     switch nodeData.nodeType
+#       when Node.COMMENT_NODE
+#         node = doc.createComment(nodeData.textContent)
+#       when Node.TEXT_NODE
+#         node = doc.createTextNode(nodeData.textContent)
+#       when Node.DOCUMENT_TYPE_NODE
+#         node = doc.implementation.createDocumentType(nodeData.name, nodeData.publicId, nodeData.systemId)
+#       when Node.ELEMENT_NODE
+#         node = @delegate.createElement(nodeData.tagName)  if @delegate and @delegate.createElement
+#         node = doc.createElement(nodeData.tagName)  unless node
+#         Object.keys(nodeData.attributes).forEach ((name) ->
+#           node.setAttribute name, nodeData.attributes[name]  if not @delegate or not @delegate.setAttribute or not @delegate.setAttribute(node, name, nodeData.attributes[name])
+#         ), this
+#     @idMap[nodeData.id] = node
+#     parent.appendChild node  if parent
+#     if nodeData.childNodes
+#       i = 0
+#
+#       while i < nodeData.childNodes.length
+#         @deserializeNode nodeData.childNodes[i], node
+#         i++
+#     node
+#
+#   applyChanged: (removed, addedOrMoved, attributes, text) ->
+#     removeNode = (node) ->
+#       node.parentNode.removeChild node  if node.parentNode
+#     moveOrInsertNode = (data) ->
+#       parent = data.parentNode
+#       previous = data.previousSibling
+#       node = data.node
+#       parent.insertBefore node, (if previous then previous.nextSibling else parent.firstChild)
+#     updateAttributes = (data) ->
+#       node = @deserializeNode(data.node)
+#       Object.keys(data.attributes).forEach ((attrName) ->
+#         newVal = data.attributes[attrName]
+#         if newVal is null
+#           node.removeAttribute attrName
+#         else
+#           node.setAttribute attrName, newVal  if not @delegate or not @delegate.setAttribute or not @delegate.setAttribute(node, attrName, newVal)
+#       ), this
+#     updateText = (data) ->
+#       node = @deserializeNode(data.node)
+#       node.textContent = data.textContent
+#     addedOrMoved.forEach ((data) ->
+#       data.node = @deserializeNode(data.node)
+#       data.previousSibling = @deserializeNode(data.previousSibling)
+#       data.parentNode = @deserializeNode(data.parentNode)
+#       removeNode data.node
+#     ), this
+#     removed.map(@deserializeNode, this).forEach removeNode
+#     addedOrMoved.forEach moveOrInsertNode
+#     attributes.forEach updateAttributes, this
+#     text.forEach updateText, this
+#     removed.forEach ((id) ->
+#       delete @idMap[id]
+#     ), this
 
 
 # NOTE: Applying the changes can result in an attempting to add a child
@@ -139,6 +139,7 @@ class TreeMirrorClient
     data =
       nodeType: node.nodeType
       id: @rememberNode(node)
+      xpath: getXPath node
 
     switch data.nodeType
       when Node.DOCUMENT_TYPE_NODE

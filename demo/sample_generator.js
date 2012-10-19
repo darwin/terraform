@@ -14,7 +14,7 @@ stage.append(ctx.data1);
 
 // process JSON from #data2
 var list = ctx.data2.planets;
-var ul = $("<ul/>");
+var ul = $("<ul/>").addClass("pretty-list");
 for (var i=0; i<list.length; i++) {
   ul.append($("<li/>").text(list[i]));
 }

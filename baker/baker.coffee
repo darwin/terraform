@@ -1,9 +1,12 @@
 phantomProxy = require 'phantom-proxy'
 
+version = ->
+  return navigator.userAgent
+
 driver = ->
   console.log "terraform it!"
   window.terraform.bootstrap()
-  return "x"
+  return navigator.userAgent
 
 collector = ->
   console.log "collect!"
@@ -53,12 +56,14 @@ class Baker
 
         page.open 'http://localhost:9721/demo?terraform-baking', ->
           page.waitForFlag 'readyForBootstrap', ->
-            page.evaluate driver, (res) ->
-              page.waitForFlag 'executionFinished', ->
-                page.evaluate collector, (res) ->
-                  setTimeout -> # wait for log messages
-                    phantomProxy.end()
-                  , 2000
-                  cb?()
+            page.evaluate version, (version) ->
+              console.log version
+              page.evaluate driver, (res) ->
+                page.waitForFlag 'executionFinished', ->
+                  page.evaluate collector, (res) ->
+                    setTimeout -> # wait for log messages
+                      phantomProxy.end()
+                    , 2000
+                    cb?()
 
 module.exports = Baker

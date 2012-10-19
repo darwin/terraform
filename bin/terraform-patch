@@ -1,0 +1,22 @@
+#!/usr/bin/env ruby
+
+require 'commander/import'
+
+# :name is optional, otherwise uses the basename of this executable
+program :name, 'Terraform Patch'
+program :version, '0.0.1'
+program :description, 'Terraform HTML patcher'
+
+command :patch do |c|
+  c.syntax = 'terraform-patch [options]'
+  c.description = 'Patch selected HTML with JSON payload'
+  c.option '--payload PATH', String, 'Specify JSON payload path'
+  c.option '--output PATH', String, 'Output file'
+  c.action do |args, options|
+    # options.default
+    require File.dirname(File.expand_path(__FILE__)) + '/../patcher/patcher.rb'
+    patch args.first, options
+  end
+end
+
+default_command :patch

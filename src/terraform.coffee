@@ -136,16 +136,15 @@ class Terraform
       @executeModel()
 
   startRecorder: ->
-    @recording = []
-
-    @mirrorClient = new TreeMirrorClient document,
-      initialize: (rootId, children) ->
-        console.log rootId, children
+    @recording =
+      changesets: []
+    @mirrorClient = new TreeMirrorClient $('html').get(0),
+      initialize: (rootId, children) =>
+        @recording.init = xpathize children
 
       applyChanged: (args...) =>
         # removed, addedOrMoved, attributes, text
-        @recording.push args
-        console.log @recording
+        @recording.changesets.push args
 
   stopRecorder: ->
     @mirrorClient.disconnect()
@@ -160,6 +159,8 @@ class Terraform
     if inBakingMode
       setTimeout =>
         @stopRecorder()
+        report = JSON.stringify @recording, null, "  "
+        console.log report
         @executionFinished = true if inBakingMode
       , 0
 

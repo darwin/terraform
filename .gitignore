@@ -10,3 +10,4 @@ baker/server.js
 baker/logs
 baker/nginx.conf
 mutation-summary/
+demo/index-baked.html

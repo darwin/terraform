@@ -1,0 +1,500 @@
+{
+  "changesets": [
+    [
+      [
+        48,
+        49,
+        50
+      ],
+      [
+        {
+          "node": {
+            "nodeType": 3,
+            "id": 57,
+            "xpath": "/HTML[1]/BODY[1]/DIV[3]/text()[1]",
+            "textContent": "Terraforming (literally, \"Earth-shaping\") of a planet, moon, or other body is the hypothetical process of deliberately modifying its atmosphere, temperature, surface topography or ecology to be similar to the biosphere of Earth, in order to make it habitable by humans."
+          },
+          "previousSibling": null,
+          "parentNode": 47
+        },
+        {
+          "node": {
+            "nodeType": 1,
+            "id": 58,
+            "xpath": "/HTML[1]/BODY[1]/DIV[3]/UL[1]",
+            "tagName": "UL",
+            "attributes": {
+              "class": "pretty-list"
+            }
+          },
+          "previousSibling": 57,
+          "parentNode": 47
+        },
+        {
+          "node": {
+            "nodeType": 1,
+            "id": 59,
+            "xpath": "/HTML[1]/BODY[1]/DIV[3]/HR[1]",
+            "tagName": "HR",
+            "attributes": {}
+          },
+          "previousSibling": 58,
+          "parentNode": 47
+        },
+        {
+          "node": {
+            "nodeType": 1,
+            "id": 60,
+            "xpath": "/HTML[1]/BODY[1]/DIV[3]/H3[1]",
+            "tagName": "H3",
+            "attributes": {}
+          },
+          "previousSibling": 59,
+          "parentNode": 47
+        },
+        {
+          "node": {
+            "nodeType": 3,
+            "id": 61,
+            "xpath": "/HTML[1]/BODY[1]/DIV[3]/text()[2]",
+            "textContent": "\n\n"
+          },
+          "previousSibling": 60,
+          "parentNode": 47
+        },
+        {
+          "node": {
+            "nodeType": 1,
+            "id": 62,
+            "xpath": "/HTML[1]/BODY[1]/DIV[3]/P[1]",
+            "tagName": "P",
+            "attributes": {}
+          },
+          "previousSibling": 61,
+          "parentNode": 47
+        },
+        {
+          "node": {
+            "nodeType": 3,
+            "id": 63,
+            "xpath": "/HTML[1]/BODY[1]/DIV[3]/text()[3]",
+            "textContent": "\n\n"
+          },
+          "previousSibling": 62,
+          "parentNode": 47
+        },
+        {
+          "node": {
+            "nodeType": 1,
+            "id": 64,
+            "xpath": "/HTML[1]/BODY[1]/DIV[3]/P[2]",
+            "tagName": "P",
+            "attributes": {}
+          },
+          "previousSibling": 63,
+          "parentNode": 47
+        },
+        {
+          "node": {
+            "nodeType": 3,
+            "id": 65,
+            "xpath": "/HTML[1]/BODY[1]/DIV[3]/text()[4]",
+            "textContent": "when your mom says \"YAML\" you go and buy: yogurt, apples, milk and lettuce"
+          },
+          "previousSibling": 64,
+          "parentNode": 47
+        },
+        {
+          "node": {
+            "nodeType": 1,
+            "id": 66,
+            "xpath": "/HTML[1]/BODY[1]/DIV[3]/DIV[1]",
+            "tagName": "DIV",
+            "attributes": {
+              "class": "sample-html",
+              "style": "margin-top: 20px"
+            }
+          },
+          "previousSibling": 65,
+          "parentNode": 47
+        },
+        {
+          "node": {
+            "nodeType": 3,
+            "id": 67,
+            "xpath": "/HTML[1]/BODY[1]/DIV[3]/text()[5]",
+            "textContent": "I have good news."
+          },
+          "previousSibling": 66,
+          "parentNode": 47
+        },
+        {
+          "node": {
+            "nodeType": 1,
+            "id": 68,
+            "xpath": "/HTML[1]/BODY[1]/DIV[3]/UL[1]/LI[1]",
+            "tagName": "LI",
+            "attributes": {}
+          },
+          "previousSibling": null,
+          "parentNode": 58
+        },
+        {
+          "node": {
+            "nodeType": 1,
+            "id": 69,
+            "xpath": "/HTML[1]/BODY[1]/DIV[3]/UL[1]/LI[2]",
+            "tagName": "LI",
+            "attributes": {}
+          },
+          "previousSibling": 68,
+          "parentNode": 58
+        },
+        {
+          "node": {
+            "nodeType": 1,
+            "id": 70,
+            "xpath": "/HTML[1]/BODY[1]/DIV[3]/UL[1]/LI[3]",
+            "tagName": "LI",
+            "attributes": {}
+          },
+          "previousSibling": 69,
+          "parentNode": 58
+        },
+        {
+          "node": {
+            "nodeType": 1,
+            "id": 71,
+            "xpath": "/HTML[1]/BODY[1]/DIV[3]/UL[1]/LI[4]",
+            "tagName": "LI",
+            "attributes": {}
+          },
+          "previousSibling": 70,
+          "parentNode": 58
+        },
+        {
+          "node": {
+            "nodeType": 3,
+            "id": 72,
+            "xpath": "/HTML[1]/BODY[1]/DIV[3]/H3[1]/text()[1]",
+            "textContent": "Markdown sample"
+          },
+          "previousSibling": null,
+          "parentNode": 60
+        },
+        {
+          "node": {
+            "nodeType": 1,
+            "id": 73,
+            "xpath": "/HTML[1]/BODY[1]/DIV[3]/P[1]/STRONG[1]",
+            "tagName": "STRONG",
+            "attributes": {}
+          },
+          "previousSibling": null,
+          "parentNode": 62
+        },
+        {
+          "node": {
+            "nodeType": 3,
+            "id": 74,
+            "xpath": "/HTML[1]/BODY[1]/DIV[3]/P[1]/text()[1]",
+            "textContent": " this is a "
+          },
+          "previousSibling": 73,
+          "parentNode": 62
+        },
+        {
+          "node": {
+            "nodeType": 1,
+            "id": 75,
+            "xpath": "/HTML[1]/BODY[1]/DIV[3]/P[1]/EM[1]",
+            "tagName": "EM",
+            "attributes": {}
+          },
+          "previousSibling": 74,
+          "parentNode": 62
+        },
+        {
+          "node": {
+            "nodeType": 3,
+            "id": 76,
+            "xpath": "/HTML[1]/BODY[1]/DIV[3]/P[1]/text()[2]",
+            "textContent": "\ngenerated from "
+          },
+          "previousSibling": 75,
+          "parentNode": 62
+        },
+        {
+          "node": {
+            "nodeType": 1,
+            "id": 77,
+            "xpath": "/HTML[1]/BODY[1]/DIV[3]/P[1]/A[1]",
+            "tagName": "A",
+            "attributes": {
+              "href": "http://daringfireball.net/projects/markdown"
+            }
+          },
+          "previousSibling": 76,
+          "parentNode": 62
+        },
+        {
+          "node": {
+            "nodeType": 3,
+            "id": 78,
+            "xpath": "/HTML[1]/BODY[1]/DIV[3]/P[2]/text()[1]",
+            "textContent": "tip: use "
+          },
+          "previousSibling": null,
+          "parentNode": 64
+        },
+        {
+          "node": {
+            "nodeType": 1,
+            "id": 79,
+            "xpath": "/HTML[1]/BODY[1]/DIV[3]/P[2]/CODE[1]",
+            "tagName": "CODE",
+            "attributes": {}
+          },
+          "previousSibling": 78,
+          "parentNode": 64
+        },
+        {
+          "node": {
+            "nodeType": 3,
+            "id": 80,
+            "xpath": "/HTML[1]/BODY[1]/DIV[3]/P[2]/text()[2]",
+            "textContent": " for saving changes in the editor"
+          },
+          "previousSibling": 79,
+          "parentNode": 64
+        },
+        {
+          "node": {
+            "nodeType": 3,
+            "id": 81,
+            "xpath": "/HTML[1]/BODY[1]/DIV[3]/DIV[1]/text()[1]",
+            "textContent": "\n  Sample "
+          },
+          "previousSibling": null,
+          "parentNode": 66
+        },
+        {
+          "node": {
+            "nodeType": 1,
+            "id": 82,
+            "xpath": "/HTML[1]/BODY[1]/DIV[3]/DIV[1]/I[1]",
+            "tagName": "I",
+            "attributes": {}
+          },
+          "previousSibling": 81,
+          "parentNode": 66
+        },
+        {
+          "node": {
+            "nodeType": 3,
+            "id": 83,
+            "xpath": "/HTML[1]/BODY[1]/DIV[3]/DIV[1]/text()[2]",
+            "textContent": " of "
+          },
+          "previousSibling": 82,
+          "parentNode": 66
+        },
+        {
+          "node": {
+            "nodeType": 1,
+            "id": 84,
+            "xpath": "/HTML[1]/BODY[1]/DIV[3]/DIV[1]/B[1]",
+            "tagName": "B",
+            "attributes": {}
+          },
+          "previousSibling": 83,
+          "parentNode": 66
+        },
+        {
+          "node": {
+            "nodeType": 3,
+            "id": 85,
+            "xpath": "/HTML[1]/BODY[1]/DIV[3]/DIV[1]/text()[3]",
+            "textContent": " content.\n"
+          },
+          "previousSibling": 84,
+          "parentNode": 66
+        },
+        {
+          "node": {
+            "nodeType": 3,
+            "id": 86,
+            "xpath": "/HTML[1]/BODY[1]/DIV[3]/UL[1]/LI[1]/text()[1]",
+            "textContent": "Mercury"
+          },
+          "previousSibling": null,
+          "parentNode": 68
+        },
+        {
+          "node": {
+            "nodeType": 3,
+            "id": 87,
+            "xpath": "/HTML[1]/BODY[1]/DIV[3]/UL[1]/LI[2]/text()[1]",
+            "textContent": "Venus"
+          },
+          "previousSibling": null,
+          "parentNode": 69
+        },
+        {
+          "node": {
+            "nodeType": 3,
+            "id": 88,
+            "xpath": "/HTML[1]/BODY[1]/DIV[3]/UL[1]/LI[3]/text()[1]",
+            "textContent": "Earth"
+          },
+          "previousSibling": null,
+          "parentNode": 70
+        },
+        {
+          "node": {
+            "nodeType": 3,
+            "id": 89,
+            "xpath": "/HTML[1]/BODY[1]/DIV[3]/UL[1]/LI[4]/text()[1]",
+            "textContent": "..."
+          },
+          "previousSibling": null,
+          "parentNode": 71
+        },
+        {
+          "node": {
+            "nodeType": 3,
+            "id": 90,
+            "xpath": "/HTML[1]/BODY[1]/DIV[3]/P[1]/STRONG[1]/text()[1]",
+            "textContent": "hello!"
+          },
+          "previousSibling": null,
+          "parentNode": 73
+        },
+        {
+          "node": {
+            "nodeType": 3,
+            "id": 91,
+            "xpath": "/HTML[1]/BODY[1]/DIV[3]/P[1]/EM[1]/text()[1]",
+            "textContent": "sample content"
+          },
+          "previousSibling": null,
+          "parentNode": 75
+        },
+        {
+          "node": {
+            "nodeType": 3,
+            "id": 92,
+            "xpath": "/HTML[1]/BODY[1]/DIV[3]/P[1]/A[1]/text()[1]",
+            "textContent": "markdown"
+          },
+          "previousSibling": null,
+          "parentNode": 77
+        },
+        {
+          "node": {
+            "nodeType": 3,
+            "id": 93,
+            "xpath": "/HTML[1]/BODY[1]/DIV[3]/P[2]/CODE[1]/text()[1]",
+            "textContent": "CMD+S"
+          },
+          "previousSibling": null,
+          "parentNode": 79
+        },
+        {
+          "node": {
+            "nodeType": 3,
+            "id": 94,
+            "xpath": "/HTML[1]/BODY[1]/DIV[3]/DIV[1]/I[1]/text()[1]",
+            "textContent": "piece"
+          },
+          "previousSibling": null,
+          "parentNode": 82
+        },
+        {
+          "node": {
+            "nodeType": 3,
+            "id": 95,
+            "xpath": "/HTML[1]/BODY[1]/DIV[3]/DIV[1]/B[1]/text()[1]",
+            "textContent": "HTML"
+          },
+          "previousSibling": null,
+          "parentNode": 84
+        }
+      ],
+      [
+        {
+          "node": 42,
+          "attributes": {
+            "title": "sample title",
+            "class": null
+          }
+        }
+      ],
+      [
+        {
+          "node": 45,
+          "textContent": "\n      Some modified text.\n    "
+        }
+      ]
+    ]
+  ],
+  "init": [
+    null,
+    null,
+    "/HTML[1]/HEAD[1]",
+    "/HTML[1]/HEAD[1]/text()[1]",
+    "/HTML[1]/HEAD[1]/META[1]",
+    "/HTML[1]/HEAD[1]/text()[2]",
+    "/HTML[1]/HEAD[1]/TITLE[1]",
+    "/HTML[1]/HEAD[1]/TITLE[1]/text()[1]",
+    "/HTML[1]/HEAD[1]/text()[3]",
+    "/HTML[1]/HEAD[1]/comment()[1]",
+    "/HTML[1]/HEAD[1]/text()[4]",
+    "/HTML[1]/HEAD[1]/SCRIPT[1]",
+    "/HTML[1]/HEAD[1]/text()[5]",
+    "/HTML[1]/HEAD[1]/SCRIPT[2]",
+    "/HTML[1]/HEAD[1]/text()[6]",
+    "/HTML[1]/text()[1]",
+    "/HTML[1]/BODY[1]",
+    "/HTML[1]/BODY[1]/text()[1]",
+    "/HTML[1]/BODY[1]/H1[1]",
+    "/HTML[1]/BODY[1]/H1[1]/text()[1]",
+    "/HTML[1]/BODY[1]/text()[2]",
+    "/HTML[1]/BODY[1]/DIV[1]",
+    "/HTML[1]/BODY[1]/DIV[1]/text()[1]",
+    "/HTML[1]/BODY[1]/DIV[1]/LINK[1]",
+    "/HTML[1]/BODY[1]/DIV[1]/text()[2]",
+    "/HTML[1]/BODY[1]/DIV[1]/LINK[2]",
+    "/HTML[1]/BODY[1]/DIV[1]/text()[3]",
+    "/HTML[1]/BODY[1]/DIV[1]/LINK[3]",
+    "/HTML[1]/BODY[1]/DIV[1]/text()[4]",
+    "/HTML[1]/BODY[1]/DIV[1]/LINK[4]",
+    "/HTML[1]/BODY[1]/DIV[1]/text()[5]",
+    "/HTML[1]/BODY[1]/DIV[1]/LINK[5]",
+    "/HTML[1]/BODY[1]/DIV[1]/text()[6]",
+    "/HTML[1]/BODY[1]/DIV[1]/LINK[6]",
+    "/HTML[1]/BODY[1]/DIV[1]/text()[7]",
+    "/HTML[1]/BODY[1]/DIV[1]/LINK[7]",
+    "/HTML[1]/BODY[1]/DIV[1]/text()[8]",
+    "/HTML[1]/BODY[1]/DIV[1]/LINK[8]",
+    "/HTML[1]/BODY[1]/DIV[1]/text()[9]",
+    "/HTML[1]/BODY[1]/DIV[1]/LINK[9]",
+    "/HTML[1]/BODY[1]/DIV[1]/text()[10]",
+    "/HTML[1]/BODY[1]/text()[3]",
+    "/HTML[1]/BODY[1]/DIV[2]",
+    "/HTML[1]/BODY[1]/DIV[2]/text()[1]",
+    "/HTML[1]/BODY[1]/DIV[2]/comment()[1]",
+    "/HTML[1]/BODY[1]/DIV[2]/text()[2]",
+    "/HTML[1]/BODY[1]/text()[4]",
+    "/HTML[1]/BODY[1]/DIV[3]",
+    "/HTML[1]/BODY[1]/DIV[3]/text()[1]",
+    "/HTML[1]/BODY[1]/DIV[3]/comment()[1]",
+    "/HTML[1]/BODY[1]/DIV[3]/text()[2]",
+    "/HTML[1]/BODY[1]/text()[5]",
+    "/HTML[1]/BODY[1]/HR[1]",
+    "/HTML[1]/BODY[1]/text()[6]",
+    "/HTML[1]/BODY[1]/BUTTON[1]",
+    "/HTML[1]/BODY[1]/BUTTON[1]/text()[1]",
+    "/HTML[1]/BODY[1]/text()[7]"
+  ]
+}

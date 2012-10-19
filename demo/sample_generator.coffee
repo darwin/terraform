@@ -14,3 +14,10 @@ stage.append "when your mom says \"YAML\" you go and buy: #{items}"
 stage.append ctx.data5 # from html file
 
 stage.append ctx.data6.note.body # from xml file
+
+# excercise changing individual text node
+textNode = $("#existing").contents()[2].nodeValue
+$("#existing").contents()[2].nodeValue = textNode.replace("existing", "modified")
+
+# try to manipulate existing attributes
+$('#existing').attr('title', 'sample title').removeAttr('class')

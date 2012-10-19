@@ -37,3 +37,51 @@ underscore = (string) ->
         .replace('-', '_').toLowerCase()
 
 capitalize = (string) -> string.replace capitalize_rx, (m,p1,p2) -> p1 + p2.toUpperCase()
+
+# http://stackoverflow.com/a/9198430/84283
+getXPath = (node) ->
+  comp = undefined
+  comps = []
+  parent = null
+  xpath = ""
+  getPos = (node) ->
+    position = 1
+    curNode = undefined
+    return null  if node.nodeType is Node.ATTRIBUTE_NODE
+    curNode = node.previousSibling
+    while curNode
+      ++position  if curNode.nodeName is node.nodeName
+      curNode = curNode.previousSibling
+    position
+
+  return "/"  if node instanceof Document
+  while node and (node not instanceof Document)
+    comp = comps[comps.length] = {}
+    switch node.nodeType
+      when Node.TEXT_NODE
+        comp.name = "text()"
+      when Node.ATTRIBUTE_NODE
+        comp.name = "@" + node.nodeName
+      when Node.PROCESSING_INSTRUCTION_NODE
+        comp.name = "processing-instruction()"
+      when Node.COMMENT_NODE
+        comp.name = "comment()"
+      when Node.ELEMENT_NODE
+        comp.name = node.nodeName
+    comp.position = getPos(node)
+    node = (if node.nodeType is Node.ATTRIBUTE_NODE then node.ownerElement else node.parentNode)
+  i = comps.length - 1
+
+  while i >= 0
+    comp = comps[i]
+    xpath += "/" + comp.name
+    xpath += "[" + comp.position + "]"  if comp.position?
+    i--
+  xpath
+
+xpathize = (nodes, map=[]) ->
+  return unless nodes
+  for node in nodes
+    map[node.id] = node.xpath
+    xpathize node.childNodes, map
+  map
